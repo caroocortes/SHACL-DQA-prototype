@@ -1,0 +1,72 @@
+{
+    "temples_classical_world": {
+        "total_elapsed_time": 4.487818002700806,
+        "vocab_shapes_elapsed_time": 0.17735981941223145,
+        "data_shapes_elapsed_time": 4.30256986618042,
+        "metadata_shapes_elapsed_time": 0.007824897766113281,
+        "inference_shapes_elapsed_time": 0,
+        "num_inst_shapes": 36,
+        "graph_profile": {
+            "num_triples": 15326,
+            "num_classes": 1,
+            "num_entities": 1363,
+            "num_properties": 17,
+            "triples_per_property": {
+                "http://www.w3.org/2004/02/skos/core#exactMatch": 1659,
+                "http://purl.org/dc/terms/temporal": 1363,
+                "http://www.w3.org/1999/02/22-rdf-syntax-ns#type": 1363,
+                "http://geovocab.org/spatial#C": 1087,
+                "https://pleiades.stoa.org/places/vocab#hasFeatureType": 1362,
+                "http://xmlns.com/foaf/0.1/homepage": 1,
+                "http://www.w3.org/2003/01/geo/wgs84_pos#lat": 1237,
+                "http://www.w3.org/2003/01/geo/wgs84_pos#location": 1237,
+                "http://purl.org/dc/terms/creator": 1,
+                "http://www.w3.org/2000/01/rdf-schema#label": 1362,
+                "http://www.w3.org/2003/01/geo/wgs84_pos#long": 1237,
+                "http://purl.org/dc/terms/title": 1,
+                "http://purl.org/dc/terms/modified": 1,
+                "http://open.vocab.org/terms/compassDirection": 690,
+                "http://purl.org/dc/terms/description": 1,
+                "http://www.geonames.org/ontology#countryCode": 1362,
+                "http://purl.org/dc/terms/subject": 1362
+            },
+            "entities_per_class": {
+                "http://lawd.info/ontology/Place": 1362
+            },
+            "num_entities_with_interlinking": 839,
+            "num_entities_label_property": 1362,
+            "num_entities_description_property": 0,
+            "classes": [
+                "http://lawd.info/ontology/Place"
+            ],
+            "properties": [
+                "http://geovocab.org/spatial#C",
+                "http://purl.org/dc/terms/temporal",
+                "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
+                "http://xmlns.com/foaf/0.1/homepage",
+                "http://www.w3.org/2003/01/geo/wgs84_pos#lat",
+                "http://purl.org/dc/terms/creator",
+                "http://www.w3.org/2000/01/rdf-schema#label",
+                "http://purl.org/dc/terms/title",
+                "http://purl.org/dc/terms/description",
+                "http://www.w3.org/2004/02/skos/core#exactMatch",
+                "https://pleiades.stoa.org/places/vocab#hasFeatureType",
+                "http://www.w3.org/2003/01/geo/wgs84_pos#location",
+                "http://www.w3.org/2003/01/geo/wgs84_pos#long",
+                "http://purl.org/dc/terms/modified",
+                "http://open.vocab.org/terms/compassDirection",
+                "http://www.geonames.org/ontology#countryCode",
+                "http://purl.org/dc/terms/subject"
+            ],
+            "count_owl_graph_profiletype_properties": 0,
+            "count_owl_object_properties": 2,
+            "count_object_range_props": 4,
+            "count_datatype_range_props": 2,
+            "count_irreflexive_props": 0,
+            "count_inverse_functional_props": 1,
+            "count_functional_props": 0,
+            "count_deprecated_classes": 0,
+            "count_deprecated_properties": 0
+        }
+    }
+}

@@ -6,3 +6,6 @@ datasets/*
 !datasets/dbtunes_john_peel_sessions/results/
 !datasets/dbtunes_john_peel_sessions/shapes/
 shacl_shapes_test_venv/
+.DS_Store
+__pycache__/
+*.py[cod]

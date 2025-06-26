@@ -1,0 +1,26 @@
+{
+    "classes": [
+        "http://www.w3.org/2003/01/geo/wgs84_pos#SpatialThing",
+        "http://www.w3.org/2003/01/geo/wgs84_pos#Point"
+    ],
+    "object_properties": {},
+    "datatype_properties": {},
+    "deprecated_classes": [],
+    "deprecated_properties": [],
+    "inverse_functional": [],
+    "functional": [],
+    "reflexive": [],
+    "irreflexive": [],
+    "disjoint_classes": [],
+    "rdf_properties": {
+        "http://www.w3.org/2003/01/geo/wgs84_pos#location": {
+            "domain": null,
+            "range": {
+                "type": "class",
+                "value": "http://www.w3.org/2003/01/geo/wgs84_pos#SpatialThing"
+            }
+        }
+    },
+    "num_classes": 2,
+    "num_properties": 1
+}

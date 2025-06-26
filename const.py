@@ -1,5 +1,5 @@
 # Path to the configuration file of the dataset
-CONFIG_FILE_PATH = 'config/drugbank.ini'
+CONFIG_FILE_PATH = 'config/temples.ini'
 
 # FOLDERS PATHS
 # Stores templates for the dq assessment results
@@ -21,15 +21,11 @@ SHAPES_FOLDER_PATH = 'shapes'
 DQ_MEASURES_DATA_GENERIC_TEMPLATE_FILE_PATH = f'{METRICS_TEMPLATE_FOLDER_PATH}/dq_measures_data_generic_template.json'
 # Stores template for the results of shapes that will be validated against the metadata
 DQ_MEASURES_METADATA_TEMPLATE_FILE_PATH = f'{METRICS_TEMPLATE_FOLDER_PATH}/dq_measures_metadata_template.json'
-# Stores template for the results of shapes that will be validated against the data with inference
-DQ_MEASURES_DATA_INFERENCE_TEMPLATE_FILE_PATH = f'{METRICS_TEMPLATE_FOLDER_PATH}/dq_measures_data_inference_template.json'
 
 # Stores template for the results of shapes that will be validated against the data
 # but to be able to instantiate this shapes we need to extract some metadata from the
 # vocabularies/ontologies
 DQ_MEASURES_DATA_SPECIFIC_TEMPLATE_FILE_PATH = f'{METRICS_TEMPLATE_FOLDER_PATH}/dq_measures_data_specific_temp.json'
-# Same as above but for shapes with inference
-DQ_MEASURES_DATA_SPECIFIC_TEMPLATE_INFERENCE_FILE_PATH = f'{METRICS_TEMPLATE_FOLDER_PATH}/dq_measures_data_inference_specific_temp.json'
 
 # Stores template for the resuls of shapes that will be validated against vocabularies/ontologies
 DQ_MEASURES_VOCABULARIES_TEMPLATE_FILE_PATH = f'{METRICS_TEMPLATE_FOLDER_PATH}/dq_measures_vocabulary_template.json'
@@ -38,7 +34,7 @@ DQ_MEASURES_VOCABULARIES_SPECIFIC_TEMPLATE_FILE_PATH = f'{METRICS_TEMPLATE_FOLDE
 
 # Helper data structures for Data Quality Assessment
 BINARY_METRICS_DATA = {"OpenSameAsChainsShapes", 
-                       "MisuseProperties", 
+                       "MisplacedProperties", 
                        "SchemaCompletenessClassUsage", 
                        "DeprecatedClasses",
                         "DeprecatedProperties" }
@@ -55,15 +51,11 @@ BINARY_METRICS_METADATA = {"AvailabilityDump",
 COUNT_METRICS = {"UsageExternalURIEntities", 
                  "UsageHashURIsEntities", 
                  "LabelForEntities", 
-                 "UsageHashURIsProperties", 
-                 "URIRegexComplianceClasses", 
                  "URIsParametersEntitiesShape", 
                  "URIsLengthEntitiesShape",
                  "ProlixFeatures", 
                  "SelfDescriptiveFormat", 
                  "BlankNodesUsageEntities", 
-                 "URIsLengthAndPatametersClasses", 
-                 "URIsLengthAndParametersProperties", 
                  "DifferentLanguagesLabelsEntities",
                  "DifferentLanguagesDescriptionsEntities",
                  "InterlinkingCompleteness", 
@@ -92,15 +84,9 @@ NUM_ENTITIES = { "UsageHashURIsEntities",
                 "BlankNodesUsageEntities", 
                 "InterlinkingCompleteness"}
 
-NUM_CLASSES = { "UsageHashURIsClasses", 
-               "LabelForClasses", 
-               "URIRegexComplianceClasses", 
-               "URIsLengthAndPatametersClasses"}
+NUM_CLASSES = { "LabelForClasses"}
 
-NUM_PROPERTIES = { "UsageHashURIsProperties", 
-                  "LabelForProperties", 
-                  "URIRegexComplianceProperties", 
-                  "URIsLengthAndParametersProperties"}
+NUM_PROPERTIES = {"LabelForProperties"}
 
 NUM_TRIPLES_PER_PROPERTY = { "MisuseOwlObjectProperties", 
                             "MisuseOwlDatatypeProperties", 
@@ -171,7 +157,7 @@ DQ_MEASURES_DATA_SPECIFIC = {
         "metric_calculation": "1 - (Number of violations / Number of triples that use the property)",
         "shape_template": "ex:MalformedDatatypeLiteralsShape\na sh:NodeShape ;\nsh:targetClass ex:Class ;\nsh:property [\nsh:path ex:SomeProperty ;\nsh:datatype DATATYPE;\nsh:pattern \"DATATYPE_PATTERN\";\n]."
     },
-    "MisuseProperties": {
+    "MisplacedProperties": {
         "dimension": "Consistency",
         "metric_id": "CN2",
         "metric": "No misplaced classes or properties",
@@ -182,7 +168,7 @@ DQ_MEASURES_DATA_SPECIFIC = {
         "metric_type": "binary",
         "metric_calculation": "0 if property is used as a class, 1 otherwise.",
         "meta_metric_calculation": "Number of correctly used properties / Number of properties defined in vocabularies",
-        "shape_template": "ex:MisusePropertiesShape\na sh:NodeShape ;\nsh:targetNode ex:someProperty ;\nsh:property [\nsh:path [ sh:inversePath rdf:type ];\nsh:maxCount 0;\n]."
+        "shape_template": "ex:MisplacedPropertiesShape\na sh:NodeShape ;\nsh:targetNode ex:someProperty ;\nsh:property [\nsh:path [ sh:inversePath rdf:type ];\nsh:maxCount 0;\n]."
     },
     "EntitiesDisjointClasses": {
         "dimension": "Consistency",
@@ -203,12 +189,7 @@ DQ_MEASURES_DATA_SPECIFIC = {
         "metric": "No misuse of owl:DatatypeProperty or owl:ObjectProperty",
         "measure": 1,
         "shape": "",
-        "message": "",
-        "description": "Verifies that owl:ObjectProperty aren't used with Literals",
-        "metric_type": "count",
-        "meta_metric_calculation": "Number of owl:ObjectProperty correctly used / Number of owl:ObjectProperty",
-        "metric_calculation": "1 - (Number of violations / Number of triples that use the property)",
-        "shape_template": "ex:MisuseOwlObjectPropertiesShape\na sh:NodeShape ;\nsh:targetObjectsOf ex:SomeObjectProperty ;\nsh:nodeKind sh:IRI."
+        "message": ""
     },
     "MisuseOwlDatatypeProperties": {
         "dimension": "Consistency",
@@ -216,12 +197,7 @@ DQ_MEASURES_DATA_SPECIFIC = {
         "metric": "No misuse of owl:DatatypeProperty or owl:ObjectProperty",
         "measure": 1,
         "shape": "",
-        "message": "",
-        "description": "Verifies that owl:DatatypeProperty are used with Literals",
-        "metric_type": "count",
-        "metric_calculation" : "1 - (Number of violations / Number of triples that use the property)",
-        "meta_metric_calculation": "Number of owl:DatatypeProperty correctly used / Number of owl:DatatypeProperty",
-        "shape_template": "ex:MisuseOwlDatatypePropertiesShape\na sh:NodeShape ;\nsh:targetObjectsOf ex:SomeDatatypeProperty ;\nsh:nodeKind sh:Literal."
+        "message": ""
     },
     "DeprecatedProperties": {
         "dimension": "Consistency",
@@ -229,12 +205,7 @@ DQ_MEASURES_DATA_SPECIFIC = {
         "metric": "Members of owl:DeprecatedClass or owl:DeprecatedProperty not used",
         "measure": 1,
         "shape": "",
-        "message": "",
-        "description": "Verifies that deprecated properties are not used",
-        "metric_type": "binary",
-        "metric_calculation": "",
-        "meta_metric_calculation": "Number of deprecated properties used / Number of deprecated properties",
-        "shape_template": "ex:DeprecatedPropertiesUsageShape\na sh:NodeShape ;\nsh:targetClass rdf:Property ;\nsh:not [ sh:in (LIST_OF_DEPRECATED_PROPERTIES) ]."
+        "message": ""
     },
     "DeprecatedClasses": {
         "dimension": "Consistency",
@@ -243,11 +214,6 @@ DQ_MEASURES_DATA_SPECIFIC = {
         "measure": 1,
         "shape": "",
         "message": "",
-        "description": "Verifies that deprecated classes are not used",
-        "metric_type": "binary",
-        "metric_calculation": "",
-        "meta_metric_calculation": "Number of deprecated classes used / Number of deprecated classes",
-        "shape_template": "ex:DeprecatedClassesShape\na sh:NodeShape ;\nsh:targetObjectsOf rdf:type ;\nsh:not [ sh:in (LIST_OF_DEPRECATED_CLASSES) ]."
     },
     "CorrectRangeObject": {
         "dimension": "Consistency",
@@ -256,11 +222,6 @@ DQ_MEASURES_DATA_SPECIFIC = {
         "measure": 1,
         "shape": "",
         "message": "",
-        "description": "Verifies that properties are used with the correct range (object properties).",
-        "metric_type": "count",
-        "metric_calculation": "1 - (Number of violations / Number of triples that use the property)",
-        "meta_metric_calculation": "Number of properties used with an correct object range / Number of properties with object range",
-        "shape_template": "ex:CorrectRangeObjectShape\na sh:NodeShape ;\nsh:targetObjectsOf ex:someProperty ;\nsh:class CLASS."
     },
     "CorrectRangeDatatype": {
         "dimension": "Consistency",
@@ -269,11 +230,6 @@ DQ_MEASURES_DATA_SPECIFIC = {
         "measure": 1,
         "shape": "",
         "message": "",
-        "description": "Verifies that properties are used with the correct range (datatype properties).",
-        "metric_type": "count",
-        "metric_calculation": "1 - (Number of violations / Number of triples that use the property)",
-        "meta_metric_calculation": "Number of properties used with a correct datatype/literal range / Number of properties with a datatype/literal range",
-        "shape_template": "ex:CorrectRangeShape\na sh:NodeShape ;\nsh:targetObjectsOf ex:someProperty ;\nsh:datatype DATATYPE."
     },
     "CorrectDomain": {
         "dimension": "Consistency",
@@ -282,11 +238,6 @@ DQ_MEASURES_DATA_SPECIFIC = {
         "measure": 1,
         "shape": "",
         "message": "",
-        "description": "Verifies that properties are used with the correct domain.",
-        "metric_type": "count",
-        "metric_calculation": "1 - (Number of violations / Number of triples that use the property)",
-        "meta_metric_calculation": "Number of properties used with a correct domain / Number of properties",
-        "shape_template": ""
     },
     "IrreflexiveProperty": {
         "dimension": "Consistency",
@@ -295,11 +246,6 @@ DQ_MEASURES_DATA_SPECIFIC = {
         "measure": 1,
         "shape": "",
         "message": "",
-        "description": "Verifies the correct usage of irreflexive properties.",
-        "metric_type": "count",
-        "metric_calculation": "1 - (Number of violations / Number of triples that use the property)",
-        "meta_metric_calculation": "Number of irreflexive properties correctly used / Number of irreflexive properties",
-        "shape_template": ""
     },
     "InverseFunctionalProperty": {
         "dimension": "Consistency",
@@ -307,12 +253,7 @@ DQ_MEASURES_DATA_SPECIFIC = {
         "metric": "Valid usage of inverse-functional properties",
         "measure": 1,
         "shape": "",
-        "message": "",
-        "description": "Verifies the correct usage of inverse-functional properties.",
-        "metric_type": "count",
-        "metric_calculation": "1 - (Number of violations / Number of triples that use the property)",
-        "meta_metric_calculation": "Number of inverse-functional properties correctly used / Number of inverse-functional properties",
-        "shape_template": "ex:InverseFunctionalPropertyUniquenessShape\na sh:NodeShape ;\nsh:targetObjectsOf ex:someInvFuncProp ;\nsh:property [\nsh:path [ sh:inversePath ex:someInvFuncProp ];\nsh:maxCount 1;\n]."
+        "message": ""
     },
     "FunctionalProperty": {
         "dimension": "Consistency",
@@ -320,12 +261,7 @@ DQ_MEASURES_DATA_SPECIFIC = {
         "metric": "No inconsistent values",
         "measure": 1,
         "shape": "",
-        "message": "",
-        "description": "Verifies the correct usage of functional properties.",
-        "metric_type": "count",
-        "metric_calculation": "1 - (Number of violations / Number of triples that use the property)",
-        "meta_metric_calculation": "Number of functional properties correctly used / Number of functional properties",
-        "shape_template": "ex:FunctionalPropertyShape\\na sh:NodeShape ;\\nsh:targetSubjectsOf {{property_uri}} ;\\nsh:property [\\n    sh:path {{property_uri}} ;\\n    sh:maxCount 1 ;\\n] ."
+        "message": ""
     },
     "SchemaCompletenessClassUsage": {
         "dimension": "Completeness",
@@ -333,12 +269,7 @@ DQ_MEASURES_DATA_SPECIFIC = {
         "metric": "Schema completeness",
         "measure": 1,
         "shape": "",
-        "message": "",
-        "description": "Verifies that classes defined in vocabularies are used in the dataset",
-        "metric_type": "binary",
-        "metric_calculation": "1 if the class is used, 0 otherwise",
-        "meta_metric_calculation": "Number of classes used / Number of classes defined in vocabularies",
-        "shape_template": "ex:SchemaCompletenessClassUsageShape\na sh:NodeShape ;\nsh:targetNode ex:SomeClass ;\nsh:property [\nsh:path [ sh:inversePath rdf:type ];\nsh:minCount 1;\n]."
+        "message": ""
     },
     "MemberIncompatibleDatatype": {
         "dimension": "Syntactic Validity",
@@ -346,12 +277,7 @@ DQ_MEASURES_DATA_SPECIFIC = {
         "metric": "No malformed datatype literals",
         "measure": 1,
         "shape": "",
-        "message": "",
-        "description": "Verifies that datatype properties aren't used with incorrect datatypes.",
-        "metric_type": "count",
-        "metric_calculation": "1 - (Number of violations / Number of triples that use the property)",
-        "meta_metric_calculation": "Number of correctly used properties / Number of properties with a datatype range",
-        "shape_template": "ex:MemberIncompatibleDatatypeShape\na sh:NodeShape ;\nsh:targetSubjectsOf PROPERTY_URI ;\nsh:property [\n    sh:path PROPERTY_URI ;\n    sh:datatype DATATYPE_URI \n] ."
+        "message": ""
     },
     "MalformedDatatype": {
         "dimension": "Syntactic Validity",
@@ -359,12 +285,7 @@ DQ_MEASURES_DATA_SPECIFIC = {
         "metric": "No malformed datatype literals",
         "measure": 1,
         "shape": "",
-        "message": "",
-        "description": "Verifies that datatype property's values follow the expected lexical syntax of the datatype.",
-        "metric_type": "count",
-        "metric_calculation": "1 - (Number of violations / Number of triples that use the property)",
-        "meta_metric_calculation": "Number of correctly used properties / Number of properties with a datatype range",
-        "shape_template": "ex:MalformedDatatypeShape \\na sh:NodeShape ;\\nsh:targetSubjectsOf PROPERTY_URI ;\\nsh:property [\\n    sh:path PROPERTY_URI ;\\n    sh:pattern DATATYPE_PATTERN;\\n] ."
+        "message": ""
     }
 }
 

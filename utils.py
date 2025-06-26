@@ -282,15 +282,6 @@ def profile_vocab(dq_assessment, vocab):
     # Number of properties      
     ontology_info['num_properties'] += len(ontology_info['rdf_properties'].keys())
 
-    # # Number of properties with labels
-    # properties = (
-    #     list(ontology_info['rdf_properties'].keys()) +
-    #     list(ontology_info['object_properties'].keys()) +
-    #     list(ontology_info['datatype_properties'].keys())
-    # )
-    # properties_with_label = {p for p in properties if (p, URIRef(RDFS.label), None) in g}
-    # ontology_info["num_properties_label"] = len(properties_with_label)
-
     # Disjoint via owl:disjointWith
     disjoint_pairs = set()
     for s, o in g.subject_objects(OWL.disjointWith):
@@ -333,31 +324,93 @@ def create_shape_graph(shacl_shapes):
 
     return shapes_graph
 
-def validate_shacl_constraints(data_graph_file_path, data_graph_file_format, shapes_graph, inference):
+def validate_shacl_constraints(data_graph_file_path, data_graph_file_format, shapes_graph, vocabs=None, config=None):
     """
-    Calculates and stores statistics needed for calculating DQ measures.
+    Validates a data graph against a shapes graph
+    If ont_files are provided, the ontologies are incorporated to the data graph. In this case, we also generate triples
+    of the form <p, rdf:type, rdf:Property> for owl properties and <c, rdf:type, rdfs:Class> for owl classes
     """
-    data_graph = Graph().parse(data_graph_file_path, format=data_graph_file_format)
 
-    if inference:
-        results = validate(
-            data_graph,
-            shacl_graph=shapes_graph,
-            debug=False,
-            inference='both'
-        )
-    else:
-        results = validate(
-            data_graph,
-            shacl_graph=shapes_graph,
-            debug=False
-        )
+    if vocabs:
+        ont_graphs = []
+        for vocab in vocabs:
+            file_path = config[vocab]['file_path']
+            file_format = config[vocab]['file_format']
+            ont_graphs.append(Graph().parse(file_path, format=file_format))
 
-    conforms, report_graph, validation_report = results
+        merged_ont = Graph()
+        for g in ont_graphs:
+            for triple in g:
+                merged_ont.add(triple)
+
+        owl_properties = [
+            OWL.ObjectProperty,
+            OWL.DatatypeProperty,
+            OWL.FunctionalProperty,
+            OWL.InverseFunctionalProperty,
+            OWL.IrreflexiveProperty,
+            OWL.ReflexiveProperty,
+            OWL.TransitiveProperty,
+            OWL.AllDisjointProperties,
+            OWL.AnnotationProperty,
+            OWL.onProperty,
+            OWL.allValuesFrom,
+            OWL.someValuesFrom,
+            OWL.oneOf,
+            OWL.members,
+            OWL.distinctMembers,
+            OWL.DeprecatedProperty,
+            OWL.OntologyProperty,
+            OWL.minCardinality,
+            OWL.maxCardinality,
+            OWL.intersectionOf,
+            OWL.unionOf,
+            OWL.complementOf,
+            OWL.incompatibleWith,
+            OWL.deprecated,
+            OWL.topDataProperty,
+            OWL.priorVersion
+        ]
+
+        for prop_type in owl_properties:
+            for s in merged_ont.subjects(RDF.type, prop_type):
+                merged_ont.add((s, RDF.type, RDF.Property))
+
+        
+        owl_classes = [
+            OWL.Class,
+            OWL.Ontology,
+            OWL.AllDisjointClasses,
+            OWL.Restriction,
+            OWL.AllDifferent,
+            OWL.NamedIndividual,
+            OWL.DeprecatedClass
+        ]
+
+        for class_type in owl_classes:
+            for s in merged_ont.subjects(RDF.type, class_type):
+                merged_ont.add((s, RDF.type, RDFS.Class))
+
+        data_graph = Graph().parse(data_graph_file_path, format=data_graph_file_format)
+
+        # Merge Abox + Tbox
+        graph_to_validate = data_graph + merged_ont 
+
+    else: 
+
+        graph_to_validate = Graph().parse(data_graph_file_path, format=data_graph_file_format)
+
+
+    conforms, report_graph, validation_report = validate(
+        graph_to_validate,
+        shacl_graph=shapes_graph,
+        debug=False
+    )
 
     return conforms, report_graph, validation_report
 
 def get_metric_message(results_graph, result):
+    # TODO: check this because of all the filters with RDFS property and RDF classes
     constraint_type = results_graph.value(result, SH.sourceConstraintComponent)
     counter = -1
     # Composite constraints don't output individual validation results for each constraint inside the composite

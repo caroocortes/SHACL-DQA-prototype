@@ -1,0 +1,137 @@
+{
+    "classes": [
+        "https://www.geonames.org/ontology#Class",
+        "https://www.geonames.org/ontology#Code",
+        "https://www.geonames.org/ontology#GeonamesFeature",
+        "https://www.geonames.org/ontology#Feature",
+        "https://www.geonames.org/ontology#Map",
+        "https://www.geonames.org/ontology#RDFData",
+        "https://www.geonames.org/ontology#WikipediaArticle"
+    ],
+    "object_properties": {
+        "https://www.geonames.org/ontology#childrenFeatures": {
+            "domain": "https://www.geonames.org/ontology#Feature",
+            "range": "https://www.geonames.org/ontology#RDFData"
+        },
+        "https://www.geonames.org/ontology#featureClass": {
+            "domain": null,
+            "range": null
+        },
+        "https://www.geonames.org/ontology#featureCode": {
+            "domain": "https://www.geonames.org/ontology#Feature",
+            "range": "https://www.geonames.org/ontology#Code"
+        },
+        "https://www.geonames.org/ontology#locatedIn": {
+            "domain": null,
+            "range": "https://www.geonames.org/ontology#Feature"
+        },
+        "https://www.geonames.org/ontology#locationMap": {
+            "domain": "https://www.geonames.org/ontology#Feature",
+            "range": "https://www.geonames.org/ontology#Map"
+        },
+        "https://www.geonames.org/ontology#nearby": {
+            "domain": "https://www.geonames.org/ontology#Feature",
+            "range": "https://www.geonames.org/ontology#Feature"
+        },
+        "https://www.geonames.org/ontology#nearbyFeatures": {
+            "domain": "https://www.geonames.org/ontology#Feature",
+            "range": "https://www.geonames.org/ontology#RDFData"
+        },
+        "https://www.geonames.org/ontology#neighbour": {
+            "domain": "https://www.geonames.org/ontology#Feature",
+            "range": "https://www.geonames.org/ontology#Feature"
+        },
+        "https://www.geonames.org/ontology#neighbouringFeatures": {
+            "domain": "https://www.geonames.org/ontology#Feature",
+            "range": "https://www.geonames.org/ontology#RDFData"
+        },
+        "https://www.geonames.org/ontology#parentADM1": {
+            "domain": "https://www.geonames.org/ontology#Feature",
+            "range": "N714f894280e44f1f892a05a23c21e3f8"
+        },
+        "https://www.geonames.org/ontology#parentADM2": {
+            "domain": "https://www.geonames.org/ontology#Feature",
+            "range": "N16f81e044e8a403e9a0ae191c911e27a"
+        },
+        "https://www.geonames.org/ontology#parentADM3": {
+            "domain": "https://www.geonames.org/ontology#Feature",
+            "range": "N7eb3c76f201f4d2599ab968ecfaa3d86"
+        },
+        "https://www.geonames.org/ontology#parentADM4": {
+            "domain": "https://www.geonames.org/ontology#Feature",
+            "range": "N621392229135431fac75aa8ea921b2d6"
+        },
+        "https://www.geonames.org/ontology#parentCountry": {
+            "domain": "https://www.geonames.org/ontology#Feature",
+            "range": "Necc934b3267b4ab789474ea5c4b49c8e"
+        },
+        "https://www.geonames.org/ontology#parentFeature": {
+            "domain": "https://www.geonames.org/ontology#Feature",
+            "range": "https://www.geonames.org/ontology#Feature"
+        },
+        "https://www.geonames.org/ontology#wikipediaArticle": {
+            "domain": "https://www.geonames.org/ontology#Feature",
+            "range": "https://www.geonames.org/ontology#WikipediaArticle"
+        }
+    },
+    "datatype_properties": {
+        "https://www.geonames.org/ontology#alternateName": {
+            "domain": "https://www.geonames.org/ontology#Feature",
+            "range": null
+        },
+        "https://www.geonames.org/ontology#colloquialName": {
+            "domain": null,
+            "range": null
+        },
+        "https://www.geonames.org/ontology#geonamesID": {
+            "domain": null,
+            "range": null
+        },
+        "https://www.geonames.org/ontology#countryCode": {
+            "domain": "https://www.geonames.org/ontology#Feature",
+            "range": null
+        },
+        "https://www.geonames.org/ontology#historicalName": {
+            "domain": null,
+            "range": null
+        },
+        "https://www.geonames.org/ontology#lat": {
+            "domain": "https://www.geonames.org/ontology#Feature",
+            "range": null
+        },
+        "https://www.geonames.org/ontology#long": {
+            "domain": "https://www.geonames.org/ontology#Feature",
+            "range": null
+        },
+        "https://www.geonames.org/ontology#name": {
+            "domain": "https://www.geonames.org/ontology#Feature",
+            "range": null
+        },
+        "https://www.geonames.org/ontology#officialName": {
+            "domain": "https://www.geonames.org/ontology#Feature",
+            "range": null
+        },
+        "https://www.geonames.org/ontology#population": {
+            "domain": "https://www.geonames.org/ontology#Feature",
+            "range": "http://www.w3.org/2001/XMLSchema#integer"
+        },
+        "https://www.geonames.org/ontology#postalCode": {
+            "domain": "https://www.geonames.org/ontology#Feature",
+            "range": null
+        },
+        "https://www.geonames.org/ontology#shortName": {
+            "domain": "https://www.geonames.org/ontology#Feature",
+            "range": null
+        }
+    },
+    "deprecated_classes": [],
+    "deprecated_properties": [],
+    "inverse_functional": [],
+    "functional": [],
+    "reflexive": [],
+    "irreflexive": [],
+    "disjoint_classes": [],
+    "rdf_properties": {},
+    "num_classes": 7,
+    "num_properties": 28
+}

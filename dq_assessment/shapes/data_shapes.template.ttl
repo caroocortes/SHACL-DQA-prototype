@@ -21,38 +21,82 @@ ex:OpenSameAsChainsShape
 ex:UsageHashURIsEntitiesShape
     a sh:NodeShape ;
     sh:targetSubjectsOf <{{ type_property }}> ;
-    sh:message "UsageHashURIsEntities - It's is recommended the usage of slash URIs";
-    sh:pattern "^[^#]*$" .
+    sh:or (
+        [
+            sh:path rdf:type ;
+            sh:hasValue rdfs:Class ;
+        ]
+        [
+            sh:path rdf:type ;
+            sh:hasValue rdf:Property ;
+        ]
+        [
+            sh:pattern "^[^#]*$" ;
+            sh:message "UsageHashURIsEntities - It's is recommended the usage of slash URIs";
+        ]
+    ).
 {%- endmacro %}
 
 {% macro understandability_label_entities(type_property, labeling_property) -%}
 ex:LabelForEntitiesShape
     a sh:NodeShape ;
     sh:targetSubjectsOf <{{ type_property }}> ;
-    sh:property [
-        sh:path <{{ labeling_property }}> ;
-        sh:minCount 1 ;
-        sh:message "LabelForEntities - All entities should be tagged with a label."
-    ] .
+    sh:or (
+        [
+            sh:path rdf:type ;
+            sh:hasValue rdfs:Class ;
+        ]
+        [
+            sh:path rdf:type ;
+            sh:hasValue rdf:Property ;
+        ]
+        [
+            sh:path <{{ labeling_property }}> ;
+            sh:minCount 1 ;
+            sh:message "LabelForEntities - All entities should be tagged with a label.";
+        ]
+    ).
 {%- endmacro %}
 
 {% macro understandability_uri_regex_compliance_entities(type_property, uri_regex_pattern) -%}
 ex:URIRegexComplianceEntitiesShape
     a sh:NodeShape ;
     sh:targetSubjectsOf <{{ type_property }}> ;
-    sh:pattern "{{ uri_regex_pattern }}" ; 
-    sh:message "URIRegexComplianceEntities - URIs should match the regex pattern provided in void:uriRegexPattern".
+    sh:or (
+        [
+            sh:path rdf:type ;
+            sh:hasValue rdfs:Class ;
+        ]
+        [
+            sh:path rdf:type ;
+            sh:hasValue rdf:Property ;
+        ]
+        [
+            sh:pattern "{{ uri_regex_pattern }}" ; 
+            sh:message "URIRegexComplianceEntities - URIs should match the regex pattern provided in void:uriRegexPattern" ;
+        ]
+    ).
 {%- endmacro %}
 
 {% macro interlinking_completeness(type_property, interlinking_property) -%}
 ex:InterlinkingCompletenessShape
     a sh:NodeShape ;
     sh:targetSubjectsOf <{{type_property}}> ;
-    sh:property [
-        sh:path <{{interlinking_property}}> ;
-        sh:minCount 1;
-        sh:message "InterlinkingCompleteness - Entities should be interlinked." ;
-    ].
+    sh:or (
+        [
+            sh:path rdf:type ;
+            sh:hasValue rdfs:Class ;
+        ]
+        [
+            sh:path rdf:type ;
+            sh:hasValue rdf:Property ;
+        ]
+        [
+            sh:path <{{interlinking_property}}> ;
+            sh:minCount 1;
+            sh:message "InterlinkingCompleteness - Entities should be interlinked." ;
+        ]
+    ).
 {%- endmacro %}
 
 {% macro completeness_schema_completeness_class_usage(class_name, class_uri, type_property) -%}
@@ -80,85 +124,173 @@ ex:PropertyCompletenessGeneralShape
 ex:URIsLengthEntitiesShape
     a sh:NodeShape ;
     sh:targetSubjectsOf <{{ type_property }}> ;
-    sh:maxLength {{ max_length_value }} ;
-    sh:message "URIsLengthEntities - URIs should have a length of less than {{ max_length_value }}".
+    sh:or (
+        [
+            sh:path rdf:type ;
+            sh:hasValue rdfs:Class ;
+        ]
+        [
+            sh:path rdf:type ;
+            sh:hasValue rdf:Property ;
+        ]
+        [
+            sh:maxLength {{ max_length_value }} ;
+            sh:message "URIsLengthEntities - URIs should have a length of less than {{ max_length_value }}";
+        ]
+    ).
 {%- endmacro %}
 
 {% macro representational_conciseness_uris_parameters(type_property) -%}
 ex:URIsParametersEntitiesShape
     a sh:NodeShape ;
     sh:targetSubjectsOf <{{ type_property }}> ;
-    sh:message "URIsParametersEntities - URIs shouldn't use parameters";
-    sh:not[
-        sh:pattern "\\?.+=.*" ;
-    ] .
+    sh:or (
+        [
+            sh:path rdf:type ;
+            sh:hasValue rdfs:Class ;
+        ]
+        [
+            sh:path rdf:type ;
+            sh:hasValue rdf:Property ;
+        ]
+        [
+            sh:not[ sh:pattern "\\?.+=.*" ; ] ;
+            sh:message "URIsParametersEntities - URIs shouldn't use parameters";
+        ]
+    ).
 {%- endmacro %}
 
 {% macro representational_conciseness_prolix_features(type_property) -%}
 ex:ProlixRDFFeaturesShape
     a sh:NodeShape ;
     sh:targetSubjectsOf <{{ type_property }}> ;
-    sh:not[
-        sh:or(
-            [ sh:class rdf:Statement; ]
-            [ sh:class rdf:List; ]
-            [ sh:class rdf:Seq; ]
-            [ sh:class rdf:Bag; ]
-            [ sh:class rdf:Alt; ]
-        );
-        sh:message "ProlixRDFFeatures - Prolix features shouldn't be used (Lists, Containers)";
-    ].
+    sh:or (
+        [
+            sh:path rdf:type ;
+            sh:hasValue rdfs:Class ;
+        ]
+        [
+            sh:path rdf:type ;
+            sh:hasValue rdf:Property ;
+        ]
+        [
+            sh:not[
+                sh:or(
+                    [ sh:class rdf:Statement; ]
+                    [ sh:class rdf:List; ]
+                    [ sh:class rdf:Seq; ]
+                    [ sh:class rdf:Bag; ]
+                    [ sh:class rdf:Alt; ]
+                );
+                sh:message "ProlixRDFFeatures - Prolix features shouldn't be used (Lists, Containers)";
+            ]
+        ]
+    ).
 {%- endmacro %}
 
 {% macro versatility_languages_labels_entities(type_property, labeling_property) -%}
 ex:DifferentLanguagesLabelsEntitiesShape
     a sh:NodeShape ;
     sh:targetSubjectsOf <{{type_property}}> ;
-    sh:property [
-        sh:path <{{labeling_property}}> ;
-        sh:datatype rdf:langString;
-        sh:message "DifferentLanguagesLabelsEntities - Entities should provide labels with language tags";
-    ].
+    sh:or (
+        [
+            sh:path rdf:type ;
+            sh:hasValue rdfs:Class ;
+        ]
+        [
+            sh:path rdf:type ;
+            sh:hasValue rdf:Property ;
+        ]
+        [
+            sh:path <{{labeling_property}}> ;
+            sh:datatype rdf:langString;
+            sh:message "DifferentLanguagesLabelsEntities - Entities should provide labels with language tags";
+        ]
+    ).
 {%- endmacro %}
 
 {% macro versatility_languages_descriptions_entities(type_property, description_property) -%}
 ex:DifferentLanguagesDescriptionsEntitiesShape
     a sh:NodeShape ;
     sh:targetSubjectsOf <{{type_property}}> ;
-    sh:property [
-        sh:path <{{description_property}}> ;
-        sh:datatype rdf:langString;
-        sh:message "DifferentLanguagesDescriptionsEntities - Entities should provide descriptions with language tags";
-    ].
+    sh:or (
+        [
+            sh:path rdf:type ;
+            sh:hasValue rdfs:Class ;
+        ]
+        [
+            sh:path rdf:type ;
+            sh:hasValue rdf:Property ;
+        ]
+        [
+            sh:path <{{description_property}}> ;
+            sh:datatype rdf:langString ;
+            sh:message "DifferentLanguagesDescriptionsEntities - Entities should provide descriptions with language tags";
+        ]
+    ).
 {%- endmacro %}
 
 {% macro versatility_languages_labels_entities_list_languages(type_property, labeling_property, list_required_languages) -%}
 ex:DifferentLanguagesEntitiesListLanguagesShape
     a sh:NodeShape ;
     sh:targetSubjectsOf <{{type_property}}> ;
-    sh:property [
-        sh:path <{{labeling_property}}> ;
-        sh:datatype rdf:langString;
-        sh:languageIn ( {{list_required_languages}} ) ;
-        sh:uniqueLang true;
-        sh:message "DifferentLanguagesEntitiesListLanguagesShape - Entities should provide labels with different languages";
-    ].
+    sh:or (
+        [
+            sh:path rdf:type ;
+            sh:hasValue rdfs:Class ;
+        ]
+        [
+            sh:path rdf:type ;
+            sh:hasValue rdf:Property ;
+        ]
+        [
+            sh:path <{{labeling_property}}> ;
+            sh:datatype rdf:langString ;
+            sh:languageIn ( {{list_required_languages}} ) ;
+            sh:uniqueLang true ;
+            sh:message "DifferentLanguagesEntitiesListLanguagesShape - Entities should provide labels with different languages" ;
+        ]
+    ).
 {%- endmacro %}
 
 {% macro versatility_self_descriptive_formats(type_property) -%}
 ex:SelfDescriptiveFormatShape
     a sh:NodeShape ;
     sh:targetSubjectsOf <{{type_property}}> ;
-    sh:nodeKind sh:IRI ;
-    sh:message "SelfDescriptiveFormat - Entities should be identified by URIs".
+    sh:or (
+        [
+            sh:path rdf:type ;
+            sh:hasValue rdfs:Class ;
+        ]
+        [
+            sh:path rdf:type ;
+            sh:hasValue rdf:Property ;
+        ]
+        [
+            sh:nodeKind sh:IRI ;
+            sh:message "SelfDescriptiveFormat - Entities should be identified by URIs" ;
+        ]
+    ).
 {%- endmacro %}
 
 {% macro versatility_usage_blank_nodes(type_property) -%}
 ex:BlankNodesUsageEntitiesShape
     a sh:NodeShape ;
     sh:targetSubjectsOf <{{type_property}}> ;
-    sh:not [ sh:nodeKind sh:BlankNode];
-    sh:message "BlankNodesUsageEntities - The dataset should not use blank nodes to identify entities".
+    sh:or (
+        [
+            sh:path rdf:type ;
+            sh:hasValue rdfs:Class ;
+        ]
+        [
+            sh:path rdf:type ;
+            sh:hasValue rdf:Property ;
+        ]
+        [
+            sh:not [ sh:nodeKind sh:BlankNode] ;
+            sh:message "BlankNodesUsageEntities - The dataset should not use blank nodes to identify entities" ;
+        ]
+    ).
 {%- endmacro %}
 
 {% macro versatility_usage_blank_nodes_subjects(property_uri, shape_index) -%}
@@ -186,13 +318,13 @@ ex:EntitiesDisjointClassesShape_{{shape_id}}
 {%- endmacro %}
 
 {% macro consistency_misuse_properties(shape_index, property_uri, type_property) -%}
-ex:MisusePropertiesShape_{{shape_index}}
+ex:MisplacedPropertiesShape_{{shape_index}}
     a sh:NodeShape ;
     sh:targetNode <{{property_uri}}> ;
     sh:property [
-        sh:path [ sh:inversePath <{{type_property}}> ];
+        sh:path [ sh:inversePath <{{type_property}}> ] ;
         sh:maxCount 0;
-        sh:message "MisuseProperties_{{shape_index}} - The property {{property_uri}} is being used as a class";
+        sh:message "MisplacedProperties_{{shape_index}} - The property {{property_uri}} is being used as a class" ;
     ].
 {%- endmacro %}
 
@@ -216,9 +348,31 @@ ex:MisuseOwlDatatypePropertiesShape_{{shape_index}}
 ex:DeprecatedClassesUsageShape
     a sh:NodeShape ;
     sh:targetObjectsOf <{{type_property}}> ;
+    sh:or (
+        [
+            sh:path rdf:type ;
+            sh:hasValue rdfs:Class ;
+        ]
+        [
+            sh:path rdf:type ;
+            sh:hasValue rdf:Property ;
+        ]
+        [
+            sh:not [ 
+                sh:in ( {{classes_list}} );
+                sh:message "DeprecatedClassesUsage - Deprecated classes are being used in the dataset";
+            ];
+        ]
+    ).
+{%- endmacro %}
+
+{% macro consistency_deprecated_properties(properties_list, type_property) -%}
+ex:DeprecatedPropertiesUsageShape
+    a sh:NodeShape ;
+    sh:targetClass rdf:Property ;
     sh:not [ 
-        sh:in ( {{classes_list}} );
-        sh:message "DeprecatedClassesUsage - Deprecated classes are being used in the dataset";
+        sh:in ( {{properties_list}} ) ;
+        sh:message "DeprecatedPropertiesUsage - Deprecated properties are being used in the dataset";
     ].
 {%- endmacro %}
 

@@ -58,7 +58,7 @@ class DQAssessment:
         self.labeling_property = self.config['settings']['labeling_property']
         self.description_property = self.config['settings']['description_property']
         self.interlinking_property = self.config['settings']['interlinking_property']
-        self.base_namespace = self.config['settings']['base_namespace']
+        self.base_namespace = self.config['settings']['base_namespace'] # this is not being used!!!!! I think I didn't implement the shape that checks for the uriSpace...
         self.uris_max_length = self.config['settings']['uris_max_length']
         self.vocab_names = [v.strip() for v in self.config["settings"]["vocabularies"].split(",")]
 
@@ -66,7 +66,6 @@ class DQAssessment:
         env = Environment(loader=FileSystemLoader("dq_assessment/shapes"))
         self.data_template = env.get_template("data_shapes.template.ttl")
         self.metadata_template = env.get_template("metadata_shapes.template.ttl")
-        self.data_inference_template = env.get_template("data_shapes_inference.template.ttl")
         self.vocabs_template = env.get_template("vocabulary_shapes.template.ttl")
 
         self.regex_pattern = None
@@ -98,25 +97,15 @@ class DQAssessment:
             self.metadata_shapes_elapsed_time = elapsed_time
             logging.info(f"Finished validating metadata shapes. \n Saved DQA results in '{DQ_ASSESSMENT_RESULTS_FOLDER_PATH.format(dataset_name=self.dataset_name)}dq_assessment_{self.dataset_name}_metadata.json'. \n Elapsed time: {elapsed_time}")
 
-        # ---- Validate shapes without inference ----
+        # ---- Validate data shapes ----
         if self.data_shapes:
             start_time = time.time()
-            self.validate_shapes_without_inference()
+            self.validate_data_shapes()
             end_time = time.time()
             elapsed_time = end_time - start_time
             self.data_shapes_elapsed_time = elapsed_time
-            logging.info(f"Finished validating data shapes without inference. Saved DQA results in '{DQ_ASSESSMENT_RESULTS_FOLDER_PATH.format(dataset_name=self.dataset_name)}/dq_assessment_{self.dataset_name}_data.json'. \n Elapsed time: {elapsed_time}")
+            logging.info(f"Finished validating data shapes. Saved DQA results in '{DQ_ASSESSMENT_RESULTS_FOLDER_PATH.format(dataset_name=self.dataset_name)}/dq_assessment_{self.dataset_name}_data.json'. \n Elapsed time: {elapsed_time}")
 
-        # ---- Validate shapes with inference ----
-        if self.inference_data_shapes:
-            start_time = time.time()
-            self.validate_shapes_with_inference()
-            end_time = time.time()
-            elapsed_time = end_time - start_time
-            self.inference_shapes_elapsed_time = elapsed_time
-
-            logging.info(f"Finished validating data shapes with inference. Saved DQA results in '{DQ_ASSESSMENT_RESULTS_FOLDER_PATH.format(dataset_name=self.dataset_name)}dq_assessment_{self.dataset_name}_data_inference.json'. \n")
-            logging.info(f"Elapsed time: {elapsed_time}")
 
         final_time = time.time() # end of validation
         self.total_elapsed_time = final_time - initial_time
@@ -125,9 +114,6 @@ class DQAssessment:
         # Remove specific .json result file created for shapes that need instantiation from vocabularies
         if os.path.exists(DQ_MEASURES_DATA_SPECIFIC_TEMPLATE_FILE_PATH):
             os.remove(DQ_MEASURES_DATA_SPECIFIC_TEMPLATE_FILE_PATH)
-
-        if os.path.exists(DQ_MEASURES_DATA_SPECIFIC_TEMPLATE_INFERENCE_FILE_PATH):
-            os.remove(DQ_MEASURES_DATA_SPECIFIC_TEMPLATE_INFERENCE_FILE_PATH)
 
         if os.path.exists(DQ_MEASURES_VOCABULARIES_SPECIFIC_TEMPLATE_FILE_PATH):
             os.remove(DQ_MEASURES_VOCABULARIES_SPECIFIC_TEMPLATE_FILE_PATH)
@@ -167,7 +153,7 @@ class DQAssessment:
         logging.info(f'Metadata shapes for dataset {self.dataset_name} saved in {file_path}')
         
         # Run validation 
-        conforms, val_graph, report = validate_shacl_constraints(self.metadata_file, self.metadata_file_format, shape_graph, inference=False)
+        _, val_graph, _ = validate_shacl_constraints(self.metadata_file, self.metadata_file_format, shape_graph)
 
         # Process & store validation results
         self.process_validation_result_metadata(val_graph)
@@ -219,12 +205,12 @@ class DQAssessment:
             os.makedirs(folder_path, exist_ok=True)
             file_path = f'{folder_path}/vocabulary_shapes_{vocab_name}.ttl'
             shape_graph.serialize(destination=file_path, format='turtle')
-            logging.info(f'Shapes for dataset {self.dataset_name} saved in {file_path}')
+            logging.info(f'Shapes for vocabulary {self.dataset_name} saved in {file_path}')
 
             # Validate shapes
             file_path = self.config[vocab]["file_path"]
             file_format = self.config[vocab]["file_format"]
-            conforms, val_graph, report = validate_shacl_constraints(file_path, file_format, shape_graph, inference=True)
+            _, val_graph, _ = validate_shacl_constraints(file_path, file_format, shape_graph)
 
             with open(f'{PROFILE_VOCABULARIES_FOLDER_PATH}/{vocab_name}.json', 'r', encoding='utf-8') as f:
                 vocab_profile = json.load(f)
@@ -233,7 +219,7 @@ class DQAssessment:
             self.process_validation_result_vocabularies(val_graph, vocab_name, vocab_profile, property_vocab_map, class_vocab_map)
 
 
-    def validate_shapes_without_inference(self):
+    def validate_data_shapes(self):
         """
             Validates shapes without inference
         """
@@ -262,10 +248,10 @@ class DQAssessment:
         shape_graph.serialize(destination=file_path, format='turtle')
         logging.info(f'Data shapes for dataset {self.dataset_name} saved in {file_path}')
 
-        conforms, val_graph, report = validate_shacl_constraints(self.graph_file_path, self.graph_file_format, shape_graph, inference=False)
+        _, val_graph, _ = validate_shacl_constraints(self.graph_file_path, self.graph_file_format, shape_graph, self.vocab_names, self.config)
         
         # Process validation results
-        results = self.process_validation_result_data(val_graph, inference=False)
+        results = self.process_validation_result_data(val_graph)
         
         # Store dq assessment results
         folder_path = DQ_ASSESSMENT_RESULTS_FOLDER_PATH.format(dataset_name=self.dataset_name)
@@ -273,48 +259,6 @@ class DQAssessment:
         file_path = f'{folder_path}/dq_assessment_{self.dataset_name}_data.json'
         with open(file_path, 'w', encoding='utf-8') as f:
             json.dump(results, f, indent=4)
-
-
-    def validate_shapes_with_inference(self):
-        """
-            Validate shapes with inference
-        """
-        results = None
-        
-        # Instantiate shapes
-        accessibility_shapes_inference = self.shape_builder.accessibility_data_shapes_inference(self.data_inference_template)
-        contextual_shapes_inference = self.shape_builder.contextual_data_shapes_inference(self.data_inference_template)
-        representational_shapes_inference = self.shape_builder.representational_data_shapes_inference(self.data_inference_template)
-        intrinsic_shapes_inference, self.graph_profile = self.shape_builder.intrinsic_data_shapes_inference(self.data_inference_template, self.graph_profile)
-
-        shacl_shapes = (accessibility_shapes_inference + '\n' + 
-                        contextual_shapes_inference + '\n' +
-                        representational_shapes_inference + '\n' +
-                        intrinsic_shapes_inference
-                    )
-        # Create shapes graph
-        shape_graph = create_shape_graph(shacl_shapes)
-
-        # Store shapes graph
-        folder_path = f'{DATASETS_FOLDER_PATH}/{self.dataset_name}/shapes'
-        os.makedirs(folder_path, exist_ok=True)
-        file_path = f'{folder_path}/data_inference_shapes.ttl'
-        shape_graph.serialize(destination=file_path, format='turtle')
-        logging.info(f'Data shapes without inference for dataset {self.dataset_name} saved in {file_path}')
-
-        # Run validation
-        conforms, val_graph, report = validate_shacl_constraints(self.graph_file_path, self.graph_file_format, shape_graph, inference=True)
-        
-        # Process validation results
-        results = self.process_validation_result_data(val_graph, inference=True)
-
-        # Store validation results
-        folder_path = DQ_ASSESSMENT_RESULTS_FOLDER_PATH.format(dataset_name=self.dataset_name)
-        os.makedirs(folder_path, exist_ok=True)
-        file_path = f'{folder_path}/dq_assessment_{self.dataset_name}_data_inference.json'
-        with open(file_path, 'w', encoding='utf-8') as f:
-            json.dump(results, f, indent=4)
-
 
     def process_validation_result_metadata(self, results_graph):
         """
@@ -425,44 +369,32 @@ class DQAssessment:
             json.dump(results, f, indent=4)
 
 
-    def process_validation_result_data(self, results_graph, inference=False):
+    def process_validation_result_data(self, results_graph):
         """
         Process validation results for shapes validated against the data.
         """
         
         violating_entities_per_shape = defaultdict(lambda: {"entities": set()})
         
-        if inference:
-            with open(DQ_MEASURES_DATA_INFERENCE_TEMPLATE_FILE_PATH, 'r', encoding='utf-8') as f:
-                metrics_generic = json.load(f)
-            
-            if os.path.exists(DQ_MEASURES_DATA_SPECIFIC_TEMPLATE_INFERENCE_FILE_PATH):
-                with open(DQ_MEASURES_DATA_SPECIFIC_TEMPLATE_INFERENCE_FILE_PATH, 'r', encoding='utf-8') as f:
-                    metrics_specific = json.load(f)
-
-        else:
-            with open(DQ_MEASURES_DATA_GENERIC_TEMPLATE_FILE_PATH, 'r', encoding='utf-8') as f:
-                metrics_generic = json.load(f)
-            
-            if os.path.exists(DQ_MEASURES_DATA_SPECIFIC_TEMPLATE_FILE_PATH):
-                with open(DQ_MEASURES_DATA_SPECIFIC_TEMPLATE_FILE_PATH, 'r', encoding='utf-8') as f:
-                    metrics_specific = json.load(f)
+        
+        with open(DQ_MEASURES_DATA_GENERIC_TEMPLATE_FILE_PATH, 'r', encoding='utf-8') as f:
+            metrics_generic = json.load(f)
+        
+        if os.path.exists(DQ_MEASURES_DATA_SPECIFIC_TEMPLATE_FILE_PATH):
+            with open(DQ_MEASURES_DATA_SPECIFIC_TEMPLATE_FILE_PATH, 'r', encoding='utf-8') as f:
+                metrics_specific = json.load(f)
 
         results = metrics_generic | metrics_specific
 
         if self.regex_pattern is None:
             # There's no regex pattern provided for the URIs, 
             # hence, we don't need to calculate the URIRegexComplianceEntities, URIRegexComplianceClasses, URIRegexComplianceProperties
-            if inference:
-                results.pop("URIRegexComplianceClasses")
-                results.pop("URIRegexComplianceProperties")
-            else:
-                results.pop("URIRegexComplianceEntities")
+            results.pop("URIRegexComplianceEntities")
         
-        if not inference and not self.labeling_property:
+        if not self.labeling_property:
             results.pop('DifferentLanguagesLabelsEntities')
 
-        if not inference and not self.description_property:
+        if not self.description_property:
             results.pop('DifferentLanguagesDescriptionsEntities')
 
         validation_results = results_graph.subjects(RDF.type, SH.ValidationResult)
@@ -480,12 +412,12 @@ class DQAssessment:
                 if counter != -1 and not metric.startswith("Deprecated"):
                     metric = f'{metric}_{counter}'
 
-                if constraint_type != SH.MinCountConstraintComponent and metric != 'MisuseProperties':
+                if constraint_type != SH.MinCountConstraintComponent and metric != 'MisplacedProperties':
                     # shapes have ranges to check for the effective usage of properties
                     # hence, the property can be present but is not being used properly
                     message += ' (the values for the property are not correct)'
                 
-                if metric.startswith("MisuseProperties"):
+                if metric.startswith("MisplacedProperties"):
                     results[metric]["property"] = self.shape_property_map[int(counter)]
               
                 if metric.startswith("SchemaCompletenessClassUsage"):
@@ -572,22 +504,16 @@ class DQAssessment:
 
         files = []
         if self.validate_metadata_shapes: 
-            files.append((f'dq_assessment_{self.dataset_name}_metadata.json', False))
-
-        if self.validate_shapes_with_inference:
-            files.append((f'dq_assessment_{self.dataset_name}_data_inference.json', True))
-        
-        if self.validate_shapes_without_inference:
-            files.append((f'dq_assessment_{self.dataset_name}_data.json', False))
+            files.append(f'dq_assessment_{self.dataset_name}_metadata.json')
 
         if self.validate_vocabulary_shapes:
-            vocab_files = [(file.split("/")[-1], False) for file in glob.glob(f'{results_folder}dq_assessment_vocabularies_*.json')]
+            vocab_files = [file.split("/")[-1] for file in glob.glob(f'{results_folder}dq_assessment_vocabularies_*.json')]
             files.extend(vocab_files)
 
         rows = []
         counter_shapes = 0
 
-        for filename, inference in files:
+        for filename in files:
 
             file_path = os.path.join(results_folder, filename)
             
@@ -694,7 +620,7 @@ class DQAssessment:
                 property_uri = info.get('property', '')
                 vocab = info.get('vocab', '')
 
-                if shape_name.startswith("MisuseProperties_"):
+                if shape_name.startswith("MisplacedProperties_"):
 
                     # this counts the number of properties, since I create 1 shape 
                     # per property and in the results I have a result per shape
@@ -836,7 +762,6 @@ class DQAssessment:
                         'metric_calculation': metric_calculation,
                         'meta_metric_calculation': meta_metric_calculation,
                         'shape_template': shape_template,
-                        'inference': 'yes' if inference else 'no',
                         'violations': violations,
                         'num_violations': num_violations,
                         'vocab': vocab
@@ -860,8 +785,7 @@ class DQAssessment:
                     'metric_type': 'binary',
                     'metric_calculation': "0 if property is used as a class, 1 otherwise.",
                     "meta_metric_calculation": "Number of correctly used properties / Number of properties defined in vocabularies",
-                    'shape_template': 'ex:MisusePropertiesShape\na sh:NodeShape ;\nsh:targetNode PROPERTY_URI ;\nsh:property [\nsh:path [ sh:inversePath rdf:type ];\nsh:maxCount 0;\n].',
-                    'inference': 'no',
+                    'shape_template': 'ex:MisplacedPropertiesShape\na sh:NodeShape ;\nsh:targetNode PROPERTY_URI ;\nsh:property [\nsh:path [ sh:inversePath rdf:type ];\nsh:maxCount 0;\n].',
                     'violations': '; '.join([f'({p},{s})' for p, s in misuse_properties_properties]),
                     'num_violations': len(misuse_properties_properties),
                     "vocab": ''
@@ -882,7 +806,6 @@ class DQAssessment:
                     'metric_calculation': '1 - (Number of violations / Number of triples that use the property)',
                     'meta_metric_calculation': 'Number of properties used with a correct datatype/literal  range / Number of properties with datatype/literal range',
                     'shape_template': 'ex:CorrectRangeShape\na sh:NodeShape ;\nsh:targetObjectsOf PROPERTY_URI ;\nsh:datatype DATATYPE.',
-                    'inference': 'no',
                     'violations': '; '.join([f'({p},{s})' for p, s in range_datatype_properties]),
                     'num_violations': len(range_datatype_properties),
                     "vocab": ''
@@ -902,7 +825,6 @@ class DQAssessment:
                     'metric_calculation': '1 - (Number of violations / Number of triples that use the property)',
                     "meta_metric_calculation": "Number of properties used with an correct object range / Number of properties with object range",
                     'shape_template': 'ex:CorrectRangeObjectShape\na sh:NodeShape ;\nsh:targetObjectsOf PROPERTY_URI ;\nsh:class CLASS.',
-                    'inference': 'no',
                     'violations': '; '.join([f'({p},{s})' for p, s in range_object_properties]),
                     'num_violations': len(range_object_properties),
                     "vocab": ''
@@ -922,7 +844,6 @@ class DQAssessment:
                     'metric_calculation': '1 - (Number of violations / Number of triples that use the property)',
                     "meta_metric_calculation": "Number of properties used with their correct domain / Number of properties with a defined domain",
                     "shape_template": "ex:CorrectDomainShape\\na sh:NodeShape ;\\nsh:targetSubjectsOf PROPERTY_URI ;\\nsh:class CLASS .",
-                    'inference': 'no',
                     'violations': '; '.join([f'({p},{s})' for p, s in correct_domain_properties]),
                     'num_violations': len(correct_domain_properties),
                     "vocab": ''
@@ -942,7 +863,6 @@ class DQAssessment:
                     'metric_calculation': '1 - (Number of violations / Number of entities of the target class)',
                     "meta_metric_calculation": "Number of classes with no member as instance of a disjoint class / Number of classes",
                     'shape_template': 'ex:EntitiesDisjointClassesShape\na sh:NodeShape ;\nsh:targetClass CLASS_URI ;\nsh:not [ sh:class ex:DisjointClass ].',
-                    'inference': 'no',
                     'violations': '; '.join([f'({fc},{sc},{s})' for fc, sc, s in entities_disjoint_classes]),
                     'num_violations': len(entities_disjoint_classes),
                     "vocab": ''
@@ -962,7 +882,6 @@ class DQAssessment:
                     'metric_calculation': '1 - (Number of violations / Number of triples that use the property)',
                     "meta_metric_calculation": "Number of irreflexive properties correctly used / Number of irreflexive properties",
                     'shape_template': '',
-                    'inference': 'no',
                     'violations': '; '.join([f'({p},{s})' for p, s in irreflexive_properties_properties]),
                     'num_violations': len(irreflexive_properties_properties),
                     "vocab": ''
@@ -982,7 +901,6 @@ class DQAssessment:
                     'metric_calculation': '1 - (Number of violations / Number of triples that use the property)',
                     "meta_metric_calculation": "Number of owl:ObjectProperty correctly used / Number of owl:ObjectProperty",
                     'shape_template': 'ex:MisuseOwlObjectPropertiesShape\na sh:NodeShape ;\nsh:targetObjectsOf ex:SomeObjectProperty ;\nsh:nodeKind sh:IRI.',
-                    'inference': 'no',
                     'violations': '; '.join([f'({p},{s})' for p, s in misuse_object_properties_properties]),
                     'num_violations': len(misuse_object_properties_properties),
                     "vocab": ''
@@ -1002,7 +920,6 @@ class DQAssessment:
                     'metric_calculation': '1 - (Number of violations / Number of triples that use the property)',
                     "meta_metric_calculation": "Number of owl:DatatypeProperty correctly used / Number of owl:DatatypeProperty",
                     'shape_template': 'ex:MisuseOwlDatatypePropertiesShape\na sh:NodeShape ;\nsh:targetObjectsOf ex:SomeDatatypeProperty ;\nsh:nodeKind sh:Literal.',
-                    'inference': 'no',
                     'violations': '; '.join([f'({p},{s})' for p, s in misuse_datatype_properties_properties]),
                     'num_violations': len(misuse_datatype_properties_properties),
                     "vocab": ''
@@ -1022,7 +939,6 @@ class DQAssessment:
                     'metric_calculation': '1 - (Number of violations / Number of triples that use the property)',
                     "meta_metric_calculation": "Number of inverse-functional properties correctly used / Number of inverse-functional properties",
                     'shape_template': 'ex:InverseFunctionalPropertyUniquenessShape\na sh:NodeShape ;\nsh:targetObjectsOf ex:someInvFuncProp ;\nsh:property [\nsh:path [ sh:inversePath ex:someInvFuncProp ];\nsh:maxCount 1;\n].',
-                    'inference': 'no',
                     'violations': '; '.join([f'({p},{s})' for p, s in inverse_functional_properties_properties]),
                     'num_violations': len(inverse_functional_properties_properties),
                     "vocab": ''
@@ -1041,7 +957,6 @@ class DQAssessment:
                     'metric_calculation': '1 - (Number of violations / Number of triples that use the property)',
                     "meta_metric_calculation": "Number of functional properties correctly used / Number of functional properties",
                     "shape_template": "ex:FunctionalPropertyShape\\na sh:NodeShape ;\\nsh:targetSubjectsOf {{property_uri}} ;\\nsh:property [\\n    sh:path {{property_uri}} ;\\n    sh:maxCount 1 ;\\n] .",
-                    'inference': 'no',
                     'violations': '; '.join([f'({p},{s})' for p, s in functional_properties_properties]),
                     'num_violations': len(functional_properties_properties),
                     "vocab": ''
@@ -1061,7 +976,6 @@ class DQAssessment:
                     "metric_calculation": "1 if the class is used, 0 otherwise",
                     "meta_metric_calculation": "Number of classes used / Number of classes defined in vocabularies",
                     'shape_template': 'ex:SchemaCompletenessClassUsageShape\na sh:NodeShape ;\nsh:targetNode CLASS_URI ;\nsh:property [\nsh:path [ sh:inversePath rdf:type ];\nsh:minCount 1;\n].',
-                    'inference': 'no',
                     'violations': '; '.join(schema_completeness_class_usage_classes),
                     'num_violations': len(schema_completeness_class_usage_classes),
                     "vocab": ''
@@ -1080,7 +994,6 @@ class DQAssessment:
                     "metric_calculation": "1 - (Number of violations / Number of triples that use the property)",
                     "meta_metric_calculation": "Number of correctly used properties / Number of properties with a datatype range",
                     "shape_template": "ex:MemberIncompatibleDatatypeShape\na sh:NodeShape ;\nsh:targetSubjectsOf PROPERTY_URI ;\nsh:property [\n    sh:path PROPERTY_URI ;\n    sh:datatype DATATYPE_URI \n] .",
-                    "inference": 'no',
                     "violations": "; ".join([f'({p},{s})' for p, s in incompatible_dataype_properties]),
                     "num_violations": len(incompatible_dataype_properties),
                     "vocab": ''
@@ -1099,7 +1012,6 @@ class DQAssessment:
                     "metric_calculation": "1 - (Number of violations / Number of triples that use the property)",
                     "meta_metric_calculation": "Number of correctly used properties / Number of properties with a datatype range",
                     "shape_template": "ex:MalformedDatatypeShape \\na sh:NodeShape ;\\nsh:targetSubjectsOf PROPERTY_URI ;\\nsh:property [\\n    sh:path PROPERTY_URI ;\\n    sh:pattern DATATYPE_PATTERN;\\n] .",
-                    "inference": 'no',
                     "violations": "; ".join([f'({p},{s})' for p, s in malformed_dataype_properties]),
                     "num_violations": len(malformed_dataype_properties),
                     "vocab": ''
@@ -1120,7 +1032,6 @@ class DQAssessment:
                         "metric_calculation": "1 if the property is defined, 0 otherwise",
                         "meta_metric_calculation": "Number of defined properties / Number of properties used in the dataset",
                         "shape_template": "ex:UndefinedPropertyShape \\na sh:NodeShape ;\\nsh:targetNode PROPERTY_URI ;\\nsh:property [\\n    sh:path TYPE_PROPERTY ;\\n    sh:class rdf:Property ;\\n    sh:minCount 1 ;\\n    sh:maxCount 1 \\n] .",
-                        "inference": 'no',
                         "violations": "; ".join(undefined_properties_properties[vocab]),
                         "num_violations": len(undefined_properties_properties[vocab]),
                         "vocab": vocab
@@ -1140,7 +1051,6 @@ class DQAssessment:
                         "metric_calculation": "1 if the class is defined, 0 otherwise",
                         "meta_metric_calculation": "Number of defined classes / Number of classes used in the dataset",
                         "shape_template": "ex:UndefinedClassShape \\na sh:NodeShape ;\\nsh:targetNode CLASS_URI ;\\nsh:property [\\n    sh:path TYPE_PROPERTY ;\\n    sh:class rdfs:Class ;\\n    sh:minCount 1 ;\\n    sh:maxCount 1 ;\\n] .",
-                        "inference": 'no',
                         "violations": "; ".join(undefined_classes_classes[vocab]),
                         "num_violations": len(undefined_classes_classes[vocab]),
                         "vocab": vocab
@@ -1164,8 +1074,8 @@ class DQAssessment:
         with open(output_csv_path, 'w', encoding='utf-8', newline='') as csvfile:
             writer = csv.DictWriter(csvfile, fieldnames=['dimension','metric_id', 'metric', 
                                                          'score', 'message', 'metric_description', 'metric_type', 
-                                                         'metric_calculation', 'meta_metric_calculation', 'shape_template', 
-                                                         'inference', 'violations', 'num_violations', 'vocab'])
+                                                         'metric_calculation', 'meta_metric_calculation', 'shape_template',
+                                                         'violations', 'num_violations', 'vocab'])
             writer.writeheader()
             for row in rows:
                 writer.writerow(row)

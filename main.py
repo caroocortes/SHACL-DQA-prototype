@@ -43,9 +43,5 @@ if "__main__":
 
 
 # TODO: 
-
-# - ver la shape malformed datatypes -> ver el KGHeartBeat para ver el dictionary que ellos usaban
 # - correr experimentos en todos los datasets
-# - hacer statistics de número de shapes y demás - done
 # ver qué pasa si no hay metadata file ni vocabularies, escribo igual el resultado???
-# revisar shapes que se ejecutan contra vocabularies

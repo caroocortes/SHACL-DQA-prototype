@@ -22,8 +22,6 @@ class SHACLShapeBuilder:
         self.vocab_names = dq_assessment.vocab_names
         self.dataset_name = dq_assessment.dataset_name
 
-        self.inference_data_shapes = dq_assessment.inference_data_shapes
-
     def accessibility_data_shapes(self, template):
 
         shacl_shapes = ''
@@ -33,14 +31,6 @@ class SHACLShapeBuilder:
          
         return shacl_shapes
     
-    def accessibility_data_shapes_inference(self, template):
-
-        shacl_shapes = ''
-
-        shacl_shapes += template.module.performance_hash_uris_classes() + '\n'
-        shacl_shapes += template.module.performance_hash_uris_properties()
-
-        return shacl_shapes 
 
     def contextual_data_shapes(self, template):
         shacl_shapes = template.module.understandability_label_entities(self.type_property, self.labeling_property) + '\n'
@@ -61,15 +51,6 @@ class SHACLShapeBuilder:
             
         return self.regex_pattern, shacl_shapes
 
-    def contextual_data_shapes_inference(self, template):
-
-        shacl_shapes = ''
-        if self.regex_pattern:
-            shacl_shapes += template.module.understandability_uri_regex_compliance_classes(self.regex_pattern) + '\n'
-            
-            shacl_shapes += template.module.understandability_uri_regex_compliance_properties(self.regex_pattern)
-            
-        return shacl_shapes
     
     def representational_data_shapes(self, template):
         max_length_value = self.uris_max_length
@@ -90,56 +71,6 @@ class SHACLShapeBuilder:
         
         return shacl_shapes
     
-    def representational_data_shapes_inference(self, template):
-    
-        shacl_shapes = ''
-
-        shacl_shapes += template.module.representational_conciseness_uris_length_classes(self.uris_max_length) + '\n'
-        shacl_shapes += template.module.representational_conciseness_uris_parameters_classes() + '\n'
-        shacl_shapes += template.module.representational_conciseness_uris_parameters_properties() + '\n'
-        shacl_shapes += template.module.representational_conciseness_uris_length_properties(self.uris_max_length)
-        
-        return shacl_shapes
-    
-    def intrinsic_data_shapes_inference(self, template, graph_profile):
-        shacl_shapes = ''
-        dq_results = {}
-        count_deprecated_properties = 0
-
-        for vocab in self.vocab_names:
-            vocab_name = self.config[vocab]['vocab_name']
-            with open(f'{PROFILE_VOCABULARIES_FOLDER_PATH}/{vocab_name}.json', 'r', encoding='utf-8') as f:
-                vocab_profile = json.load(f)
-
-            if self.inference_data_shapes and len(vocab_profile['deprecated_properties']) > 0:
-                properties_list = " ".join([f"<{v}>" for v in vocab_profile['deprecated_properties']])
-                
-                shacl_shapes_inf += template.module.consistency_deprecated_properties(properties_list, self.type_property) + '\n'
-                
-                metric_info = copy.deepcopy(DQ_MEASURES_DATA_SPECIFIC['DeprecatedPropertiesUsage'])
-                metric_info['shape'] = f'ex:DeprecatedPropertiesUsageShape'
-                metric_name = f'DeprecatedPropertiesUsage'
-                dq_results[metric_name] = metric_info
-
-                count_deprecated_properties = len(properties_list)
-        
-        # Read graph profile
-        with open(f'{PROFILE_DATASETS_FOLDER_PATH}/{self.dataset_name}.json', 'r', encoding='utf-8') as f:
-            data = json.load(f)
-
-        # Add number of deprecated properties
-        graph_profile['count_deprecated_properties'] = count_deprecated_properties
-        
-        # Update profile with new information from vocabularies
-        with open(f'{PROFILE_DATASETS_FOLDER_PATH}/{self.dataset_name}.json', 'w', encoding='utf-8') as f:
-            json.dump(graph_profile, f, indent=4)
-
-        # Save the DQ "initial" results for the shapes that need instantiation from vocabularies
-        file_path = DQ_MEASURES_DATA_SPECIFIC_TEMPLATE_INFERENCE_FILE_PATH
-        with open(file_path, 'w', encoding='utf-8') as f:
-            json.dump(dq_results, f, indent=4)
-
-        return shacl_shapes, graph_profile
 
     def intrinsic_data_shapes(self, template, graph_profile):
 
@@ -163,6 +94,7 @@ class SHACLShapeBuilder:
         count_functional_props = 0
         count_inverse_functional_props = 0
         count_deprecated_classes = 0
+        count_deprecated_properties = 0
 
         property_counter = 1
         property_counter_map = {}
@@ -259,9 +191,9 @@ class SHACLShapeBuilder:
                         # since we want to check the correct usage of properties (that they are not used as a class)
                         shacl_shapes +=  template.module.consistency_misuse_properties(property_counter, prop, self.type_property) + '\n'
                     
-                        metric_info = copy.deepcopy(DQ_MEASURES_DATA_SPECIFIC['MisuseProperties'])
-                        metric_info['shape'] = f'ex:MisusePropertiesShape_{property_counter}'
-                        metric_name = f'MisuseProperties_{property_counter}'
+                        metric_info = copy.deepcopy(DQ_MEASURES_DATA_SPECIFIC['MisplacedProperties'])
+                        metric_info['shape'] = f'ex:MisplacedPropertiesShape_{property_counter}'
+                        metric_name = f'MisplacedProperties_{property_counter}'
                         dq_results[metric_name] = metric_info
 
                         property_counter_map[property_counter] = prop
@@ -338,9 +270,9 @@ class SHACLShapeBuilder:
                         # since we want to check the correct usage of properties (that they are not used as a class)
                         shacl_shapes +=  template.module.consistency_misuse_properties(property_counter, prop, self.type_property) + '\n'
                         
-                        metric_info = copy.deepcopy(DQ_MEASURES_DATA_SPECIFIC['MisuseProperties'])
-                        metric_info['shape'] = f'ex:MisusePropertiesShape_{property_counter}'
-                        metric_name = f'MisuseProperties_{property_counter}'
+                        metric_info = copy.deepcopy(DQ_MEASURES_DATA_SPECIFIC['MisplacedProperties'])
+                        metric_info['shape'] = f'ex:MisplacedPropertiesShape_{property_counter}'
+                        metric_name = f'MisplacedProperties_{property_counter}'
                         dq_results[metric_name] = metric_info
 
                         property_counter_map[property_counter] = prop
@@ -405,6 +337,18 @@ class SHACLShapeBuilder:
 
                 count_deprecated_classes = len(classes_list)
 
+            if len(vocab_profile['deprecated_properties']) > 0:
+                properties_list = " ".join([f"<{v}>" for v in vocab_profile['deprecated_properties']])
+                
+                shacl_shapes_inf += template.module.consistency_deprecated_properties(properties_list, self.type_property) + '\n'
+                
+                metric_info = copy.deepcopy(DQ_MEASURES_DATA_SPECIFIC['DeprecatedPropertiesUsage'])
+                metric_info['shape'] = f'ex:DeprecatedPropertiesUsageShape'
+                metric_name = f'DeprecatedPropertiesUsage'
+                dq_results[metric_name] = metric_info
+
+                count_deprecated_properties = len(properties_list)
+
             if len(vocab_profile['rdf_properties']) > 0:
                 # In this case we don't filter properties that aren't used in the dataset
                 # since we want to check the correct usage of properties (that they are not used as a class)
@@ -412,9 +356,9 @@ class SHACLShapeBuilder:
 
                     shacl_shapes += template.module.consistency_misuse_properties(property_counter, prop, self.type_property) + '\n'
                     
-                    metric_info = copy.deepcopy(DQ_MEASURES_DATA_SPECIFIC['MisuseProperties'])
-                    metric_info['shape'] = f'ex:MisusePropertiesShape_{property_counter}'
-                    metric_name = f'MisuseProperties_{property_counter}'
+                    metric_info = copy.deepcopy(DQ_MEASURES_DATA_SPECIFIC['MisplacedProperties'])
+                    metric_info['shape'] = f'ex:MisplacedPropertiesShape_{property_counter}'
+                    metric_name = f'MisplacedProperties_{property_counter}'
                     dq_results[metric_name] = metric_info
 
                     property_counter_map[property_counter] = prop
@@ -507,6 +451,9 @@ class SHACLShapeBuilder:
 
         # Add number of dperecated classes
         graph_profile['count_deprecated_classes'] = count_deprecated_classes
+
+        # Add number of deprecated properties
+        graph_profile['count_deprecated_properties'] = count_deprecated_properties
         
         # Update profile with new information from vocabularies
         with open(f'{PROFILE_DATASETS_FOLDER_PATH}/{self.dataset_name}.json', 'w', encoding='utf-8') as f:
