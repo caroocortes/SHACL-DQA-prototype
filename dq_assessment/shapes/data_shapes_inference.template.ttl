@@ -1,0 +1,112 @@
+{% macro performance_hash_uris_classes() -%}
+ex:UsageHashURIsClassesShape
+    a sh:NodeShape ;
+    sh:targetClass rdfs:Class ; 
+    sh:message "UsageHashURIsClasses - It's is recommended the usage of slash URIs";
+    sh:or (
+        [ 
+            sh:pattern "^[^#]*$" ; 
+            sh:message "UsageHashURIsProperties - It is recommended the usage of slash URIs" ;
+        ]
+        [ 
+            sh:pattern "rdf|owl|dc|XMLSchema|w3|vocab";
+            sh:message "UsageHashURIsProperties - It is recommended the usage of slash URIs" ;
+        ]
+    ).
+{%- endmacro %}
+
+{% macro performance_hash_uris_properties() -%}
+ex:UsageHashURIsPropertiesShape
+    a sh:NodeShape ;
+    sh:targetClass rdf:Property ; 
+    sh:or (
+        [ 
+            sh:pattern "^[^#]*$" ; 
+            sh:message "UsageHashURIsProperties - It is recommended the usage of slash URIs" ;
+        ]
+        [ 
+            sh:pattern "rdf|owl|dc|XMLSchema|w3|vocab";
+            sh:message "UsageHashURIsProperties - It is recommended the usage of slash URIs" ;
+        ]
+    ).
+{%- endmacro %}
+
+{% macro understandability_uri_regex_compliance_classes(uri_regex_pattern) -%}
+ex:URIRegexComplianceClassesShape
+    a sh:NodeShape ;
+    sh:entailment <https://www.w3.org/ns/entailment/RDFS>;
+    sh:targetClass rdfs:Class ;
+    sh:or (
+        [ 
+            sh:pattern "rdf|owl|dc|XMLSchema"; 
+            sh:message "URIRegexComplianceClasses - The URI should match the regex pattern";
+        ]
+        [ 
+            sh:pattern "{{uri_regex_pattern}}"; 
+            sh:message "URIRegexComplianceClasses - The URI should match the regex pattern";
+        ]
+    ).
+{%- endmacro %}
+
+{% macro understandability_uri_regex_compliance_properties(uri_regex_pattern) -%}
+ex:URIRegexCompliancePropertiesShape
+    a sh:NodeShape ;
+    sh:entailment <https://www.w3.org/ns/entailment/RDFS>;
+    sh:targetClass rdf:Property ;
+    sh:or (
+        [ 
+            sh:pattern "rdf|owl|dc|XMLSchema|w3|vocab"; 
+            sh:message "URIRegexComplianceProperties - The URI should match the regex pattern";
+        ]
+        [ 
+            sh:pattern "{{uri_regex_pattern}}" ; 
+            sh:message "URIRegexComplianceProperties - The URI should match the regex pattern";
+        ]
+    ).
+{%- endmacro %}
+
+{% macro representational_conciseness_uris_parameters_classes() -%}
+ex:URIsParametersClassShape
+    a sh:NodeShape ;
+    sh:targetClass rdfs:Class ;
+    sh:message "URIsParametersClass - URIs shouldn't use parameters";
+    sh:not[
+        sh:pattern "\\?.+=.*" ;
+    ]. 
+{%- endmacro %}
+
+{% macro representational_conciseness_uris_length_classes(max_length_value) -%}
+ex:URIsLengthClassShape
+    a sh:NodeShape ;
+    sh:targetClass rdfs:Class ;
+    sh:maxLength {{ max_length_value }} ;
+    sh:message "URIsLengthClass - URIs should have a length of less than {{ max_length_value }}". 
+{%- endmacro %}
+
+{% macro representational_conciseness_uris_parameters_properties() -%}
+ex:URIsParametersPropertiesShape
+    a sh:NodeShape ;
+    sh:targetClass rdf:Property ;
+    sh:message "URIsParametersProperties - URIs shouldn't use parameters";
+    sh:not[
+        sh:pattern "\\?.+=.*" ;
+    ]. 
+{%- endmacro %}
+
+{% macro representational_conciseness_uris_length_properties(max_length_value) -%}
+ex:URIsLengthPropertiesShape
+    a sh:NodeShape ;
+    sh:targetClass rdf:Property ;
+    sh:maxLength {{ max_length_value }} ;
+    sh:message "URIsLengthProperties - URIs should have a length of less than {{ max_length_value }}". 
+{%- endmacro %}
+
+{% macro consistency_deprecated_properties(properties_list, type_property) -%}
+ex:DeprecatedPropertiesUsageShape
+    a sh:NodeShape ;
+    sh:targetClass rdf:Property ;
+    sh:not [ 
+        sh:in ( {{properties_list}}) ;
+        sh:message "DeprecatedPropertiesUsage - Deprecated properties are being used in the dataset";
+    ].
+{%- endmacro %}

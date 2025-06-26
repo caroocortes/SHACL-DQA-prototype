@@ -1,0 +1,8 @@
+datasets/*
+!datasets/drugbank/results/
+!datasets/drugbank/shapes/
+!datasets/temples_classical_world/shapes/
+!datasets/temples_classical_world/results/
+!datasets/dbtunes_john_peel_sessions/results/
+!datasets/dbtunes_john_peel_sessions/shapes/
+shacl_shapes_test_venv/

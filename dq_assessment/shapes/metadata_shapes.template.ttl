@@ -1,0 +1,155 @@
+{% macro metadata_shape() -%}
+ex:MachineReadableShape
+    a sh:NodeShape ;
+    sh:targetClass void:Dataset ;
+    sh:property [
+        sh:message "MachineReadableLicense - The dataset must provide a machine readable indication of a license";
+        sh:path dcterms:license ;
+        sh:minCount 1 ;
+    ].
+
+ex:DatasetMetadataShape
+    a sh:NodeShape ;
+    sh:targetClass void:Dataset ;
+    sh:property [
+        sh:path dcterms:title ;
+        sh:minCount 1 ;
+        sh:or (
+            [
+                sh:datatype xsd:string;
+            ]
+            [
+                sh:datatype rdf:langString;
+            ]
+        );
+        sh:message "PresenceMetadata - The dataset should specify a title, description and web page";
+    ];
+    sh:property [
+        sh:path dcterms:description ;
+        sh:minCount 1 ;
+        sh:or (
+            [
+                sh:datatype xsd:string;
+            ]
+            [
+                sh:datatype rdf:langString;
+            ]
+        );
+        sh:message "PresenceMetadata - The dataset should specify a title, description and web page";
+    ];
+    sh:property [
+        sh:path foaf:homepage ;
+        sh:minCount 1 ;
+        sh:nodeKind sh:IRI;
+        sh:message "PresenceMetadata - The dataset should specify a title, description and web page";
+    ].
+
+ex:ExemplaryResourceShape
+    a sh:NodeShape;
+    sh:targetClass void:Dataset;
+    sh:property [
+        sh:path void:exampleResource ;
+        sh:minCount 1 ;
+        sh:nodeKind sh:IRI ;
+        sh:message "ExemplaryResources - The dataset should specify an example of an exemplary resource";
+    ].
+
+ex:VocabularyExistenceShape
+    a sh:NodeShape;
+    sh:targetClass void:Dataset;
+    sh:property[
+        sh:path void:vocabulary ;
+        sh:nodeKind sh:IRI ;
+        sh:minCount 1 ;
+        sh:message "VocabularyExistence - The dataset should specify a list of the vocabularies used";
+    ].
+
+ex:SerializationFormatsShape
+    a sh:NodeShape;
+    sh:targetClass void:Dataset;
+    sh:property [
+        sh:path void:feature;
+        sh:minCount 1;
+        sh:maxCount 5;
+        sh:nodeKind sh:IRI;
+        sh:message "SerializationFormats - The dataset's metadata should specify the serialization formats in which the data is available";
+        sh:in (
+            <http://www.w3.org/ns/formats/N3>
+            <http://www.w3.org/ns/formats/N-Triples>
+            <http://www.w3.org/ns/formats/RDF_XML>
+            <http://www.w3.org/ns/formats/RDFa>
+            <http://www.w3.org/ns/formats/Turtle>
+        );
+    ].
+
+ex:URIRegexPressenceShape
+    a sh:NodeShape;
+    sh:targetClass void:Dataset;
+    sh:property [
+        sh:path void:uriRegexPattern ;
+        sh:minCount 1 ;
+        sh:datatype xsd:string ;
+        sh:message "URIRegexPresence - The dataset should specify a regex that matches the URIs of the entities";
+    ].
+
+ex:AvailabilityDumpShape
+    a sh:NodeShape;
+    sh:targetClass void:Dataset;
+    sh:or (
+        [
+            sh:path void:dataDump ;
+            sh:minCount 1 ;
+            sh:message "AvailabilityDump - The dataset must provide an accessible RDF dump that can be downloaded.";
+        ] 
+        [
+            sh:path ( dcat:distribution dcat:downloadURL );
+            sh:minCount 1 ;
+            sh:nodeKind sh:IRI ;
+            sh:message "AvailabilityDump - The dataset must provide an accessible RDF dump that can be downloaded";
+        ]
+        [
+            sh:path ( dcat:distribution dcat:accessURL );
+            sh:minCount 1 ;
+            sh:message "AvailabilityDump - The dataset must provide an accessible RDF dump that can be downloaded";
+        ]
+    ).
+
+ex:AuthenticityDatasetShape
+    a sh:NodeShape;
+    sh:targetClass void:Dataset;
+    sh:and(
+        [
+            sh:or (
+                [
+                    sh:path dcterms:contributor ;
+                    sh:minCount 1 ;
+                    sh:message "AuthenticityDataset - The dataset should specify a contributor, creator or publisher and the origin of the data";
+                ]
+                [
+                    sh:path dcterms:creator ;
+                    sh:minCount 1 ;
+                    sh:message "AuthenticityDataset - The dataset should specify a contributor, creator or publisher and the origin of the data";
+                ]
+                [
+                    sh:path dcterms:publisher ;
+                    sh:minCount 1 ;
+                    sh:message "AuthenticityDataset - The dataset should specify a contributor, creator or publisher and the origin of the data";
+                ]
+            );
+        ]
+        [
+            sh:or (
+                [
+                    sh:path dcterms:source ;
+                    sh:minCount 1 ;
+                    sh:message "AuthenticityDataset - The dataset should specify a contributor, creator or publisher and the origin of the data";
+                ]
+                [
+                    sh:path dcterms:provenance ;
+                    sh:minCount 1 ;
+                    sh:message "AuthenticityDataset - The dataset should specify a contributor, creator or publisher and the origin of the data";
+                ]
+            )
+        ]
+    ).
+{%- endmacro %}
