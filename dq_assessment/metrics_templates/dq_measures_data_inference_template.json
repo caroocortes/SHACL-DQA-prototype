@@ -1,0 +1,98 @@
+{
+    "UsageHashURIsClasses": {
+        "dimension": "Performance",
+        "metric_id": "P1",
+        "metric": "Usage of slash-URIs ",
+        "measure": 1,
+        "shape": "ex:UsageHashURIsClassesShape",
+        "message": "",
+        "description": "Verifies that **class's** URIs don't have a hash (#)",
+        "metric_type": "count",
+        "metric_calculation": "1 - (Number of violations / Number of classes)",
+        "shape_template": "ex:UsageHashURIsClassesShape\na sh:NodeShape ;\nsh:targetClass rdfs:Class ;\nsh:or (\n[ sh:pattern \"^[ ^#]*$\"; ]\n[ sh:pattern \"rdf|owl|dc|XMLSchema|w3\"; ]\n)"
+    },
+    "URIRegexComplianceClasses": {
+        "dimension": "Understandability",
+        "metric_id": "U3",
+        "metric": "Indication of a regular expression that matches the URIs of a dataset",
+        "measure": 1,
+        "shape": "ex:URIRegexComplianceClassesShape",
+        "message": "",
+        "description": "Verifies that **class's** URIs comply with the provided regular expression",
+        "metric_type": "count",
+        "metric_calculation": "1 - (Number of violations / Number of classes)",
+        "shape_template": "ex:URIRegexComplianceShape\na sh:NodeShape ;\nsh:targetClass rdfs:Class ;\nsh:or (\n[ sh:pattern \"rdf|owl|dc|XMLSchema|w3\" ]\n[ sh:pattern \"URI_REGEX_PATTERN\" ; ]\n)"
+    },
+    "UsageHashURIsProperties": {
+        "dimension": "Performance",
+        "metric_id": "P1",
+        "metric": "Usage of slash-URIs ",
+        "measure": 1,
+        "shape": "ex:UsageHashURIsPropertiesShape",
+        "message": "",
+        "description": "Verifies that **property's** URIs don't have a hash (#)",
+        "metric_type": "count",
+        "metric_calculation": "1 - (Number of violations / Number of properties)",
+        "shape_template": "ex:UsageHashURIsPropertiesShape\na sh:NodeShape ;\nsh:targetClass rdf:Property ;\nsh:or (\n[ sh:pattern \"^#\"; ]\n[ sh:pattern \"rdf|owl|dc|XMLSchema|w3\"; ]\n)."
+    },
+    "URIRegexComplianceProperties": {
+        "dimension": "Understandability",
+        "metric_id": "U3",
+        "metric": "Indication of a regular expression that matches the URIs of a dataset",
+        "measure": 1,
+        "shape": "ex:URIRegexCompliancePropertiesShape",
+        "message": "",
+        "description": "Verifies that **property's** URIs comply with the provided regular expression",
+        "metric_type": "count",
+        "metric_calculation": "1 - (Number of violations / Number of properties)",
+        "shape_template": "ex:URIRegexCompliancePropertiesShape\na sh:NodeShape ;\nsh:entailment <https://www.w3.org/ns/entailment/RDFS>;\nsh:targetClass rdf:Property ;\nsh:or (\n[ sh:pattern \"rdf|owl|dc|XMLSchema|w3\" ]\n[ sh:pattern \"URI_REGEX_PATTERN\" ; ]\n)."
+    },
+    "URIsLengthClass": {
+        "dimension": "Representational Conciseness",
+        "metric_id": "RC1",
+        "metric": "Keeping URIs short",
+        "measure": 1,
+        "shape": "ex:URIsLengthClassShape",
+        "message": "",
+        "description": "Verifies that **class's** URIs have a length of at most 80 characters",
+        "metric_type": "count",
+        "metric_calculation": "1 - (Number of violations / Number of classes)",
+        "shape_template": "ex:URIsLengthClassShape\na sh:NodeShape ;\nsh:targetClass rdfs:Class ;\nsh:maxLength LENGTH_VALUE."
+    },
+    "URIsParametersClass": {
+        "dimension": "Representational Conciseness",
+        "metric_id": "RC1",
+        "metric": "Keeping URIs short",
+        "measure": 1,
+        "shape": "ex:URIsParametersClassShape",
+        "message": "",
+        "description": "Verifies that **class's** URIs don't contain parameters",
+        "metric_type": "count",
+        "metric_calculation": "1 - (Number of violations / Number of classes)",
+        "shape_template": "ex:URIsParametersClassShape\na sh:NodeShape ;\nsh:targetClass rdfs:Class ;\nsh:not[\nsh:pattern \"\\\\?|=\" ;\n]"
+    },
+    "URIsParametersProperties": {
+        "dimension": "Representational Conciseness",
+        "metric_id": "RC1",
+        "metric": "Keeping URIs short",
+        "measure": 1,
+        "shape": "ex:URIsParametersPropertiesShape",
+        "message": "",
+        "description": "Verifies that **property's** URIs don't contain parameters",
+        "metric_type": "count",
+        "metric_calculation": "1 - (Number of violations / Number of properties)",
+        "shape_template": "ex:URIsParametersPropertiesShape\na sh:NodeShape ;\nsh:targetClass rdf:Property ;\nsh:not[\nsh:pattern \"\\\\?|=\" ;\n]"
+    },
+    "URIsLengthProperties": {
+        "dimension": "Representational Conciseness",
+        "metric_id": "RC1",
+        "metric": "Keeping URIs short",
+        "measure": 1,
+        "shape": "ex:URIsLengthPropertiesShape",
+        "message": "",
+        "description": "Verifies that **property's** URIs have a length of at most 80 characters",
+        "metric_type": "count",
+        "metric_calculation": "1 - (Number of violations / Number of properties)",
+        "shape_template": "ex:URIsLengthPropertiesShape\na sh:NodeShape ;\nsh:targetClass rdf:Property ;\nsh:maxLength LENGTH_VALUE."
+    }
+}

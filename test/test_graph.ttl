@@ -1,0 +1,50 @@
+@prefix ex: <https://www.example.org/> .
+@prefix dcat: <http://www.w3.org/ns/dcat#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix foaf: <http://xmlns.com/foaf/0.1/> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix void: <http://rdfs.org/ns/void#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix viaf: <http://viaf.org/viaf/> .
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+@prefix pizza: <http://www.co-ode.org/ontologies/pizza/pizza.owl#> .
+
+ex:Dataset a void:Dataset .
+ex:Dataset dcterms:provider "no 3".
+
+ex:Pizza1 a pizza:MargheritaPizza ; 
+    pizza:hasTopping ex:Mozzarella, ex:Tomato ;
+    pizza:hasBase pizza:ThinAndCrispyBase .
+
+ex:Pizza2 a pizza:FourSeasonsPizza ; 
+    pizza:hasTopping ex:Mozzarella, ex:Mushroom, ex:Artichoke ;
+    pizza:hasBase pizza:DeepPanBase .
+
+ex:Mozzarella a pizza:MozzarellaTopping . 
+ex:Tomato a pizza:TomatoTopping . 
+ex:Mushroom a pizza:MushroomTopping . 
+ex:Artichoke a pizza:ArtichokeTopping . 
+
+ex:Alice a foaf:Person ; 
+    foaf:name "Alice" ;
+    ex:likesPizza ex:Pizza1 .
+
+_:Bob a foaf:Person.
+
+ex:Peter a foaf:Person .
+
+ex:Tomato rdfs:label "Tomate"@es .
+ex:Pizza1 rdfs:label "Pizza 1"@en .
+ex:Artichoke rdfs:label "Artichoke"^^xsd:string .
+ex:Mushroom rdfs:label "Mushroom"^^xsd:string.
+
+ex:Alice owl:sameAs ex:Peter .
+ex:Peter owl:sameAs ex:Alice .
+
+ex:Peter owl:sameAs ex:Bob . 
+ex:Bob owl:sameAs ex:Peter.
+
+ex:Bob owl:sameAs ex:Alice.
+ex:Alice owl:sameAs ex:Bob .
