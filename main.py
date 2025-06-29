@@ -8,10 +8,9 @@ from dq_assessment import DQAssessment
 
 def execute_assessment():
     dq_assessment = DQAssessment(CONFIG_FILE_PATH, 
-                                 inference_data_shapes=True, 
                                  metadata_shapes=True, 
                                  data_shapes=True, 
-                                 vocab_shapes=True)
+                                 vocab_shapes=False)
 
     dq_assessment.run()
 
@@ -29,7 +28,6 @@ def execute_assessment():
         "vocab_shapes_elapsed_time": dq_assessment.vocab_shapes_elapsed_time,
         "data_shapes_elapsed_time": dq_assessment.data_shapes_elapsed_time,
         "metadata_shapes_elapsed_time": dq_assessment.metadata_shapes_elapsed_time,
-        "inference_shapes_elapsed_time": dq_assessment.inference_shapes_elapsed_time,
         "num_inst_shapes": dq_assessment.counter_shapes,
         "graph_profile": dq_assessment.graph_profile
     }
@@ -40,8 +38,3 @@ def execute_assessment():
 if "__main__":
     execute_assessment()
     
-
-
-# TODO: 
-# - correr experimentos en todos los datasets
-# ver qué pasa si no hay metadata file ni vocabularies, escribo igual el resultado???

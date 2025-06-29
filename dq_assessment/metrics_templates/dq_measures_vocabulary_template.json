@@ -9,7 +9,7 @@
         "description": "Human readable labels in classes",
         "metric_type": "count",
         "metric_calculation": "1 - (Number of violations / Number of classes)",
-        "shape_template": "ex:LabelForClassesShape\na sh:NodeShape ;\nsh:targetClass rdfs:Class ;\nsh:or (\n[\nsh:path LABELING_PROPERTY ;\nsh:minCount 1 ;\n]\n[ sh:pattern \"rdf|owl|dc|XMLSchema|w3\" ]\n)."
+        "shape_template": "ex:LabelForClassesShape\na sh:NodeShape ;\nsh:targetClass rdfs:Class ;\nsh:property [\nsh:path LABELING_PROPERTY ;\nsh:minCount 1 ;\n]."
     },
     "LabelForProperties": {
         "dimension": "Understandability",
@@ -21,6 +21,6 @@
         "description": "Human readable labels in properties",
         "metric_type": "count",
         "metric_calculation": "1 - (Number of violations / Number of properties)",
-        "shape_template": "ex:LabelForPropertiesShape\na sh:NodeShape ;\nsh:targetClass rdf:Property ;\nsh:or (\n[\nsh:path LABELING_PROPERTY ;\nsh:minCount 1 ;\n];\n[ sh:pattern \"rdf|owl|dc|XMLSchema|w3\" ];\n)."
+        "shape_template": "ex:LabelForPropertiesShape\na sh:NodeShape ;\nsh:targetClass rdf:Property ;\nsh:property [\nsh:path LABELING_PROPERTY ;\nsh:minCount 1 ;\n]."
     }
 }

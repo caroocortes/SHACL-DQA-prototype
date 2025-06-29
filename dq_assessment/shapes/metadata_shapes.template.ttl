@@ -11,7 +11,7 @@ ex:MachineReadableShape
 ex:DatasetMetadataShape
     a sh:NodeShape ;
     sh:targetClass void:Dataset ;
-    sh:property [
+    sh:property [ 
         sh:path dcterms:title ;
         sh:minCount 1 ;
         sh:or (
@@ -89,7 +89,17 @@ ex:URIRegexPressenceShape
         sh:path void:uriRegexPattern ;
         sh:minCount 1 ;
         sh:datatype xsd:string ;
-        sh:message "URIRegexPresence - The dataset should specify a regex that matches the URIs of the entities";
+        sh:message "URIRegexPressence - The dataset should specify a regex that matches the URIs of the entities";
+    ].
+
+ex:URISpacePressenceShape
+    a sh:NodeShape;
+    sh:targetClass void:Dataset;
+    sh:property [
+        sh:path void:uriSpace ;
+        sh:minCount 1 ;
+        sh:datatype xsd:string ;
+        sh:message "URISpacePressence - The dataset should specify a URI namespace used for the entities";
     ].
 
 ex:AvailabilityDumpShape
@@ -114,42 +124,40 @@ ex:AvailabilityDumpShape
         ]
     ).
 
-ex:AuthenticityDatasetShape
-    a sh:NodeShape;
-    sh:targetClass void:Dataset;
-    sh:and(
+ex:AuthenticityOfDatasetSourceShape
+    a sh:NodeShape ;
+    sh:targetClass void:Dataset ;
+    sh:or (
         [
-            sh:or (
-                [
-                    sh:path dcterms:contributor ;
-                    sh:minCount 1 ;
-                    sh:message "AuthenticityDataset - The dataset should specify a contributor, creator or publisher and the origin of the data";
-                ]
-                [
-                    sh:path dcterms:creator ;
-                    sh:minCount 1 ;
-                    sh:message "AuthenticityDataset - The dataset should specify a contributor, creator or publisher and the origin of the data";
-                ]
-                [
-                    sh:path dcterms:publisher ;
-                    sh:minCount 1 ;
-                    sh:message "AuthenticityDataset - The dataset should specify a contributor, creator or publisher and the origin of the data";
-                ]
-            );
+            sh:path dcterms:source ;
+            sh:minCount 1 ;
+            sh:message "AuthenticityOfDatasetSource - The dataset should specify the origin of the data";
         ]
         [
-            sh:or (
-                [
-                    sh:path dcterms:source ;
-                    sh:minCount 1 ;
-                    sh:message "AuthenticityDataset - The dataset should specify a contributor, creator or publisher and the origin of the data";
-                ]
-                [
-                    sh:path dcterms:provenance ;
-                    sh:minCount 1 ;
-                    sh:message "AuthenticityDataset - The dataset should specify a contributor, creator or publisher and the origin of the data";
-                ]
-            )
+            sh:path dcterms:provenance ;
+            sh:minCount 1 ;
+            sh:message "AuthenticityOfDatasetSource - The dataset should specify the origin of the data";
+        ]
+    ).
+
+ex:AuthenticityOfDatasetAuthorShape
+    a sh:NodeShape ;
+    sh:targetClass void:Dataset ;
+    sh:or (
+        [
+            sh:path dcterms:contributor ;
+            sh:minCount 1 ;
+            sh:message "AuthenticityOfDatasetAuthor - The dataset should specify a contributor, creator or publisher";
+        ]
+        [
+            sh:path dcterms:creator ;
+            sh:minCount 1 ;
+            sh:message "AuthenticityOfDatasetAuthor - The dataset should specify a contributor, creator or publisher";
+        ]
+        [
+            sh:path dcterms:publisher ;
+            sh:minCount 1 ;
+            sh:message "AuthenticityOfDatasetAuthor - The dataset should specify a contributor, creator or publisher";
         ]
     ).
 {%- endmacro %}

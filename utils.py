@@ -1,5 +1,5 @@
 from pyshacl import validate
-from rdflib import Graph, RDF, RDFS, OWL, Literal, SH, URIRef, Namespace, XSD
+from rdflib import Graph, RDF, RDFS, OWL, Literal, SH, URIRef, Namespace, XSD, BNode
 import pandas as pd
 from collections import defaultdict
 import json
@@ -20,17 +20,18 @@ composite_components = {
 #                                       Auxiliary methods
 # ------------------------------------------------------------------------------------------------------------------- #
 
+def escape_dots_for_turtle_regex(s):
+    return s.replace("\\", "\\\\")
+
+def python_regex_to_shacl_regex(python_regex):
+    # Convert to a Turtle-ready regex string by doubling backslashes
+    return python_regex.replace('\\', '\\\\')
+
 def get_ns(uri):
     if '#' in uri:
         return uri.rsplit('#', 1)[0] + '#'
     else:
         return uri.rsplit('/', 1)[0] + '/'
-
-def get_local_name(uri):
-    if '#' in uri:
-        return uri.rsplit('#', 1)[-1]
-    else:
-        return uri.rsplit('/', 1)[-1]
 
 def get_uri_regex_pattern(metadata_file, metadata_format):
     VOID = Namespace("http://rdfs.org/ns/void#")
@@ -38,6 +39,16 @@ def get_uri_regex_pattern(metadata_file, metadata_format):
     g.parse(metadata_file, format=metadata_format)
     for dataset in g.subjects(predicate=None, object=VOID.Dataset):
         pattern = g.value(dataset, VOID.uriRegexPattern)
+        if pattern:
+            return str(pattern)
+    return None
+
+def get_uri_space(metadata_file, metadata_format):
+    VOID = Namespace("http://rdfs.org/ns/void#")
+    g = Graph()
+    g.parse(metadata_file, format=metadata_format)
+    for dataset in g.subjects(predicate=None, object=VOID.Dataset):
+        pattern = g.value(dataset, VOID.uriSpace)
         if pattern:
             return str(pattern)
     return None
@@ -53,36 +64,18 @@ def profile_graph(dq_assessment, profile_file_path):
     graph = Graph()
     graph.parse(dq_assessment.graph_file_path, format="turtle")
 
-    KNOWN_VOCAB_PREFIXES = (
-        "http://www.w3.org/2002/07/owl#",
-        "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
-        "http://www.w3.org/2000/01/rdf-schema#",
-        "http://rdfs.org/ns/void#",
-        "http://www.w3.org/ns/dcat#"
-    )
-
     # number of triples
     num_triples = len(graph)
 
-    # Number of classes (excluding known vocabularies)
-    all_classes = set(graph.subjects(RDF.type, OWL.Class)).union(
-        set(graph.subjects(RDF.type, RDFS.Class)),
-        set(graph.subjects(RDF.type, RDFS.subClassOf)),
-        set(graph.objects(None, RDF.type))
-    )
-    filtered_classes = {c for c in all_classes if not any(str(c).startswith(prefix) for prefix in KNOWN_VOCAB_PREFIXES)}
-    num_classes = len(filtered_classes)
+    # Number of classes 
+    all_classes = set(graph.objects(None, RDF.type))
+    num_classes = len(all_classes)
 
     # Number of entities (instances of any class)
     num_entities = len(set(graph.subjects(RDF.type, None)))
 
-    # Number of properties (rdf:Property, owl:ObjectProperty, owl:DatatypeProperty)
-    properties = set(graph.subjects(RDF.type, RDF.Property)).union(
-        set(graph.subjects(RDF.type, OWL.ObjectProperty)),
-        set(graph.subjects(RDF.type, OWL.DatatypeProperty)),
-        set(graph.subjects(RDF.type, RDFS.subPropertyOf)),
-        set(graph.predicates())
-    )
+    # Number of properties used -> predicate position of triples
+    properties = set(graph.predicates())
     num_properties = len(properties)
 
     # Number of triples per property
@@ -90,9 +83,15 @@ def profile_graph(dq_assessment, profile_file_path):
     for p in set(graph.predicates()):
         triples_per_property[str(p)] = len(list(graph.triples((None, p, None))))
 
+    # Number of unique subjects that use a property
+    subjects_per_property = {}
+    for p in set(graph.predicates()):
+        subjects = set(s for s, _, _ in graph.triples((None, p, None)))
+        subjects_per_property[str(p)] = len(subjects)
+
     # Number of entities per class
     entities_per_class = {}
-    for c in filtered_classes:
+    for c in all_classes:
         entities_per_class[str(c)] = len(set(graph.subjects(RDF.type, c)))
 
     # Number of entities with interlinking property
@@ -109,7 +108,7 @@ def profile_graph(dq_assessment, profile_file_path):
         num_entities_description_property = len(set(graph.subjects(URIRef(dq_assessment.description_property), None)))
 
     # Save actual classes and properties as lists of strings
-    classes_list = [str(c) for c in filtered_classes]
+    classes_list = [str(c) for c in all_classes]
     properties_list = [str(p) for p in properties]
 
     profile = {
@@ -117,6 +116,7 @@ def profile_graph(dq_assessment, profile_file_path):
         "num_classes": num_classes,
         "num_entities": num_entities,
         "num_properties": num_properties,
+        "subjects_per_property": subjects_per_property,
         "triples_per_property": triples_per_property,
         "entities_per_class": entities_per_class,
         "num_entities_with_interlinking": num_entities_with_interlinking,
@@ -179,16 +179,16 @@ def profile_vocab(dq_assessment, vocab):
         "rdf_properties": {},
         "num_classes": 0,
         "num_properties": 0,
-        # "num_classes_label": 0,
-        # "num_properties_label": 0
+        "num_all_classes": 0,
+        "num_all_properties": 0
     }
 
     # Classes
     for s, p, o in g.triples((None, RDF.type, OWL.Class)):
-        if vocab_ns and str(s).startswith(vocab_ns):
+        if vocab_ns and str(s).startswith(vocab_ns) and not s in g.subjects(OWL.deprecated, Literal(True)) and not s in g.subjects(RDF.type, OWL.DeprecatedClass):
             ontology_info["classes"].append(str(s))
     for s, p, o in g.triples((None, RDF.type, RDFS.Class)):
-        if str(s) not in ontology_info["classes"] and vocab_ns and str(s).startswith(vocab_ns):
+        if str(s) not in ontology_info["classes"] and vocab_ns and str(s).startswith(vocab_ns) and not s in g.subjects(RDF.type, OWL.DeprecatedClass):
             ontology_info["classes"].append(str(s))
     
     # Number of classes
@@ -200,7 +200,7 @@ def profile_vocab(dq_assessment, vocab):
 
     # Object Properties + domain/range
     for s in g.subjects(RDF.type, OWL.ObjectProperty):
-        if vocab_ns and str(s).startswith(vocab_ns):
+        if vocab_ns and str(s).startswith(vocab_ns) and not s in g.subjects(OWL.deprecated, Literal(True)) and not s in g.subjects(RDF.type, OWL.DeprecatedProperty):
             domain = g.value(s, RDFS.domain)
             range_ = g.value(s, RDFS.range)
             ontology_info["object_properties"][s] = {
@@ -213,7 +213,7 @@ def profile_vocab(dq_assessment, vocab):
 
     # Datatype Properties + domain/range
     for s in g.subjects(RDF.type, OWL.DatatypeProperty):
-        if vocab_ns and str(s).startswith(vocab_ns):
+        if vocab_ns and str(s).startswith(vocab_ns) and not s in g.subjects(OWL.deprecated, Literal(True)) and not s in g.subjects(RDF.type, OWL.DeprecatedProperty):
             domain = g.value(s, RDFS.domain)
             range_ = g.value(s, RDFS.range)
             ontology_info["datatype_properties"][s] = {
@@ -229,6 +229,10 @@ def profile_vocab(dq_assessment, vocab):
         if (s, RDF.type, OWL.ObjectProperty) in g or (s, RDF.type, OWL.DatatypeProperty) in g:
             if vocab_ns and str(s).startswith(vocab_ns):
                 ontology_info["deprecated_properties"].append(s)
+    
+    for s in g.subjects(RDF.type, OWL.DeprecatedProperty):
+        if vocab_ns and str(s).startswith(vocab_ns):
+            ontology_info["deprecated_properties"].append(s)
 
     # Deprecated classes
     for s in g.subjects(OWL.deprecated, Literal(True)):
@@ -236,19 +240,23 @@ def profile_vocab(dq_assessment, vocab):
             if vocab_ns and str(s).startswith(vocab_ns):
                 ontology_info["deprecated_classes"].append(s)
 
+    for s in g.subjects(RDF.type, OWL.DeprecatedClass):
+        if vocab_ns and str(s).startswith(vocab_ns):
+            ontology_info["deprecated_classes"].append(s)
+
     # Inverse functional
     for s in g.subjects(RDF.type, OWL.InverseFunctionalProperty):
-        if vocab_ns and str(s).startswith(vocab_ns):
+        if vocab_ns and str(s).startswith(vocab_ns) and not s in g.subjects(OWL.deprecated, Literal(True)) and not s in g.subjects(RDF.type, OWL.DeprecatedProperty):
             ontology_info["inverse_functional"].append(s)
 
     # Functional
     for s in g.subjects(RDF.type, OWL.FunctionalProperty):
-        if vocab_ns and str(s).startswith(vocab_ns):
+        if vocab_ns and str(s).startswith(vocab_ns) and not s in g.subjects(OWL.deprecated, Literal(True)) and not s in g.subjects(RDF.type, OWL.DeprecatedProperty):
             ontology_info["functional"].append(s)
 
     # Irreflexive
     for s in g.subjects(RDF.type, OWL.IrreflexiveProperty):
-        if vocab_ns and str(s).startswith(vocab_ns):
+        if vocab_ns and str(s).startswith(vocab_ns) and not s in g.subjects(OWL.deprecated, Literal(True)) and not s in g.subjects(RDF.type, OWL.DeprecatedProperty):
             ontology_info["irreflexive"].append(s)
 
     # RDF properties
@@ -258,7 +266,31 @@ def profile_vocab(dq_assessment, vocab):
     for s in g.subjects(RDF.type, RDF.Property):
 
         if s not in dt_props and s not in obj_props:
-            if vocab_ns and str(s).startswith(vocab_ns):
+            if vocab_ns and str(s).startswith(vocab_ns) and not s in g.subjects(OWL.deprecated, Literal(True)) and not s in g.subjects(RDF.type, OWL.DeprecatedProperty):
+                domain = g.value(s, RDFS.domain)
+                range_ = g.value(s, RDFS.range)
+
+                if range_ is not None and (str(range_) == str(RDFS.Literal) or str(range_).startswith(str(XSD))):
+                    ontology_info["rdf_properties"][s] = {
+                        "domain": domain,
+                        "range": {
+                            "type": "literal",
+                            "value": range_
+                        }
+                    }
+                elif range_ is not None:   
+                    ontology_info["rdf_properties"][s] = {
+                        "domain": domain,
+                        "range": {
+                            "type": "class",
+                            "value": range_
+                        }
+                    }
+    
+    for s in g.subjects(RDF.type, OWL.OntologyProperty):
+
+        if s not in dt_props and s not in obj_props:
+            if vocab_ns and str(s).startswith(vocab_ns) and not s in g.subjects(OWL.deprecated, Literal(True)) and not s in g.subjects(RDF.type, OWL.DeprecatedProperty):
                 domain = g.value(s, RDFS.domain)
                 range_ = g.value(s, RDFS.range)
 
@@ -290,6 +322,13 @@ def profile_vocab(dq_assessment, vocab):
 
     ontology_info['disjoint_classes'] = [sorted(list(pair)) for pair in disjoint_pairs]
 
+    ontology_info['num_all_classes'] = ontology_info["num_classes"] + len(ontology_info['deprecated_classes'])
+    ontology_info['num_all_properties'] = ( ontology_info['num_properties'] + 
+                                           len(ontology_info['datatype_properties']) +
+                                            len(ontology_info['object_properties'])  + 
+                                            len(ontology_info['deprecated_properties'])
+                                        )
+
     os.makedirs(PROFILE_VOCABULARIES_FOLDER_PATH, exist_ok=True)
     with open(f'{PROFILE_VOCABULARIES_FOLDER_PATH}/{vocab_name}.json', "w", encoding="utf-8") as f:
         json.dump(ontology_info, f, indent=4)
@@ -306,7 +345,7 @@ def create_shape_graph(shacl_shapes):
     """
     prefixes = """
         @prefix sh: <http://www.w3.org/ns/shacl#> . \n
-        @prefix ex: <https://www.example.org#> . \n
+        @prefix ex: <https://www.example.org/> . \n
         @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> . \n
         @prefix xsd: <http://www.w3.org/2001/XMLSchema#> . \n
         @prefix void: <http://rdfs.org/ns/void#> . \n
@@ -332,18 +371,18 @@ def validate_shacl_constraints(data_graph_file_path, data_graph_file_format, sha
     """
 
     if vocabs:
+
         ont_graphs = []
         for vocab in vocabs:
             file_path = config[vocab]['file_path']
             file_format = config[vocab]['file_format']
             ont_graphs.append(Graph().parse(file_path, format=file_format))
 
+        # Create new merged graph with only class/property definitions
         merged_ont = Graph()
-        for g in ont_graphs:
-            for triple in g:
-                merged_ont.add(triple)
 
-        owl_properties = [
+        # Types of OWL properties to consider
+        owl_properties = {
             OWL.ObjectProperty,
             OWL.DatatypeProperty,
             OWL.FunctionalProperty,
@@ -351,55 +390,58 @@ def validate_shacl_constraints(data_graph_file_path, data_graph_file_format, sha
             OWL.IrreflexiveProperty,
             OWL.ReflexiveProperty,
             OWL.TransitiveProperty,
-            OWL.AllDisjointProperties,
-            OWL.AnnotationProperty,
-            OWL.onProperty,
-            OWL.allValuesFrom,
-            OWL.someValuesFrom,
-            OWL.oneOf,
-            OWL.members,
-            OWL.distinctMembers,
+            OWL.AsymmetricProperty,
+            OWL.ReflexiveProperty,
+            OWL.SymmetricProperty,
             OWL.DeprecatedProperty,
             OWL.OntologyProperty,
-            OWL.minCardinality,
-            OWL.maxCardinality,
-            OWL.intersectionOf,
-            OWL.unionOf,
-            OWL.complementOf,
-            OWL.incompatibleWith,
-            OWL.deprecated,
-            OWL.topDataProperty,
-            OWL.priorVersion
-        ]
+        }
 
-        for prop_type in owl_properties:
-            for s in merged_ont.subjects(RDF.type, prop_type):
-                merged_ont.add((s, RDF.type, RDF.Property))
-
-        
-        owl_classes = [
+        # Types of OWL classes to consider
+        owl_classes = {
             OWL.Class,
-            OWL.Ontology,
-            OWL.AllDisjointClasses,
-            OWL.Restriction,
-            OWL.AllDifferent,
-            OWL.NamedIndividual,
-            OWL.DeprecatedClass
-        ]
+            OWL.DeprecatedClass,
+        }
 
-        for class_type in owl_classes:
-            for s in merged_ont.subjects(RDF.type, class_type):
-                merged_ont.add((s, RDF.type, RDFS.Class))
+        # Allowed properties to retain structure
+        allowed_predicates = {
+            RDFS.domain,
+            RDFS.range
+        }
+
+        # Collect classes and properties
+        relevant_subjects = set()
+        for g in ont_graphs:
+            for owl_prop in owl_properties:
+                for s in g.subjects(RDF.type, owl_prop):
+                    if isinstance(s, BNode):
+                        continue
+                    relevant_subjects.add(s)
+                    merged_ont.add((s, RDF.type, owl_prop))
+                    merged_ont.add((s, RDF.type, RDF.Property))
+
+            for owl_class in owl_classes:
+                for s in g.subjects(RDF.type, owl_class):
+                    if isinstance(s, BNode):
+                        continue
+                    relevant_subjects.add(s)
+                    merged_ont.add((s, RDF.type, owl_class))
+                    merged_ont.add((s, RDF.type, RDFS.Class))
+
+        # Copy only allowed triples related to classes and properties (I remove everything that can be in the vocab - e.g. metadata)
+        for g in ont_graphs:
+            for s in relevant_subjects:
+                for p, o in g.predicate_objects(subject=s):
+                    if p in allowed_predicates:
+                        merged_ont.add((s, p, o))
 
         data_graph = Graph().parse(data_graph_file_path, format=data_graph_file_format)
 
-        # Merge Abox + Tbox
-        graph_to_validate = data_graph + merged_ont 
-
-    else: 
-
+        # Merge Abox (data) + Tbox (filtered ontology)
+        graph_to_validate = data_graph + merged_ont
+        graph_to_validate.serialize('aux.ttl', 'ttl')
+    else:
         graph_to_validate = Graph().parse(data_graph_file_path, format=data_graph_file_format)
-
 
     conforms, report_graph, validation_report = validate(
         graph_to_validate,
@@ -410,14 +452,15 @@ def validate_shacl_constraints(data_graph_file_path, data_graph_file_format, sha
     return conforms, report_graph, validation_report
 
 def get_metric_message(results_graph, result):
-    # TODO: check this because of all the filters with RDFS property and RDF classes
+    
     constraint_type = results_graph.value(result, SH.sourceConstraintComponent)
     counter = -1
     # Composite constraints don't output individual validation results for each constraint inside the composite
     # They just output that the node must conform to one or more shapes in the **composite_shape**
-    # Therefore, the sh:message with the name of the metric is in the resultMessage
+    # Therefore, the sh:message the sh:resultMessage node
+
     if constraint_type in composite_components:
-        metric = results_graph.value(result, SH.sourceShape).removesuffix("Shape").removeprefix("https://www.example.org#")
+        metric = results_graph.value(result, SH.sourceShape).removesuffix("Shape").removeprefix("https://www.example.org/")
         result_message = results_graph.value(result, SH.resultMessage)
         
         pattern_message = r'sh:message\s+Literal\("([^"]+)"\)'
@@ -428,28 +471,21 @@ def get_metric_message(results_graph, result):
     else:
         message = str(results_graph.value(result, SH.resultMessage))
 
-        if "_" in message: 
-            # To handle shapes for a specific property/class
-            # shape message: Metric_Counter - Message
+    # To handle shapes for a specific property/class
+    # shape message: Metric_Counter - Message
 
-            # Get Metric and Counter - Message separately
-            metric, counter_message = [part.strip() for part in message.split("_", 1)]
-
-            # Get Counter and Message separately
-            counter, message = [part.strip() for part in counter_message.split("-", 1)]
-            
-        else:
-            # Remaining shapes: Metric - Message
-            metric_message = message.split("-")
-            metric = metric_message[0].strip()
-            message = metric_message[1].strip() 
-
-            if 'URIsLengthAndParameters' in metric:
-                # this shapes has 2 different constraints
-                # if constraints_type is SH.NotConstraintComponent the shape checks for URIs parameters
-                # if constraints_type is SH.MaxLengthConstraintComponent the shape checks for URIs length
-                message = 'URIs should not contain parameters' if constraint_type == SH.NotConstraintComponent else 'URIs are too long'  
-
+    if "_" in message: 
+        # Get Metric and Counter - Message separately
+        metric, counter_message = [part.strip() for part in message.split("_", 1)]
+        
+        # Get Counter and Message separately
+        counter, message = [part.strip() for part in counter_message.split("-", 1)]
+    else:
+        # Remaining shapes: Metric - Message
+        metric_message = message.split("-")
+        metric = metric_message[0].strip()
+        message = metric_message[1].strip() 
+    
     return metric, message, counter
 
 def get_denominator(metric, info, dataset_profile):
@@ -467,11 +503,14 @@ def get_denominator(metric, info, dataset_profile):
     elif metric_prefix in NUM_CLASSES:
         return dataset_profile.get("num_classes", 1)
     elif metric_prefix in NUM_PROPERTIES:
-        return dataset_profile.get("num_properties", 1)        
+        return dataset_profile.get("num_properties", 1)    
+    elif metric_prefix in NUM_SUBJECTS_PER_PROPERTY:
+        if "property" in info:
+            return dataset_profile.get("subjects_per_property", {}).get(info['property'], 1)
     elif metric_prefix in NUM_TRIPLES_PER_PROPERTY:
         if "property" in info:
             return dataset_profile.get("triples_per_property", {}).get(info['property'], 1)
     elif metric_prefix in NUM_ENTITIES_PER_CLASS:  
         if "class" in info:
-            return dataset_profile.get("entities_per_class", {}).get(info['class'], 1)
+            return dataset_profile.get("entities_per_class", {}).get(info['class']['first_class'], 1)
 

@@ -17,6 +17,7 @@ class SHACLShapeBuilder:
         self.base_namespace = dq_assessment.base_namespace
 
         self.regex_pattern = None
+        self.uri_space = None
 
         self.config = dq_assessment.config
         self.vocab_names = dq_assessment.vocab_names
@@ -35,24 +36,28 @@ class SHACLShapeBuilder:
     def contextual_data_shapes(self, template):
         shacl_shapes = template.module.understandability_label_entities(self.type_property, self.labeling_property) + '\n'
         
-        # Check if the metric URIRegexPresence is 1, hence, 
+        # Check if the metric URIRegexPressence is 1, hence, 
         # there's a regex pattern provided for the URIs
         folder_path = DQ_ASSESSMENT_RESULTS_FOLDER_PATH.format(dataset_name=self.dataset_name)
         results_file = f'{folder_path}/dq_assessment_{self.dataset_name}_metadata.json'
         with open(results_file, 'r', encoding='utf-8') as f:
             results = json.load(f)
 
-        metric_name = "URIRegexPresence"
-
-        if metric_name in results and results[metric_name] == 1:
+        metadata_file_path = self.config['settings']['metadata_file']
+        metadata_file_format = self.config['settings']['metadata_file_format']
+        if "URISpacePressence" in results and results["URIRegexPressence"]['measure'] == 1:
             # If the metric is 1, we need to check the regex pattern against the URIs
-            self.regex_pattern = get_uri_regex_pattern(self.config.metadata_file, self.config.metadata_file_format)
-            shacl_shapes += template.module.understandability_uri_regex_compliance_entities(self.type_property, self.regex_pattern)
+            self.regex_pattern = get_uri_regex_pattern(metadata_file_path, metadata_file_format)
+            shacl_shapes += template.module.understandability_uri_regex_compliance_entities(self.type_property, escape_dots_for_turtle_regex(self.regex_pattern))
+        
+        if "URISpacePressence" in results and results["URISpacePressence"]['measure'] == 1:
+            self.uri_space = get_uri_space(metadata_file_path, metadata_file_format)
+            shacl_shapes += template.module.understandability_uri_space_compliance_entities(self.type_property, self.uri_space)
             
-        return self.regex_pattern, shacl_shapes
+        return self.regex_pattern, self.uri_space, shacl_shapes
 
     
-    def representational_data_shapes(self, template):
+    def representational_data_shapes(self, template, graph_profile):
         max_length_value = self.uris_max_length
         shacl_shapes = ''
 
@@ -66,10 +71,42 @@ class SHACLShapeBuilder:
         if self.description_property:
             shacl_shapes += template.module.versatility_languages_descriptions_entities(self.type_property, self.description_property) + '\n'
             
-        shacl_shapes += template.module.versatility_self_descriptive_formats(self.type_property) + '\n'
-        shacl_shapes += template.module.versatility_usage_blank_nodes(self.type_property) + '\n'
-        
-        return shacl_shapes
+        shacl_shapes += template.module.interpretability_self_descriptive_formats(self.type_property) + '\n'
+        shacl_shapes += template.module.interpretability_usage_blank_nodes(self.type_property) + '\n'
+
+        property_counter = 0
+        property_counter_map = {}
+        dq_results = {}
+        for prop in graph_profile['properties']:
+            shacl_shapes += template.module.interpretability_self_descriptive_format_properties(property_counter, prop) + '\n'
+            
+            metric_info = copy.deepcopy(DQ_MEASURES_DATA_SPECIFIC['SelfDescriptiveFormatProperties'])
+            metric_info['shape'] = f'ex:SelfDescriptiveFormatPropertiesShape_{property_counter}'
+            metric_name = f'SelfDescriptiveFormatProperties_{property_counter}'
+            dq_results[metric_name] = metric_info
+            
+            property_counter_map[property_counter] = prop
+            property_counter += 1
+
+        # Store specific result
+        file_path = DQ_MEASURES_DATA_SPECIFIC_TEMPLATE_FILE_PATH
+        if os.path.exists(file_path):
+            with open(file_path, 'r', encoding='utf-8') as f:
+                try:
+                    existing_data = json.load(f)
+                except json.JSONDecodeError:
+                    existing_data = {}
+            # Update existing data with new initial results
+            existing_data.update(dq_results)
+
+            with open(file_path, 'w', encoding='utf-8') as f:
+                json.dump(existing_data, f, indent=4)
+        else:
+            # If file doesn't exist, create it with dq_results
+            with open(file_path, 'w', encoding='utf-8') as f:
+                json.dump(dq_results, f, indent=4)
+
+        return shacl_shapes, property_counter_map
     
 
     def intrinsic_data_shapes(self, template, graph_profile):
@@ -256,7 +293,7 @@ class SHACLShapeBuilder:
                             regex_pattern = REGEX_PATTERNS_DICT[datatype] if datatype in REGEX_PATTERNS_DICT else None
                             
                             if regex_pattern:
-                                shacl_shapes += template.module.syntactic_validity_malformed_datatype(property_counter, prop, regex_pattern) + '\n'
+                                shacl_shapes += template.module.syntactic_validity_malformed_datatype(property_counter, prop, python_regex_to_shacl_regex(regex_pattern)) + '\n'
                         
                                 metric_info = copy.deepcopy(DQ_MEASURES_DATA_SPECIFIC['MalformedDatatype'])
                                 metric_info['shape'] = f'ex:MalformedDatatypeShape_{property_counter}'
@@ -279,7 +316,7 @@ class SHACLShapeBuilder:
                         property_counter += 1
 
             if len(vocab_profile['irreflexive']) > 0:
-                for prop in vocab_profile['reflexive']:
+                for prop in vocab_profile['irreflexive']:
                     
                     if prop in properties_in_dataset:
                         count_irreflexive_props += 1
@@ -302,9 +339,9 @@ class SHACLShapeBuilder:
                         
                         shacl_shapes +=  template.module.consistency_inverse_functional_property(property_counter, prop) + '\n'
                         
-                        metric_info = copy.deepcopy(DQ_MEASURES_DATA_SPECIFIC['InverseFunctionalProperty'])
-                        metric_info['shape'] = f'ex:InverseFunctionalPropertyShape_{property_counter}'
-                        metric_name = f'InverseFunctionalProperty_{property_counter}'
+                        metric_info = copy.deepcopy(DQ_MEASURES_DATA_SPECIFIC['InverseFunctionalPropertyUniqueness'])
+                        metric_info['shape'] = f'ex:InverseFunctionalPropertyUniquenessShape_{property_counter}'
+                        metric_name = f'InverseFunctionalPropertyUniqueness_{property_counter}'
                         dq_results[metric_name] = metric_info
 
                         property_counter_map[property_counter] = prop
@@ -330,24 +367,27 @@ class SHACLShapeBuilder:
                 classes_list = " ".join([f"<{v}>" for v in vocab_profile['deprecated_classes']])
                 shacl_shapes += template.module.consistency_deprecated_classes(classes_list, self.type_property) + '\n'
                 
-                metric_info = copy.deepcopy(DQ_MEASURES_DATA_SPECIFIC['DeprecatedClassesUsage'])
-                metric_info['shape'] = f'ex:DeprecatedClassesUsageShape'
-                metric_name = f'DeprecatedClassesUsage'
+                metric_info = copy.deepcopy(DQ_MEASURES_DATA_SPECIFIC['DeprecatedClasses'])
+                metric_info['shape'] = f'ex:DeprecatedClassesShape'
+                metric_name = f'DeprecatedClasses'
                 dq_results[metric_name] = metric_info
 
                 count_deprecated_classes = len(classes_list)
 
             if len(vocab_profile['deprecated_properties']) > 0:
-                properties_list = " ".join([f"<{v}>" for v in vocab_profile['deprecated_properties']])
-                
-                shacl_shapes_inf += template.module.consistency_deprecated_properties(properties_list, self.type_property) + '\n'
-                
-                metric_info = copy.deepcopy(DQ_MEASURES_DATA_SPECIFIC['DeprecatedPropertiesUsage'])
-                metric_info['shape'] = f'ex:DeprecatedPropertiesUsageShape'
-                metric_name = f'DeprecatedPropertiesUsage'
-                dq_results[metric_name] = metric_info
+                for prop in vocab_profile['deprecated_properties']:
+                    
+                    shacl_shapes += template.module.consistency_deprecated_properties(property_counter, prop, self.type_property) + '\n'
+                    
+                    metric_info = copy.deepcopy(DQ_MEASURES_DATA_SPECIFIC['DeprecatedProperties'])
+                    metric_info['shape'] = f'ex:DeprecatedPropertiesShape_{property_counter}'
+                    metric_name = f'DeprecatedProperties_{property_counter}'
+                    dq_results[metric_name] = metric_info
 
-                count_deprecated_properties = len(properties_list)
+                    property_counter_map[property_counter] = prop
+                    property_counter += 1
+
+                    count_deprecated_properties += 1
 
             if len(vocab_profile['rdf_properties']) > 0:
                 # In this case we don't filter properties that aren't used in the dataset
@@ -404,19 +444,20 @@ class SHACLShapeBuilder:
                                 property_counter_map[property_counter] = prop
                                 property_counter += 1
 
-                                datatype = info['range']['value']
-                                regex_pattern = REGEX_PATTERNS_DICT[datatype] if datatype in REGEX_PATTERNS_DICT else None
+                                if info['range']['value'] != 'http://www.w3.org/2000/01/rdf-schema#Literal':
+                                    datatype = info['range']['value']
+                                    regex_pattern = REGEX_PATTERNS_DICT[datatype] if datatype in REGEX_PATTERNS_DICT else None
+                                    
+                                    if regex_pattern:
+                                        shacl_shapes += template.module.syntactic_validity_malformed_datatype(property_counter, prop, python_regex_to_shacl_regex(regex_pattern)) + '\n'
                                 
-                                if regex_pattern:
-                                    shacl_shapes += template.module.syntactic_validity_malformed_datatype(property_counter, prop, regex_pattern) + '\n'
-                            
-                                    metric_info = copy.deepcopy(DQ_MEASURES_DATA_SPECIFIC['MalformedDatatype'])
-                                    metric_info['shape'] = f'ex:MalformedDatatypeShape_{property_counter}'
-                                    metric_name = f'MalformedDatatype_{property_counter}'
-                                    dq_results[metric_name] = metric_info
+                                        metric_info = copy.deepcopy(DQ_MEASURES_DATA_SPECIFIC['MalformedDatatype'])
+                                        metric_info['shape'] = f'ex:MalformedDatatypeShape_{property_counter}'
+                                        metric_name = f'MalformedDatatype_{property_counter}'
+                                        dq_results[metric_name] = metric_info
 
-                                    property_counter_map[property_counter] = prop
-                                    property_counter += 1
+                                        property_counter_map[property_counter] = prop
+                                        property_counter += 1
 
                             else:
                                 # only consider specific classes
@@ -433,7 +474,7 @@ class SHACLShapeBuilder:
                                     property_counter += 1
 
         # Add number of owl:DatatypeProperty and owl:ObjectProperty
-        graph_profile['count_owl_graph_profiletype_properties'] = count_dt_props_dataset
+        graph_profile['count_owl_datatype_properties'] = count_dt_props_dataset
         graph_profile['count_owl_object_properties'] = count_o_props_dataset
 
         # Add number of properties with datatype range and object range
@@ -461,8 +502,21 @@ class SHACLShapeBuilder:
 
         # Save the DQ "initial" results for the shapes that need instantiation from vocabularies
         file_path = DQ_MEASURES_DATA_SPECIFIC_TEMPLATE_FILE_PATH
-        with open(file_path, 'w', encoding='utf-8') as f:
-            json.dump(dq_results, f, indent=4)
+        if os.path.exists(file_path):
+            with open(file_path, 'r', encoding='utf-8') as f:
+                try:
+                    existing_data = json.load(f)
+                except json.JSONDecodeError:
+                    existing_data = {}
+            # Update existing data with new initial results
+            existing_data.update(dq_results)
+
+            with open(file_path, 'w', encoding='utf-8') as f:
+                json.dump(existing_data, f, indent=4)
+        else:
+            # If file doesn't exist, create it with dq_results
+            with open(file_path, 'w', encoding='utf-8') as f:
+                json.dump(dq_results, f, indent=4)
 
         return shacl_shapes, graph_profile, property_counter_map, class_counter_map
 

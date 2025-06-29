@@ -2,28 +2,22 @@
 ex:LabelForClassesShape
     a sh:NodeShape ;
     sh:targetClass rdfs:Class ;
-    sh:or (
-        [
-            sh:path <{{labeling_property}}> ;
-            sh:minCount 1 ;
-            sh:message "LabelForClasses - Classes should contain a label";
-        ]
-        [ sh:pattern "rdf|owl|dc|XMLSchema" ]
-    ).
+    sh:property [
+        sh:path <{{labeling_property}}> ;
+        sh:minCount 1 ;
+        sh:message "LabelForClasses - Classes should contain a label";
+    ].
 {%- endmacro %}
 
 {% macro understandability_label_properties(labeling_property) -%}
 ex:LabelForPropertiesShape
     a sh:NodeShape ;
     sh:targetClass rdf:Property ;
-    sh:or (
-        [
-            sh:path <{{labeling_property}}> ;
-            sh:minCount 1 ;
-            sh:message "LabelForProperties - Properties should contain a label";
-        ]
-        [ sh:pattern "rdf|owl|dc|XMLSchema" ]
-    ).
+    sh:property [
+        sh:path <{{labeling_property}}> ;
+        sh:minCount 1 ;
+        sh:message "LabelForProperties - Properties should contain a label";
+    ].
 {%- endmacro %}
 
 {% macro versatility_undefined_class(counter, class_uri, type_property) -%}
@@ -32,9 +26,8 @@ ex:UndefinedClassShape_{{counter}}
     sh:targetNode <{{class_uri}}> ;
     sh:property [
         sh:path <{{type_property}}> ;
-        sh:class rdfs:Class ;
+        sh:hasValue rdfs:Class;
         sh:minCount 1 ;
-        sh:maxCount 1 ;
         sh:message "UndefinedClass_{{counter}} - The class {{class_uri}} is not defined";
     ].
 {%- endmacro %}
@@ -45,9 +38,8 @@ ex:UndefinedPropertyShape_{{counter}}
     sh:targetNode <{{property_uri}}> ;
     sh:property [
         sh:path <{{type_property}}> ;
-        sh:class rdf:Property ;
+        sh:hasValue rdf:Property;
         sh:minCount 1 ;
-        sh:maxCount 1 ;
         sh:message "UndefinedProperty_{{counter}} - The property {{property_uri}} is undefined";
     ].
 {%- endmacro %}

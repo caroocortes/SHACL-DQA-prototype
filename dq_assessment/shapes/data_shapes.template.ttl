@@ -1,20 +1,12 @@
 {% macro interlinking_external_uris(dataset_uri, interlinking_property) -%}
 ex:UsageExternalURIEntitiesShape
     a sh:NodeShape ;
-    sh:targetObjectsOf <{{ interlinking_property }}> ;
-    sh:pattern "^(?!<{{ dataset_uri }}>)" ;
-    sh:message "UsageExternalURIEntities - The dataset doesn't contain links to external sources" .
-{%- endmacro %}
-
-{% macro interlinking_open_same_as_chains_shape(interlinking_property) -%}
-ex:OpenSameAsChainsShape
-    a sh:NodeShape ;
     sh:targetSubjectsOf <{{ interlinking_property }}> ;
     sh:property [
-        sh:path [ sh:inversePath <{{ interlinking_property }}> ] ;
-        sh:equals <{{ interlinking_property }}> ;
-    ] ;
-    sh:message "OpenSameAsChains - There are open <{{ interlinking_property }}> chains " .
+        sh:path <{{ interlinking_property }}> ;
+        sh:pattern "^(?!{{ dataset_uri }})" ;
+        sh:message "UsageExternalURIEntities - The dataset doesn't contain links to external sources"
+    ].
 {%- endmacro %}
 
 {% macro performance_hash_uris_entities(type_property) -%}
@@ -78,6 +70,26 @@ ex:URIRegexComplianceEntitiesShape
     ).
 {%- endmacro %}
 
+{% macro understandability_uri_space_compliance_entities(type_property, uri_space) -%}
+ex:URISpaceComplianceEntitiesShape
+    a sh:NodeShape ;
+    sh:targetSubjectsOf <{{ type_property }}> ;
+    sh:or (
+        [
+            sh:path rdf:type ;
+            sh:hasValue rdfs:Class ;
+        ]
+        [
+            sh:path rdf:type ;
+            sh:hasValue rdf:Property ;
+        ]
+        [
+            sh:pattern "^{{ uri_space }}" ; 
+            sh:message "URISpaceComplianceEntities - URIs should match the URI space provided in void:uriSpace" ;
+        ]
+    ).
+{%- endmacro %}
+
 {% macro interlinking_completeness(type_property, interlinking_property) -%}
 ex:InterlinkingCompletenessShape
     a sh:NodeShape ;
@@ -107,16 +119,6 @@ ex:SchemaCompletenessClassUsageShape_{{class_name}}
         sh:path [ sh:inversePath <{{type_property}}> ];
         sh:minCount 1;
         sh:message "SchemaCompletenessClassUsage_{{class_name}} - The class {{class_name}} is defined in the vocabulary but isn't used in the dataset";
-    ].
-{%- endmacro %}
-
-{% macro completeness_property_completeness(property_uri, count_value) -%}
-ex:PropertyCompletenessGeneralShape
-    a sh:NodeShape ;
-    sh:targetSubjectsOf <{{property_uri}}> ;
-    sh:property [
-        sh:path <{{property_uri}}>;
-        sh:minCount {{count_value}};
     ].
 {%- endmacro %}
 
@@ -161,7 +163,7 @@ ex:URIsParametersEntitiesShape
 {%- endmacro %}
 
 {% macro representational_conciseness_prolix_features(type_property) -%}
-ex:ProlixRDFFeaturesShape
+ex:ProlixFeaturesShape
     a sh:NodeShape ;
     sh:targetSubjectsOf <{{ type_property }}> ;
     sh:or (
@@ -182,7 +184,7 @@ ex:ProlixRDFFeaturesShape
                     [ sh:class rdf:Bag; ]
                     [ sh:class rdf:Alt; ]
                 );
-                sh:message "ProlixRDFFeatures - Prolix features shouldn't be used (Lists, Containers)";
+                sh:message "ProlixFeatures - Prolix features shouldn't be used (Lists, Containers)";
             ]
         ]
     ).
@@ -230,30 +232,7 @@ ex:DifferentLanguagesDescriptionsEntitiesShape
     ).
 {%- endmacro %}
 
-{% macro versatility_languages_labels_entities_list_languages(type_property, labeling_property, list_required_languages) -%}
-ex:DifferentLanguagesEntitiesListLanguagesShape
-    a sh:NodeShape ;
-    sh:targetSubjectsOf <{{type_property}}> ;
-    sh:or (
-        [
-            sh:path rdf:type ;
-            sh:hasValue rdfs:Class ;
-        ]
-        [
-            sh:path rdf:type ;
-            sh:hasValue rdf:Property ;
-        ]
-        [
-            sh:path <{{labeling_property}}> ;
-            sh:datatype rdf:langString ;
-            sh:languageIn ( {{list_required_languages}} ) ;
-            sh:uniqueLang true ;
-            sh:message "DifferentLanguagesEntitiesListLanguagesShape - Entities should provide labels with different languages" ;
-        ]
-    ).
-{%- endmacro %}
-
-{% macro versatility_self_descriptive_formats(type_property) -%}
+{% macro interpretability_self_descriptive_formats(type_property) -%}
 ex:SelfDescriptiveFormatShape
     a sh:NodeShape ;
     sh:targetSubjectsOf <{{type_property}}> ;
@@ -273,7 +252,15 @@ ex:SelfDescriptiveFormatShape
     ).
 {%- endmacro %}
 
-{% macro versatility_usage_blank_nodes(type_property) -%}
+{% macro interpretability_self_descriptive_format_properties(shape_index, property_uri) -%}
+ex:SelfDescriptiveFormatPropertiesShape_{{shape_index}}
+    a sh:NodeShape ;
+    sh:targetObjectsOf <{{property_uri}}> ;
+    sh:message "SelfDescriptiveFormatProperties_{{shape_index}} - The property {{property_uri}} uses literals or blank nodes as values";
+    sh:nodeKind sh:IRI .
+{%- endmacro %}
+
+{% macro interpretability_usage_blank_nodes(type_property) -%}
 ex:BlankNodesUsageEntitiesShape
     a sh:NodeShape ;
     sh:targetSubjectsOf <{{type_property}}> ;
@@ -293,28 +280,14 @@ ex:BlankNodesUsageEntitiesShape
     ).
 {%- endmacro %}
 
-{% macro versatility_usage_blank_nodes_subjects(property_uri, shape_index) -%}
-ex:BlankNodesUsageSubjectShape_{{shape_index}}
-    a sh:NodeShape ;
-    sh:targetSubjectsOf <{{property_uri}}> ;
-    sh:not [ sh:nodeKind sh:BlankNode];
-    sh:message "BlankNodesUsageSubject_{{shape_index}}_subject - The dataset should not use blank nodes".
-{%- endmacro %}
-
-{% macro versatility_usage_blank_nodes_objects(property_uri, shape_index) -%}
-ex:BlankNodesUsageObjectShape_{{shape_index}}
-    a sh:NodeShape ;
-    sh:targetObjectsOf <{{property_uri}}> ;
-    sh:not [ sh:nodeKind sh:BlankNode];
-    sh:message "BlankNodesUsageObject_{{shape_index}}_object - The dataset should not use blank nodes".
-{%- endmacro %}
-
 {% macro consistency_entities_disjoint_classes(shape_id, first_class_uri, second_class_uri) -%}
 ex:EntitiesDisjointClassesShape_{{shape_id}}
     a sh:NodeShape ;
     sh:targetClass <{{first_class_uri}}> ;
-    sh:message "EntitiesDisjointClasses_{{shape_id}} - There are instances of the class {{first_class_uri}} that are instances of the disjoint class {{second_class_uri}}";
-    sh:not [ sh:class <{{second_class_uri}}>].
+    sh:not [ 
+        sh:class <{{second_class_uri}}>;
+        sh:message "EntitiesDisjointClasses_{{shape_id}} - There are instances of the class {{first_class_uri}} that are instances of the disjoint class {{second_class_uri}}";
+    ].
 {%- endmacro %}
 
 {% macro consistency_misuse_properties(shape_index, property_uri, type_property) -%}
@@ -331,23 +304,29 @@ ex:MisplacedPropertiesShape_{{shape_index}}
 {% macro consistency_misuse_object_properties(shape_index, property_uri) -%}
 ex:MisuseOwlObjectPropertiesShape_{{shape_index}}
     a sh:NodeShape ;
-    sh:targetObjectsOf <{{property_uri}}> ;
-    sh:nodeKind sh:IRI;
-    sh:message "MisuseOwlObjectProperties_{{shape_index}} - The object property {{property_uri}} is being used with Literals".
+    sh:targetSubjectsOf <{{property_uri}}> ;
+    sh:property [
+        sh:path <{{property_uri}}>;
+        sh:nodeKind sh:IRI;
+        sh:message "MisuseOwlObjectProperties_{{shape_index}} - The object property {{property_uri}} is being used with Literals"
+    ].
 {%- endmacro %}
 
 {% macro consistency_misuse_datatype_properties(shape_index, property_uri) -%}
 ex:MisuseOwlDatatypePropertiesShape_{{shape_index}}
     a sh:NodeShape ;
-    sh:targetObjectsOf <{{property_uri}}> ;
-    sh:nodeKind sh:Literal;
-    sh:message "MisuseOwlDatatypeProperties_{{shape_index}} - The datatype property {{property_uri}} is being used with Resources".
+    sh:targetSubjectsOf <{{property_uri}}> ;
+    sh:property [
+        sh:path <{{property_uri}}> ;
+        sh:nodeKind sh:Literal ;
+        sh:message "MisuseOwlDatatypeProperties_{{shape_index}} - The datatype property {{property_uri}} is being used with Resources" ;
+    ].
 {%- endmacro %}
 
 {% macro consistency_deprecated_classes(classes_list, type_property) -%}
-ex:DeprecatedClassesUsageShape
+ex:DeprecatedClassesShape
     a sh:NodeShape ;
-    sh:targetObjectsOf <{{type_property}}> ;
+    sh:targetSubjectsOf <{{type_property}}> ;
     sh:or (
         [
             sh:path rdf:type ;
@@ -358,32 +337,44 @@ ex:DeprecatedClassesUsageShape
             sh:hasValue rdf:Property ;
         ]
         [
+            sh:path <{{type_property}}> ;
             sh:not [ 
                 sh:in ( {{classes_list}} );
-                sh:message "DeprecatedClassesUsage - Deprecated classes are being used in the dataset";
+                sh:message "DeprecatedClasses - Deprecated classes are being used in the dataset";
             ];
         ]
     ).
 {%- endmacro %}
 
-{% macro consistency_deprecated_properties(properties_list, type_property) -%}
-ex:DeprecatedPropertiesUsageShape
+{% macro consistency_deprecated_properties(shape_index, property_uri, type_property) -%}
+ex:DeprecatedPropertiesShape_{{shape_index}}
     a sh:NodeShape ;
-    sh:targetClass rdf:Property ;
-    sh:not [ 
-        sh:in ( {{properties_list}} ) ;
-        sh:message "DeprecatedPropertiesUsage - Deprecated properties are being used in the dataset";
-    ].
+    sh:targetSubjectsOf <{{type_property}}> ;
+    sh:or (
+        [
+            sh:path rdf:type ;
+            sh:hasValue rdfs:Class ;
+        ]
+        [
+            sh:path rdf:type ;
+            sh:hasValue rdf:Property ;
+        ]
+        [
+            sh:path <{{property_uri}}> ;
+            sh:maxCount 0;
+            sh:message "DeprecatedProperties_{{shape_index}} - Deprecated properties are being used in the dataset";
+        ]
+    ).
 {%- endmacro %}
 
 {% macro consistency_inverse_functional_property(shape_index, property_uri) -%}
-ex:InverseFunctionalPropertyShape_{{shape_index}}
+ex:InverseFunctionalPropertyUniquenessShape_{{shape_index}}
     a sh:NodeShape ;
     sh:targetObjectsOf <{{property_uri}}> ;
     sh:property [
         sh:path [ sh:inversePath <{{property_uri}}> ] ;
         sh:maxCount 1 ;
-        sh:message "InverseFunctionalProperty_{{shape_index}} - The uniqueness characteristic of the inverse functional property is not enforced" ;
+        sh:message "InverseFunctionalPropertyUniqueness_{{shape_index}} - The uniqueness characteristic of the inverse functional property is not enforced" ;
     ].
 {%- endmacro %}
 
@@ -436,7 +427,7 @@ ex:MalformedDatatypeShape_{{shape_index}}
     sh:targetSubjectsOf <{{property_uri}}> ;
     sh:property [
         sh:path <{{property_uri}}> ;
-        sh:pattern "{{datatype_pattern}}";
+        sh:pattern "{{datatype_pattern}}" ;
         sh:message "MalformedDatatype_{{shape_index}} - The property {{property_uri}} is used with a malformed datatype" ;
     ].
 {%- endmacro %}

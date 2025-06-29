@@ -1,5 +1,5 @@
 # Path to the configuration file of the dataset
-CONFIG_FILE_PATH = 'config/temples.ini'
+CONFIG_FILE_PATH = 'config/pizza.ini'
 
 # FOLDERS PATHS
 # Stores templates for the dq assessment results
@@ -37,22 +37,25 @@ BINARY_METRICS_DATA = {"OpenSameAsChainsShapes",
                        "MisplacedProperties", 
                        "SchemaCompletenessClassUsage", 
                        "DeprecatedClasses",
-                        "DeprecatedProperties" }
+                        "InverseFunctionalPropertyUniqueness",
+                         "SelfDescriptiveFormatProperties" }
 
 BINARY_METRICS_METADATA = {"AvailabilityDump", 
                            "MachineReadableLicense", 
-                           "AuthenticityDataset", 
+                           "AuthenticityOfDatasetSource", 
+                           "AuthenticityOfDatasetAuthor",
                            "PresenceMetadata", 
                            "ExemplaryResources", 
-                           "URIRegexPresence", 
+                           "URIRegexPressence", 
+                           "URISpacePressence",
                            "VocabularyExistence", 
                            "SerializationFormats"}
 
 COUNT_METRICS = {"UsageExternalURIEntities", 
                  "UsageHashURIsEntities", 
                  "LabelForEntities", 
-                 "URIsParametersEntitiesShape", 
-                 "URIsLengthEntitiesShape",
+                 "URIsParametersEntities", 
+                 "URIsLengthEntities",
                  "ProlixFeatures", 
                  "SelfDescriptiveFormat", 
                  "BlankNodesUsageEntities", 
@@ -64,40 +67,44 @@ COUNT_METRICS = {"UsageExternalURIEntities",
                 "CorrectRangeObject", 
                 "CorrectRangeDatatype",
                 "CorrectDomain", 
-                "ReflexiveProperty", 
                 "IrreflexiveProperty",
                 "EntitiesDisjointClasses",
-                "InverseFunctionalProperty", 
                 "FunctionalProperty",
                 "MalformedDatatype",
-                "MemberIncompatibleDatatype"}
+                "MemberIncompatibleDatatype", 
+                "DeprecatedProperties",
+                "URISpaceComplianceEntities",
+                "URIRegexComplianceEntities"}
 
 NUM_ENTITIES = { "UsageHashURIsEntities", 
                 "LabelForEntities", 
                 "URIRegexComplianceEntities", 
-                "URIsLengthEntitiesShape", 
-                "URIsParametersEntitiesShape",
+                "URISpaceComplianceEntities",
+                "URIsLengthEntities", 
+                "URIsParametersEntities",
                 "ProlixFeatures", 
                 "DifferentLanguagesLabelsEntities", 
                 "DifferentLanguagesDescriptionsEntities",
                 "SelfDescriptiveFormat", 
                 "BlankNodesUsageEntities", 
-                "InterlinkingCompleteness"}
+                "InterlinkingCompleteness", 
+                "DeprecatedProperties"}
 
 NUM_CLASSES = { "LabelForClasses"}
 
 NUM_PROPERTIES = {"LabelForProperties"}
+
+NUM_SUBJECTS_PER_PROPERTY = { "FunctionalProperty", "IrreflexiveProperty"}
 
 NUM_TRIPLES_PER_PROPERTY = { "MisuseOwlObjectProperties", 
                             "MisuseOwlDatatypeProperties", 
                             "CorrectRangeObject", 
                             "CorrectRangeDatatype",
                             "CorrectDomain", 
-                            "IrreflexiveProperty",
-                            "InverseFunctionalProperty", 
-                            "FunctionalProperty",
                             "MalformedDatatype",
-                            "MemberIncompatibleDatatype"}
+                            "MemberIncompatibleDatatype",
+                            "UsageExternalURIEntities"
+                        }
 
 NUM_ENTITIES_PER_CLASS = { "EntitiesDisjointClasses"}
 
@@ -214,6 +221,15 @@ DQ_MEASURES_DATA_SPECIFIC = {
         "measure": 1,
         "shape": "",
         "message": "",
+        "description": "Verifies that deprecated classes aren't used",
+        'metric_type': 'binary',
+        'metric_calculation': '1 if no deprecated classes are used, 0 otherwise',
+        'meta_metric_calculation': '',
+        'shape_name': 'DeprecatedClassesShape',
+        'shape_template': "ex:DeprecatedClassesShape a sh:NodeShape ;\\n\\tsh:targetSubjectsOf rdf:type ;\\n\\tsh:or (\\n\\t\\t[\\n\\t\\t\\tsh:path rdf:type ;\\n\\t\\t\\tsh:hasValue rdfs:Class ;\\n\\t\\t]\\n\\t\\t[\\n\\t\\t\\tsh:path rdf:type ;\\n\\t\\t\\tsh:hasValue rdf:Property ;\\n\\t\\t]\\n\\t\\t[\\n\\t\\t\\tsh:path rdf:type ;\\n\\t\\t\\tsh:not [\\n\\t\\t\\t\\tsh:in ( CLASSES_LIST ) ;\\n\\t\\t\\t] ;\\n\\t\\t]\\n\\t) .",
+        'violations': '',
+        'num_violations': '',
+        'vocab': ''
     },
     "CorrectRangeObject": {
         "dimension": "Consistency",
@@ -242,18 +258,26 @@ DQ_MEASURES_DATA_SPECIFIC = {
     "IrreflexiveProperty": {
         "dimension": "Consistency",
         "metric_id": "CN10",
-        "metric": "Valid usage of irreflexive properties",
+        "metric": "No inconsistent values",
         "measure": 1,
         "shape": "",
         "message": "",
     },
-    "InverseFunctionalProperty": {
-        "dimension": "Consistency",
-        "metric_id": "CN5",
-        "metric": "Valid usage of inverse-functional properties",
-        "measure": 1,
-        "shape": "",
-        "message": ""
+    "InverseFunctionalPropertyUniqueness": {
+        'dimension': 'Consistency',
+        'metric_id': 'CN5',
+        'metric': 'Valid usage of inverse-functional properties',
+        'description': 'Verifies the correct usage of inverse-functional properties.',
+        'measure': 1,
+        'message': '',
+        'metric_type': 'binary',
+        'metric_calculation': '1 if the inverse functional property is correctly used, 0 otherwise',
+        "meta_metric_calculation": "Number of inverse-functional properties correctly used / Number of inverse-functional properties",
+        'shape_name': 'InverseFunctionalPropertyUniquenessShape',
+        'shape_template': 'ex:InverseFunctionalPropertyUniquenessShape\na sh:NodeShape ;\nsh:targetObjectsOf PROPERTY_URI ;\nsh:property [\nsh:path [ sh:inversePath PROPERTY_URI ];\nsh:maxCount 1;\n].',
+        'violations': '',
+        'num_violations': '',
+        'vocab': ''
     },
     "FunctionalProperty": {
         "dimension": "Consistency",
@@ -286,6 +310,14 @@ DQ_MEASURES_DATA_SPECIFIC = {
         "measure": 1,
         "shape": "",
         "message": ""
+    },
+    "SelfDescriptiveFormatProperties": {
+        "dimension": "Interpretability",
+        "metric_id": "ITP1",
+        "metric": "Use of self-descriptive formats",
+        "measure": 1,
+        "shape": "",
+        "message": ""
     }
 }
 
@@ -297,11 +329,6 @@ DQ_MEASURES_VOCABULARY_SPECIFIC = {
         "measure": 1,
         "shape": "",
         "message": "",
-        "description": "Verifies that the properties used in the dataset are defined in the vocabulary.",
-        "metric_type": "binary",
-        "metric_calculation": "1 if the property is defined, 0 otherwise",
-        "meta_metric_calculation": "Number of defined properties / Number of properties used in the dataset",
-        "shape_template": ""
     },
     "UndefinedClass": {
         "dimension": "Interpretability",
@@ -309,11 +336,78 @@ DQ_MEASURES_VOCABULARY_SPECIFIC = {
         "metric": "Invalid usage of undefined classes and properties",
         "measure": 1,
         "shape": "",
-        "message": "",
-        "description": "Verifies that the classes used in the dataset are defined in the vocabulary.",
-        "metric_type": "binary",
-        "metric_calculation": "1 if the class is defined, 0 otherwise",
-        "meta_metric_calculation": "Number of defined classes / Number of classes used in the dataset",
-        "shape_template": ""
+        "message": ""
     }
 }
+
+METRIC_COVERAGE = [
+    ["Availability", "A1", "accessibility of the SPARQL endpoint and the server", "No"],
+    ["Availability", "A2", "accessibility of the RDF dumps", "Partial"],
+    ["Availability", "A3", "dereferenceability of the URI", "No"],
+    ["Availability", "A4", "no misreported content types", "No"],
+    ["Availability", "A5", "dereferenced forward-links", "No"],
+    ["Licensing", "L1", "machine-readable indication of a license in the VoID description of the dataset", "Yes"],
+    ["Licensing", "L2", "human-readable indication of a license in the documentation of the dataset", "No"],
+    ["Licensing", "L3", "specifying the correct license", "No"],
+    ["Interlinking", "I1", "detection of good quality interlinks", "No"],
+    ["Interlinking", "I2", "existence of links to external data providers", "Yes"],
+    ["Interlinking", "I3", "dereferenced back-links", "No"],
+    ["Security", "SE1", "usage of digital signatures", "Yes"],
+    ["Security", "SE2", "authenticity of the dataset", "Yes"],
+    ["Performance", "P1", "usage of slash-URIs", "Yes"],
+    ["Performance", "P2", "low latency", "No"],
+    ["Performance", "P3", "High throughput", "No"],
+    ["Performance", "P4", "Scalability of a data source", "No"],
+    ["Relevancy", "R1", "Relevant terms within meta-information attributes", "No"],
+    ["Relevancy", "R2", "coverage", "Partial"],
+    ["Understandability", "U1", "Human-readable labelling of classes, properties and entities as well as presence of metadata", "Partial"],
+    ["Understandability", "U2", "Indication of one or more exemplary URIs", "Yes"],
+    ["Understandability", "U3", "Indication of a regular expression that matches the URIs of a dataset", "Yes"],
+    ["Understandability", "U4", "Indication of an exemplary SPARQL query", "No"],
+    ["Understandability", "U5", "Indication of the vocabularies used in the dataset", "Yes"],
+    ["Understandability", "U6", "Provision of message boards and mailing lists", "No"],
+    ["Trustworthiness", "T1", "Trustworthiness of statements", "No"],
+    ["Trustworthiness", "T2", "trustworthiness through reasoning", "Partial"],
+    ["Trustworthiness", "T3", "trustworthiness of statements, datasets and rules", "Partial"],
+    ["Trustworthiness", "T4", "trustworthiness of a resource", "No"],
+    ["Trustworthiness", "T5", "trustworthiness of the information provider", "Partial"],
+    ["Trustworthiness", "T6", "trustworthiness of information provided (content trust)", "Yes"],
+    ["Trustworthiness", "T7", "reputation of the dataset", "No"],
+    ["Timeliness", "TI1", "freshness of datasets based on currency and volatility", "Partial"],
+    ["Timeliness", "TI2", "freshness of datasets based on their data source", "Partial"],
+    ["Representational conciseness", "RC1", "keeping URIs short", "Yes"],
+    ["Representational conciseness", "RC2", "no use of prolix RDF features", "Yes"],
+    ["Interoperability", "IO1", "Re-use of existing terms", "Yes"],
+    ["Interoperability", "IO2", "Re-use of existing vocabularies", "Partial"],
+    ["Versatility", "V1", "Provision of the data in different serialization formats", "Yes"],
+    ["Versatility", "V2", "checking whether data is available in different languages", "Yes"],
+    ["Interpretability", "IP1", "use of self-descriptive formats", "Yes"],
+    ["Interpretability", "IP2", "detecting the interpretability of data", "Partial"],
+    ["Interpretability", "IP3", "invalid usage of undefined classes and properties", "Yes"],
+    ["Interpretability", "IP4", "no misinterpretation of missing values", "Yes"],
+    ["Syntactic validity", "SV1", "no syntax errors of the documents", "No"],
+    ["Syntactic validity", "SV2", "Syntactically accurate values", "Partial"],
+    ["Syntactic validity", "SV3", "no malformed datatype literals", "Yes"],
+    ["Semantic accuracy", "SA1", "no outliers", "No"],
+    ["Semantic accuracy", "SA2", "no inaccurate values", "Partial"],
+    ["Semantic accuracy", "SA3", "no inaccurate annotations, labellings or classifications", "Partial"],
+    ["Semantic accuracy", "SA4", "no misuse of properties", "No"],
+    ["Semantic accuracy", "SA5", "detection of valid rules", "No"],
+    ["Consistency", "C1", "no use of entities as members of disjoint classes", "Yes"],
+    ["Consistency", "C2", "no misplaced classes or properties", "No"],
+    ["Consistency", "C3", "no misuse of owl:DatatypeProperty or owl:ObjectProperty", "Yes"],
+    ["Consistency", "C4", "members of owl:DeprecatedClass or owl:DeprecatedProperty not used", "Partial"],
+    ["Consistency", "C5", "valid usage of inverse-functional properties", "Partial"],
+    ["Consistency", "C6", "absence of ontology hijacking", "No"],
+    ["Consistency", "C7", "no negative dependencies/correlation among properties", "Yes"],
+    ["Consistency", "C8", "no inconsistencies in spatial data", "?"],
+    ["Consistency", "C9", "correct domain and range definition", "Yes"],
+    ["Consistency", "C10", "no inconsistent values", "Partial"],
+    ["Conciseness", "CO1", "high intensional conciseness", "No"],
+    ["Conciseness", "CO2", "high extensional conciseness", "Partial"],
+    ["Conciseness", "CO3", "usage of unambiguous annotations/labels", "No"],
+    ["Completeness", "CM1", "schema completeness", "Partial"],
+    ["Completeness", "CM2", "property completeness", "Partial"],
+    ["Completeness", "CM3", "population completeness", "No"],
+    ["Completeness", "CM4", "interlinking completeness", "Partial"],
+]

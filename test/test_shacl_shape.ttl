@@ -9,11 +9,10 @@
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix viaf: <http://viaf.org/viaf/> .
 @prefix sh: <http://www.w3.org/ns/shacl#> .
+@prefix ex_pizza: <http://example.org/pizza#> .
+@prefix pizza: <http://www.co-ode.org/ontologies/pizza/pizza.owl#> .
 
-ex:OpenSameAsChainsShapes
-    a sh:NodeShape ;
-    sh:targetSubjectsOf owl:sameAs ;
-    sh:property [
-        sh:path [ sh:inversePath owl:sameAs ] ;
-        sh:equals owl:sameAs ;
-    ] .
+ex:SelfDescriptiveFormatPropertiesShape
+	a sh:NodeShape ;
+	sh:targetObjectsOf pizza:cookedDate ;
+	sh:nodeKind sh:IRI .

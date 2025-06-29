@@ -8,6 +8,9 @@ import glob
 from shacl_shape_builder import SHACLShapeBuilder
 from utils import *
 
+import warnings
+warnings.filterwarnings("ignore", category=UserWarning, module="rdflib.term")
+
 logging.basicConfig(level=logging.INFO)
 
 class DQAssessment:
@@ -15,12 +18,10 @@ class DQAssessment:
     def __init__(self, config_path, 
                  metadata_shapes=True, 
                  data_shapes=True, 
-                 inference_data_shapes=True, 
                  vocab_shapes=True):
         
         self.metadata_shapes = metadata_shapes
         self.data_shapes = data_shapes
-        self.inference_data_shapes = inference_data_shapes
         self.config = self._load_config(config_path)
         self.vocab_shapes = vocab_shapes
         self._init_paths_and_params()
@@ -32,7 +33,6 @@ class DQAssessment:
         self.data_shapes_elapsed_time = 0
         self.vocab_shapes_elapsed_time = 0
         self.metadata_shapes_elapsed_time = 0
-        self.inference_shapes_elapsed_time = 0
         self.graph_profile = None
 
     def _load_config(self, path):
@@ -41,26 +41,27 @@ class DQAssessment:
         return config
 
     def _init_paths_and_params(self):
-        
-        self.graph_file_path = self.config['settings']['graph_file']
-        self.vocab_names = [v.strip() for v in self.config["settings"]["vocabularies"].split(",")]
+        settings = self.config['settings']
 
-        self.graph_file_path = self.config['settings']['graph_file']
-        self.graph_file_format = self.config['settings']['graph_file_format']
-        self.dataset_name = self.config["settings"]["dataset_name"]
+        self.graph_file_path = settings['graph_file']
+        self.vocab_names = [v.strip() for v in settings["vocabularies"].split(",")]
+
+        self.graph_file_path = settings['graph_file']
+        self.graph_file_format = settings['graph_file_format']
+        self.dataset_name = settings["dataset_name"]
         self.dataset_name = self.dataset_name.lower().replace(" ", "_")
 
-        self.metadata_file = self.config['settings']['metadata_file']
-        self.metadata_file_format = self.config['settings']['metadata_file_format']
+        self.metadata_file = settings['metadata_file']
+        self.metadata_file_format = settings['metadata_file_format']
 
         # Parameters for SHACL shapes
-        self.type_property = self.config['settings']['type_property']
-        self.labeling_property = self.config['settings']['labeling_property']
-        self.description_property = self.config['settings']['description_property']
-        self.interlinking_property = self.config['settings']['interlinking_property']
-        self.base_namespace = self.config['settings']['base_namespace'] # this is not being used!!!!! I think I didn't implement the shape that checks for the uriSpace...
-        self.uris_max_length = self.config['settings']['uris_max_length']
-        self.vocab_names = [v.strip() for v in self.config["settings"]["vocabularies"].split(",")]
+        self.type_property = settings['type_property']
+        self.labeling_property = settings['labeling_property']
+        self.description_property = settings['description_property']
+        self.interlinking_property = settings['interlinking_property']
+        self.base_namespace = settings['base_namespace'] # this is not being used!!!!! I think I didn't implement the shape that checks for the uriSpace...
+        self.uris_max_length = settings['uris_max_length']
+        self.vocab_names = [v.strip() for v in settings["vocabularies"].split(",")]
 
         # Shapes templates
         env = Environment(loader=FileSystemLoader("dq_assessment/shapes"))
@@ -69,6 +70,7 @@ class DQAssessment:
         self.vocabs_template = env.get_template("vocabulary_shapes.template.ttl")
 
         self.regex_pattern = None
+        self.uri_space = None
 
 
     def run(self):
@@ -77,17 +79,7 @@ class DQAssessment:
         logging.info(f"Finished profiling graph and vocabularies. Saved results in {PROFILE_DATASETS_FOLDER_PATH} & {PROFILE_VOCABULARIES_FOLDER_PATH}")
         
         initial_time = time.time() # start of validation
-        
-        # ---- Validate shapes against vocabularies ----
-        if self.vocab_shapes:
-            start_time = time.time()
-            self.validate_vocabulary_shapes()
-            end_time = time.time()
-            elapsed_time = end_time - start_time
-            self.vocab_shapes_elapsed_time = elapsed_time
-            # TODO: see this
-            # logging.info(f"Finished validating shapes against vocabularies. Saved DQA results in '{DQ_ASSESSMENT_RESULTS_FOLDER_PATH.format(dataset_name=self.dataset_name)}dq_assessment_{self.dataset_name}_data_inference.json'. \n Elapsed time: {elapsed_time}")
-
+    
         # ---- Validate metadata shapes ----
         if self.metadata_shapes and self.metadata_file:
             start_time = time.time()
@@ -106,6 +98,14 @@ class DQAssessment:
             self.data_shapes_elapsed_time = elapsed_time
             logging.info(f"Finished validating data shapes. Saved DQA results in '{DQ_ASSESSMENT_RESULTS_FOLDER_PATH.format(dataset_name=self.dataset_name)}/dq_assessment_{self.dataset_name}_data.json'. \n Elapsed time: {elapsed_time}")
 
+        # ---- Validate shapes against vocabularies ----
+        if self.vocab_shapes:
+            start_time = time.time()
+            self.validate_vocabulary_shapes()
+            end_time = time.time()
+            elapsed_time = end_time - start_time
+            self.vocab_shapes_elapsed_time = elapsed_time
+            logging.info(f"Finished validating shapes against vocabularies. Saved DQA results in '{DQ_ASSESSMENT_RESULTS_FOLDER_PATH.format(dataset_name=self.dataset_name)}dq_assessment_[vocab_name].json'. \n Elapsed time: {elapsed_time}")
 
         final_time = time.time() # end of validation
         self.total_elapsed_time = final_time - initial_time
@@ -153,8 +153,7 @@ class DQAssessment:
         logging.info(f'Metadata shapes for dataset {self.dataset_name} saved in {file_path}')
         
         # Run validation 
-        _, val_graph, _ = validate_shacl_constraints(self.metadata_file, self.metadata_file_format, shape_graph)
-
+        _, val_graph, _ = validate_shacl_constraints(self.metadata_file, self.metadata_file_format, shape_graph, vocabs=None, config=None)
         # Process & store validation results
         self.process_validation_result_metadata(val_graph)
         
@@ -210,7 +209,7 @@ class DQAssessment:
             # Validate shapes
             file_path = self.config[vocab]["file_path"]
             file_format = self.config[vocab]["file_format"]
-            _, val_graph, _ = validate_shacl_constraints(file_path, file_format, shape_graph)
+            _, val_graph, _ = validate_shacl_constraints(file_path, file_format, shape_graph, vocabs=[vocab], config=self.config)
 
             with open(f'{PROFILE_VOCABULARIES_FOLDER_PATH}/{vocab_name}.json', 'r', encoding='utf-8') as f:
                 vocab_profile = json.load(f)
@@ -221,16 +220,16 @@ class DQAssessment:
 
     def validate_data_shapes(self):
         """
-            Validates shapes without inference
+            Validates data shapes
         """
 
         # Instantiate shapes
         accessibility_shapes = self.shape_builder.accessibility_data_shapes(self.data_template)
-        self.regex_pattern, contextual_shapes = self.shape_builder.contextual_data_shapes(self.data_template)
-        representational_shapes = self.shape_builder.representational_data_shapes(self.data_template)
-        
+        self.regex_pattern, self.uri_space, contextual_shapes = self.shape_builder.contextual_data_shapes(self.data_template)
+        representational_shapes, self.shape_property_map_representational = self.shape_builder.representational_data_shapes(self.data_template, self.graph_profile)
+
         # Update graph_profile because it gets updated inside intrinsic_data_shapes
-        intrinsic_shapes, self.graph_profile, self.shape_property_map, self.shape_class_map = self.shape_builder.intrinsic_data_shapes(self.data_template, self.graph_profile)
+        intrinsic_shapes, self.graph_profile, self.shape_property_map_intrinsic, self.shape_class_map = self.shape_builder.intrinsic_data_shapes(self.data_template, self.graph_profile)
 
         shacl_shapes = (accessibility_shapes + '\n' + 
                         contextual_shapes + '\n' +
@@ -283,9 +282,22 @@ class DQAssessment:
             metric, message, _ = get_metric_message(results_graph, result)    
             # All metadata metrics are binary, so if there's a validation result, 
             # it means the measure is 0
-            results[metric]["measure"] = 0
-            results[metric]["message"] = message
 
+            # Had to separate this shape so I could get the specific violation
+            if metric == 'AuthenticityOfDatasetAuthor' or metric == 'AuthenticityOfDatasetSource':
+                metric = 'AuthenticityOfDataset'
+
+            constraint_type = results_graph.value(result, SH.sourceConstraintComponent)
+            results[metric]["measure"] = 0
+            
+            if constraint_type != SH.MinCountConstraintComponent:
+                # Metadata shapes have constraints to check for the correctness of the values of properties
+                new_message = 'The property is present but the value is incorrect.'
+                results[metric]["message"] = new_message
+            else:
+                # If the constraint is a MinCount, it means the property is not present
+                results[metric]["message"] = message
+            
         with open(file_path, 'w', encoding='utf-8') as f:
             json.dump(results, f, indent=4)
 
@@ -308,7 +320,6 @@ class DQAssessment:
         os.makedirs(folder_path, exist_ok=True)
         validation_results = results_graph.subjects(RDF.type, SH.ValidationResult)
         if not any(validation_results):
-            print('no validation result')
             # If no validation results, save template files without updating measures
             for metric, info in results.items():
                 info['vocab'] = vocab
@@ -320,29 +331,31 @@ class DQAssessment:
             metric, message, counter = get_metric_message(results_graph, result)
 
             focus_node = results_graph.value(result, SH.focusNode)
-            
+
             if metric.startswith("UndefinedProperty"):
                 metric = f'{metric}_{counter}'
                 # check that the property is actually from the vocabulary
                 # some vocabularies define properties from other vocabularies as 
                 # annotation properties 
-                if vocab in property_vocab_map and focus_node in property_vocab_map[vocab]:
-                    results[metric]["property"] = focus_node
+                
+                results[metric]["property"] = focus_node
+                results[metric]["measure"] = 0
               
             elif metric.startswith("UndefinedClass"):
                 metric = f'{metric}_{counter}'
                 # check that the class is actually from the vocabulary
-                if focus_node in class_vocab_map[vocab]:
-                    results[metric]["class"] = focus_node
+                
+                results[metric]["class"] = focus_node
+                results[metric]["measure"] = 0
                 
             elif metric and focus_node:
                 # consider unique focus nodes for each metric
                 if metric not in violating_entities_per_shape:
                     violating_entities_per_shape[metric] = set()
                 
+                # TODO: check if this is needed
                 # check that the class/property is actually from the vocabulary
-                if (vocab in property_vocab_map and focus_node in property_vocab_map[vocab]) or (focus_node in class_vocab_map and focus_node in class_vocab_map[vocab]):
-                    violating_entities_per_shape[metric].add(focus_node)
+                violating_entities_per_shape[metric].add(focus_node)
 
             if results[metric]["message"] == "":
                 results[metric]["message"] = message
@@ -350,9 +363,9 @@ class DQAssessment:
         for metric, nodes in violating_entities_per_shape.items():
             count = len(nodes)
             if metric == 'LabelForClasses':
-                denominator = vocab_profile.get("num_classes", 1)
+                denominator = vocab_profile.get("num_all_classes", 1)
             elif metric == 'LabelForProperties':
-                denominator = vocab_profile.get("num_properties", 1)
+                denominator = vocab_profile.get("num_all_properties", 1)
             
             ratio = 1 - (count / denominator)
             results[metric]["measure"] = ratio
@@ -376,7 +389,6 @@ class DQAssessment:
         
         violating_entities_per_shape = defaultdict(lambda: {"entities": set()})
         
-        
         with open(DQ_MEASURES_DATA_GENERIC_TEMPLATE_FILE_PATH, 'r', encoding='utf-8') as f:
             metrics_generic = json.load(f)
         
@@ -388,8 +400,13 @@ class DQAssessment:
 
         if self.regex_pattern is None:
             # There's no regex pattern provided for the URIs, 
-            # hence, we don't need to calculate the URIRegexComplianceEntities, URIRegexComplianceClasses, URIRegexComplianceProperties
+            # hence, we don't need to calculate the URIRegexComplianceEntities,
             results.pop("URIRegexComplianceEntities")
+
+        if self.uri_space is None:
+            # There's no uri space provided for the URIs, 
+            # hence, we don't need to calculate the URISpaceComplianceEntities,
+            results.pop("URISpaceComplianceEntities")
         
         if not self.labeling_property:
             results.pop('DifferentLanguagesLabelsEntities')
@@ -399,93 +416,108 @@ class DQAssessment:
 
         validation_results = results_graph.subjects(RDF.type, SH.ValidationResult)
         if not any(validation_results):
-            print("No validation results found.")
             return results
-
+        
         for result in results_graph.subjects(RDF.type, SH.ValidationResult):
             
             constraint_type = results_graph.value(result, SH.sourceConstraintComponent)
             metric, message, counter = get_metric_message(results_graph, result)
 
             if metric in BINARY_METRICS_DATA:
-                
                 if counter != -1 and not metric.startswith("Deprecated"):
                     metric = f'{metric}_{counter}'
-
-                if constraint_type != SH.MinCountConstraintComponent and metric != 'MisplacedProperties':
-                    # shapes have ranges to check for the effective usage of properties
-                    # hence, the property can be present but is not being used properly
-                    message += ' (the values for the property are not correct)'
                 
-                if metric.startswith("MisplacedProperties"):
-                    results[metric]["property"] = self.shape_property_map[int(counter)]
+                if metric.startswith("MisplacedProperties") or metric.startswith("InverseFunctionalProperty"):
+                    results[metric]["property"] = self.shape_property_map_intrinsic[int(counter)]
+
+                if metric.startswith("SelfDescriptiveFormatProperties"):
+                    results[metric]["property"] = self.shape_property_map_representational[int(counter)]
               
                 if metric.startswith("SchemaCompletenessClassUsage"):
                     results[metric]["class"] = self.shape_class_map[int(counter)]
                 
-                if metric.startswith("DeprecatedClasses"):
-                    if "violations" not in results[metric]:
-                        results[metric]['violations'] = ''
-
+                # For deprecated classes violations are the entities that use the class
+                # For inverse functional properties violations are the entities that use the property
+                # For self-descriptive format properties violations are the values of the property that aren't IRIs
+                if metric.startswith("DeprecatedClasses") or metric.startswith("InverseFunctionalProperty") or metric.startswith("SelfDescriptiveFormatProperties"):
+                    
                     focus_node = results_graph.value(result, SH.focusNode)
-                    results[metric]['violations'] += ';' + focus_node
-                
-                if metric.startswith("DeprecatedProperties"):
-                    if "violations" not in results[metric]:
-                        results[metric]['violations'] = ''
-
-                    focus_node = results_graph.value(result, SH.focusNode)
-                    results[metric]['violations'] += ';' + focus_node
-
+                    if "violations" not in results[metric] or results[metric]['violations'] == '':
+                        results[metric]['violations'] = str(focus_node.toPython())
+                        
+                    elif results[metric]['violations'] != '':
+                        results[metric]['violations'] += ';' + str(focus_node.toPython())
                 results[metric]["measure"] = 0 
             
             elif metric in COUNT_METRICS:
-            
-                if metric in NUM_TRIPLES_PER_PROPERTY:
+
+                if metric in NUM_TRIPLES_PER_PROPERTY or metric in NUM_SUBJECTS_PER_PROPERTY:
                     
                     if counter != -1:
                         metric = f'{metric}_{counter}'
                     if metric not in violating_entities_per_shape:
-
-                        violating_entities_per_shape[metric] = {
-                            "entities": set(),
-                            "property": self.shape_property_map[int(counter)]
-                        }
+                        if metric == 'UsageExternalURIEntities':
+                            violating_entities_per_shape[metric] = {
+                                "entities": [],
+                                "property": self.interlinking_property
+                            }
+                        else:
+                            
+                            violating_entities_per_shape[metric] = {
+                                "entities": [],
+                                "property": self.shape_property_map_intrinsic[int(counter)]
+                            }
 
                 elif metric in NUM_ENTITIES_PER_CLASS:
                     if counter != -1:
                         metric = f'{metric}_{counter}'
+    
                     if metric not in violating_entities_per_shape:
-
+   
                         violating_entities_per_shape[metric] = {
-                            "entities": set(),
+                            "entities": [],
                             "class": self.shape_class_map[int(counter)]
                         }
                 else:
+
+                    if counter != -1:
+                        metric = f'{metric}_{counter}'
+
                     if metric not in violating_entities_per_shape:
-                        if counter != -1:
-                            metric = f'{metric}_{counter}'
-                        violating_entities_per_shape[metric] = {
-                            "entities": set()
-                        }
+                        
+                        if metric.startswith("DeprecatedProp"):
+                            violating_entities_per_shape[metric] = {
+                                "entities": [],
+                                "property": self.shape_property_map_intrinsic[int(counter)]
+                            }
+                        else:
+                            violating_entities_per_shape[metric] = {
+                                "entities": []
+                            }
 
                 focus_node = results_graph.value(result, SH.focusNode)
+
                 if metric and focus_node:
-                    # consider unique focus nodes for each metric
-                    violating_entities_per_shape[metric]['entities'].add(focus_node)
+                    violating_entities_per_shape[metric]['entities'].append(focus_node)
 
-            if results[metric]["message"] == "":
-                results[metric]["message"] = message
+                if results[metric]["message"] == "":
+                    results[metric]["message"] = message
 
+                if constraint_type != SH.MinCountConstraintComponent:
+                    # shapes have ranges to check for the effective usage of properties
+                    # hence, the property can be present but is not being used properly
+                    message += ' (the values for the property are not correct)'
+        
         for metric, info in violating_entities_per_shape.items():
-
+            
             count = len(info["entities"])
             denominator = get_denominator(metric, info, self.graph_profile)
+
             ratio = 1 - (count / denominator)
             results[metric]["measure"] = ratio
             results[metric]['violations'] = '; '.join(info['entities'])
             results[metric]['num_violations'] = count
-
+                
             if 'class' in info:
                 results[metric]['class'] = info['class']
             elif 'property' in info:
@@ -497,7 +529,7 @@ class DQAssessment:
     def create_dq_results_csv(self):
 
         """
-        Create a CSV with columns: 'dimension', 'metric', 'metric_id', 'metric_description', 'score', 'message', 'metric_type', 'metric_calculation', 'meta_metric_calculation', 'shape_template', 'inference', 'violations'
+        Create a CSV with columns: 'dimension', 'metric', 'metric_id', 'metric_description', 'score', 'message', 'metric_type', 'metric_calculation', 'meta_metric_calculation', 'shape_template', 'violations'
         from DQ assessment JSON files.
         """
         results_folder = DQ_ASSESSMENT_RESULTS_FOLDER_PATH.format(dataset_name=self.dataset_name)
@@ -505,6 +537,9 @@ class DQAssessment:
         files = []
         if self.validate_metadata_shapes: 
             files.append(f'dq_assessment_{self.dataset_name}_metadata.json')
+        
+        if self.validate_data_shapes: 
+            files.append(f'dq_assessment_{self.dataset_name}_data.json')
 
         if self.validate_vocabulary_shapes:
             vocab_files = [file.split("/")[-1] for file in glob.glob(f'{results_folder}dq_assessment_vocabularies_*.json')]
@@ -563,10 +598,9 @@ class DQAssessment:
             count_irreflexive_properties_shapes = 0
             irreflexive_properties_properties = []
 
-            # inverse functional property
-            inverse_functional_property_ones = 0
-            count_inverse_functional_properties_shapes = 0
-            inverse_functional_properties_properties = []
+            self_descriptive_format_properties_ones = 0
+            count_self_descriptive_format_properties_shapes = 0
+            self_descriptive_format_properties_properties = []
 
             # functional property
             functional_property_ones = 0
@@ -598,6 +632,11 @@ class DQAssessment:
             undefined_properties_ones = {}
             undefined_properties_properties = {}
 
+            # deprecated property
+            deprecated_property_ones = 0
+            count_deprecated_properties_shapes = 0
+            deprecated_properties_properties = []
+
             for shape_name, info in data.items():
                 counter_shapes += 1
                 
@@ -612,7 +651,7 @@ class DQAssessment:
                 metric_id = info.get('metric_id', '')
                 metric_type = info.get('metric_type', '')
                 metric_calculation = info.get('metric_calculation', '')
-                meta_metric_calculation = info.get('metric_meta_calculation', '')
+                meta_metric_calculation = info.get('meta_metric_calculation', '')
                 shape_template = info.get('shape_template', '')
                 num_violations = info.get('num_violations', 0)
                 violations = info.get('violations', '')
@@ -654,7 +693,9 @@ class DQAssessment:
                 elif shape_name.startswith("EntitiesDisjointClasses_"):
                     count_entities_disjoint_classes_shapes += 1
                     if str(score) == "1":
-                        entities_disjoint_classes_ones += 1
+                        # I only instantiate with 1 of the classes, not with both
+                        # is this correct????
+                        entities_disjoint_classes_ones += 2
                     else:
                         entities_disjoint_classes.append((class_uri['first_class'], class_uri['second_class'], score))
                 
@@ -681,12 +722,19 @@ class DQAssessment:
                     else:   
                         irreflexive_properties_properties.append((property_uri, score))
 
-                elif shape_name.startswith("InverseFunctionalProperty_"):
-                    count_inverse_functional_properties_shapes += 1
+                elif shape_name.startswith("SelfDescriptiveFormatProperties"):
+                    count_self_descriptive_format_properties_shapes += 1
                     if str(score) == "1":
-                        inverse_functional_property_ones += 1
+                        self_descriptive_format_properties_ones += 1
                     else:   
-                        inverse_functional_properties_properties.append((property_uri, score))
+                        self_descriptive_format_properties_properties.append(property_uri)
+
+                elif shape_name.startswith("FunctionalProperty"):
+                    count_functional_properties_shapes += 1
+                    if str(score) == "1":
+                        functional_property_ones += 1
+                    else:   
+                        functional_properties_properties.append((property_uri, score))
 
                 elif shape_name.startswith("SchemaCompletenessClassUsage_"):
 
@@ -697,14 +745,6 @@ class DQAssessment:
                         schema_completeness_class_usage_ones += 1
                     else:   
                         schema_completeness_class_usage_classes.append(class_uri)
-
-                elif shape_name.startswith("DeprecatedClasses"):
-                    count_violations = len([v for v in violations.split("; ") if v.strip()])
-                    score = 1 - ( count_violations / profile_graph['count_deprecated_classes'])
-
-                elif shape_name.startswith("DeprecatedProperties"):
-                    count_violations = len([v for v in violations.split("; ") if v.strip()])
-                    score = 1 - ( count_violations / profile_graph['count_deprecated_properties'])
 
                 elif shape_name.startswith("MalformedDatatype"):
                     # 1 shape per property, so this counts the number of properties
@@ -725,6 +765,16 @@ class DQAssessment:
                         incompatible_dataype_ones += 1
                     else:   
                         incompatible_dataype_properties.append((property_uri, score))
+
+                elif shape_name.startswith("DeprecatedProperties"):
+                    # 1 shape per property, so this counts the number of properties
+                    count_deprecated_properties_shapes += 1
+                    if str(score) == "1":
+                        # The metric is count, so this returns the number of properties that
+                        # are correctly used
+                        deprecated_property_ones += 1
+                    else:   
+                        deprecated_properties_properties.append((property_uri, score))
 
                 elif shape_name.startswith("UndefinedClass"):
                     if vocab not in count_undefined_classes_shapes.keys():
@@ -749,8 +799,20 @@ class DQAssessment:
                         undefined_properties_ones[vocab] += 1
                     else:
                         undefined_properties_properties[vocab].append(property_uri)
-                
+
                 else:
+
+                    if shape_name.startswith("DeprecatedClasses"):
+                        num_violations = len([v for v in violations.split(";") if v.strip()])
+                    
+                    # violations contains the values of the property that are used multiple times
+                    if shape_name.startswith("InverseFunctionalPropertyUniqueness"):
+                        value_violations = [v.strip() for v in violations.split(";")]
+                        num_violations = len(value_violations)
+                        
+                        if len(value_violations) > 0:
+                            violations = '; '.join([f'({property_uri},{v})' for v in value_violations])
+
                     rows.append({
                         'dimension': dimension,
                         'metric': metric_name,
@@ -761,6 +823,7 @@ class DQAssessment:
                         'metric_type': metric_type,
                         'metric_calculation': metric_calculation,
                         'meta_metric_calculation': meta_metric_calculation,
+                        'shape_name': shape_name,
                         'shape_template': shape_template,
                         'violations': violations,
                         'num_violations': num_violations,
@@ -785,6 +848,7 @@ class DQAssessment:
                     'metric_type': 'binary',
                     'metric_calculation': "0 if property is used as a class, 1 otherwise.",
                     "meta_metric_calculation": "Number of correctly used properties / Number of properties defined in vocabularies",
+                    'shape_name': 'MisplacedPropertiesShape',
                     'shape_template': 'ex:MisplacedPropertiesShape\na sh:NodeShape ;\nsh:targetNode PROPERTY_URI ;\nsh:property [\nsh:path [ sh:inversePath rdf:type ];\nsh:maxCount 0;\n].',
                     'violations': '; '.join([f'({p},{s})' for p, s in misuse_properties_properties]),
                     'num_violations': len(misuse_properties_properties),
@@ -799,12 +863,13 @@ class DQAssessment:
                     'dimension': 'Consistency',
                     'metric_id': 'CN9',
                     'metric': 'Correct domain and range definition',
-                    'metric_description': 'Verifies that properties are used with the correct range (datatype properties).',
+                    'metric_description': 'Verifies that properties are used with the correct range (datatype).',
                     'score': ratio,
                     'message': f'{number_violations} {'properties' if number_violations > 1 else 'property'} are used with incorrect range' if ratio < 1 else '',
                     'metric_type': 'count',
                     'metric_calculation': '1 - (Number of violations / Number of triples that use the property)',
                     'meta_metric_calculation': 'Number of properties used with a correct datatype/literal  range / Number of properties with datatype/literal range',
+                    'shape_name': 'CorrectRangeShape',
                     'shape_template': 'ex:CorrectRangeShape\na sh:NodeShape ;\nsh:targetObjectsOf PROPERTY_URI ;\nsh:datatype DATATYPE.',
                     'violations': '; '.join([f'({p},{s})' for p, s in range_datatype_properties]),
                     'num_violations': len(range_datatype_properties),
@@ -818,12 +883,13 @@ class DQAssessment:
                     'dimension': 'Consistency',
                     'metric_id': 'CN9',
                     'metric': 'Correct domain and range definition.',
-                    'metric_description': 'Verifies that properties are used with the correct range (object properties).',
+                    'metric_description': 'Verifies that properties are used with the correct range (object).',
                     'score': ratio,
                     'message': f'{count_correct_range_object_shapes - correct_range_object_ones} properties are used with incorrect ranges' if ratio < 1 else '',
                     'metric_type': 'count',
                     'metric_calculation': '1 - (Number of violations / Number of triples that use the property)',
-                    "meta_metric_calculation": "Number of properties used with an correct object range / Number of properties with object range",
+                    "meta_metric_calculation": "Number of properties used with a correct object range / Number of properties with object range",
+                    'shape_name': 'CorrectRangeObjectShape',
                     'shape_template': 'ex:CorrectRangeObjectShape\na sh:NodeShape ;\nsh:targetObjectsOf PROPERTY_URI ;\nsh:class CLASS.',
                     'violations': '; '.join([f'({p},{s})' for p, s in range_object_properties]),
                     'num_violations': len(range_object_properties),
@@ -843,6 +909,7 @@ class DQAssessment:
                     'metric_type': 'count',
                     'metric_calculation': '1 - (Number of violations / Number of triples that use the property)',
                     "meta_metric_calculation": "Number of properties used with their correct domain / Number of properties with a defined domain",
+                    'shape_name': 'CorrectDomainShape',
                     "shape_template": "ex:CorrectDomainShape\\na sh:NodeShape ;\\nsh:targetSubjectsOf PROPERTY_URI ;\\nsh:class CLASS .",
                     'violations': '; '.join([f'({p},{s})' for p, s in correct_domain_properties]),
                     'num_violations': len(correct_domain_properties),
@@ -862,6 +929,7 @@ class DQAssessment:
                     'metric_type': 'count',
                     'metric_calculation': '1 - (Number of violations / Number of entities of the target class)',
                     "meta_metric_calculation": "Number of classes with no member as instance of a disjoint class / Number of classes",
+                    'shape_name': 'EntitiesDisjointClassesShape',
                     'shape_template': 'ex:EntitiesDisjointClassesShape\na sh:NodeShape ;\nsh:targetClass CLASS_URI ;\nsh:not [ sh:class ex:DisjointClass ].',
                     'violations': '; '.join([f'({fc},{sc},{s})' for fc, sc, s in entities_disjoint_classes]),
                     'num_violations': len(entities_disjoint_classes),
@@ -879,11 +947,32 @@ class DQAssessment:
                     'score': ratio,
                     'message': f'{count_irreflexive_properties_shapes - irreflexive_property_ones} properties don\'t conform to their irreflexive characteristic' if ratio < 1 else '',
                     'metric_type': 'count',
-                    'metric_calculation': '1 - (Number of violations / Number of triples that use the property)',
+                    'metric_calculation': '1 - (Number of violations / Number of subjects that use the property)',
                     "meta_metric_calculation": "Number of irreflexive properties correctly used / Number of irreflexive properties",
-                    'shape_template': '',
+                    'shape_name': 'IrreflexivePropertyShape',
+                    'shape_template': "ex:IrreflexivePropertyShape\\na sh:NodeShape ;\\n \tsh:targetSubjectsOf PROPERTY_URI ;\\n \tsh:disjoint PROPERTY_URI .",
                     'violations': '; '.join([f'({p},{s})' for p, s in irreflexive_properties_properties]),
                     'num_violations': len(irreflexive_properties_properties),
+                    "vocab": ''
+                })
+            
+            # Self descriptive formats properties
+            if count_self_descriptive_format_properties_shapes > 0:
+                ratio = (self_descriptive_format_properties_ones/count_self_descriptive_format_properties_shapes)
+                rows.append({
+                    "dimension": 'Interpretability',
+                    "metric_id": "ITP1",
+                    "metric": "Use of self-descriptive formats",
+                    'metric_description': 'Verifies if properties use IRIs as values',
+                    'score': ratio,
+                    'message': f'{count_self_descriptive_format_properties_shapes - self_descriptive_format_properties_ones} properties use at least one literal or blank node' if ratio < 1 else '',
+                    'metric_type': 'count',
+                    'metric_calculation': '1 if the property uses IRIs as values, 0 otherwise.',
+                    "meta_metric_calculation": "Number of properties that have IRIs as values / Number of properties used in the dataset",
+                    'shape_name': 'SelfDescriptiveFormatPropertiesShape',
+                    "shape_template": "ex:SelfDescriptiveFormatPropertiesShape\\n\\ta sh:NodeShape ;\\n\\tsh:targetObjectsOf PROPERTY_URI ;\\n\\tsh:nodeKind sh:IRI .",
+                    'violations': '; '.join([p for p in self_descriptive_format_properties_properties]),
+                    'num_violations': len(self_descriptive_format_properties_properties),
                     "vocab": ''
                 })
 
@@ -896,11 +985,12 @@ class DQAssessment:
                     'metric': 'No misuse of owl:DatatypeProperty or owl:ObjectProperty',
                     'metric_description': 'Verifies that owl:ObjectProperty aren\'t used with Literals',
                     'score': ratio,
-                    'message': f'{count_object_misuse_properties_shapes - misuse_object_properties_ones} object properties aren\'t used with the correct range' if ratio < 1 else '',
+                    'message': f'{count_object_misuse_properties_shapes - misuse_object_properties_ones} object properties are used with literals or blank nodes' if ratio < 1 else '',
                     'metric_type': 'count',
                     'metric_calculation': '1 - (Number of violations / Number of triples that use the property)',
                     "meta_metric_calculation": "Number of owl:ObjectProperty correctly used / Number of owl:ObjectProperty",
-                    'shape_template': 'ex:MisuseOwlObjectPropertiesShape\na sh:NodeShape ;\nsh:targetObjectsOf ex:SomeObjectProperty ;\nsh:nodeKind sh:IRI.',
+                    'shape_name': 'MisuseOwlObjectPropertiesShape',
+                    'shape_template': 'ex:MisuseOwlObjectPropertiesShape\\na sh:NodeShape ;\\nsh:targetObjectsOf ex:SomeObjectProperty ;\\nsh:nodeKind sh:IRI.',
                     'violations': '; '.join([f'({p},{s})' for p, s in misuse_object_properties_properties]),
                     'num_violations': len(misuse_object_properties_properties),
                     "vocab": ''
@@ -915,32 +1005,14 @@ class DQAssessment:
                     'metric': 'No misuse of owl:DatatypeProperty or owl:ObjectProperty',
                     'metric_description': 'Verifies that owl:DatatypeProperty are used with Literals',
                     'score': ratio,
-                    'message': f'{count_datatype_misuse_properties_shapes - misuse_datatype_properties_ones} datatype properties aren\'t used with the correct range' if ratio < 1 else '',
+                    'message': f'{count_datatype_misuse_properties_shapes - misuse_datatype_properties_ones} datatype properties are used with IRIs' if ratio < 1 else '',
                     'metric_type': 'count',
                     'metric_calculation': '1 - (Number of violations / Number of triples that use the property)',
                     "meta_metric_calculation": "Number of owl:DatatypeProperty correctly used / Number of owl:DatatypeProperty",
-                    'shape_template': 'ex:MisuseOwlDatatypePropertiesShape\na sh:NodeShape ;\nsh:targetObjectsOf ex:SomeDatatypeProperty ;\nsh:nodeKind sh:Literal.',
+                    'shape_name': 'MisuseOwlDatatypePropertiesShape',
+                    'shape_template': 'ex:MisuseOwlDatatypePropertiesShape\\na sh:NodeShape ;\\nsh:targetObjectsOf ex:SomeDatatypeProperty ;\\nsh:nodeKind sh:Literal.',
                     'violations': '; '.join([f'({p},{s})' for p, s in misuse_datatype_properties_properties]),
                     'num_violations': len(misuse_datatype_properties_properties),
-                    "vocab": ''
-                })
-
-            # Inverse functional properties
-            if count_inverse_functional_properties_shapes > 0:
-                ratio = (inverse_functional_property_ones/count_inverse_functional_properties_shapes)
-                rows.append({
-                    'dimension': 'Consistency',
-                    'metric_id': 'CN5',
-                    'metric': 'Valid usage of inverse-functional properties',
-                    'metric_description': 'Verifies the correct usage of inverse-functional properties.',
-                    'score': ratio,
-                    'message': f'{count_inverse_functional_properties_shapes - inverse_functional_property_ones} properties don\'t conform to their inverse functional characteristic' if ratio < 1 else '',
-                    'metric_type': 'count',
-                    'metric_calculation': '1 - (Number of violations / Number of triples that use the property)',
-                    "meta_metric_calculation": "Number of inverse-functional properties correctly used / Number of inverse-functional properties",
-                    'shape_template': 'ex:InverseFunctionalPropertyUniquenessShape\na sh:NodeShape ;\nsh:targetObjectsOf ex:someInvFuncProp ;\nsh:property [\nsh:path [ sh:inversePath ex:someInvFuncProp ];\nsh:maxCount 1;\n].',
-                    'violations': '; '.join([f'({p},{s})' for p, s in inverse_functional_properties_properties]),
-                    'num_violations': len(inverse_functional_properties_properties),
                     "vocab": ''
                 })
 
@@ -954,9 +1026,10 @@ class DQAssessment:
                     'score': ratio,
                     'message': f'{count_functional_properties_shapes - functional_property_ones} properties don\'t conform to their functional characteristic' if ratio < 1 else '',
                     'metric_type': 'count',
-                    'metric_calculation': '1 - (Number of violations / Number of triples that use the property)',
+                    'metric_calculation': '1 - (Number of violations / Number of subjects that use the property)',
                     "meta_metric_calculation": "Number of functional properties correctly used / Number of functional properties",
-                    "shape_template": "ex:FunctionalPropertyShape\\na sh:NodeShape ;\\nsh:targetSubjectsOf {{property_uri}} ;\\nsh:property [\\n    sh:path {{property_uri}} ;\\n    sh:maxCount 1 ;\\n] .",
+                    'shape_name': 'FunctionalPropertyShape',
+                    "shape_template": "ex:FunctionalPropertyShape\\na sh:NodeShape ;\\nsh:targetSubjectsOf PROPERTY_URI ;\\nsh:property [\\n    sh:path PROPERTY_URI ;\\n    sh:maxCount 1 ;\\n] .",
                     'violations': '; '.join([f'({p},{s})' for p, s in functional_properties_properties]),
                     'num_violations': len(functional_properties_properties),
                     "vocab": ''
@@ -975,7 +1048,8 @@ class DQAssessment:
                     'metric_type': 'binary',
                     "metric_calculation": "1 if the class is used, 0 otherwise",
                     "meta_metric_calculation": "Number of classes used / Number of classes defined in vocabularies",
-                    'shape_template': 'ex:SchemaCompletenessClassUsageShape\na sh:NodeShape ;\nsh:targetNode CLASS_URI ;\nsh:property [\nsh:path [ sh:inversePath rdf:type ];\nsh:minCount 1;\n].',
+                    'shape_name': 'SchemaCompletenessClassUsageShape',
+                    'shape_template': 'ex:SchemaCompletenessClassUsageShape\\na sh:NodeShape ;\\nsh:targetNode CLASS_URI ;\\nsh:property [\\nsh:path [ sh:inversePath rdf:type ];\\nsh:minCount 1;\\n].',
                     'violations': '; '.join(schema_completeness_class_usage_classes),
                     'num_violations': len(schema_completeness_class_usage_classes),
                     "vocab": ''
@@ -993,7 +1067,8 @@ class DQAssessment:
                     "metric_type": "count",
                     "metric_calculation": "1 - (Number of violations / Number of triples that use the property)",
                     "meta_metric_calculation": "Number of correctly used properties / Number of properties with a datatype range",
-                    "shape_template": "ex:MemberIncompatibleDatatypeShape\na sh:NodeShape ;\nsh:targetSubjectsOf PROPERTY_URI ;\nsh:property [\n    sh:path PROPERTY_URI ;\n    sh:datatype DATATYPE_URI \n] .",
+                    'shape_name': 'MemberIncompatibleDatatypeShape',
+                    "shape_template": "ex:MemberIncompatibleDatatypeShape\\na sh:NodeShape ;\\nsh:targetSubjectsOf PROPERTY_URI ;\\nsh:property [\\n    sh:path PROPERTY_URI ;\\n    sh:datatype DATATYPE_URI \\n] .",
                     "violations": "; ".join([f'({p},{s})' for p, s in incompatible_dataype_properties]),
                     "num_violations": len(incompatible_dataype_properties),
                     "vocab": ''
@@ -1011,6 +1086,7 @@ class DQAssessment:
                     "metric_type": "count",
                     "metric_calculation": "1 - (Number of violations / Number of triples that use the property)",
                     "meta_metric_calculation": "Number of correctly used properties / Number of properties with a datatype range",
+                    'shape_name': 'MalformedDatatypeShape',
                     "shape_template": "ex:MalformedDatatypeShape \\na sh:NodeShape ;\\nsh:targetSubjectsOf PROPERTY_URI ;\\nsh:property [\\n    sh:path PROPERTY_URI ;\\n    sh:pattern DATATYPE_PATTERN;\\n] .",
                     "violations": "; ".join([f'({p},{s})' for p, s in malformed_dataype_properties]),
                     "num_violations": len(malformed_dataype_properties),
@@ -1030,7 +1106,8 @@ class DQAssessment:
                         "metric_description": "Verifies that the properties used in the dataset are defined in the vocabulary.",
                         "metric_type": "binary",
                         "metric_calculation": "1 if the property is defined, 0 otherwise",
-                        "meta_metric_calculation": "Number of defined properties / Number of properties used in the dataset",
+                        "meta_metric_calculation": "Number of defined properties used / Number of properties used in the dataset (from the vocabulary)",
+                        'shape_name': 'UndefinedPropertyShape',
                         "shape_template": "ex:UndefinedPropertyShape \\na sh:NodeShape ;\\nsh:targetNode PROPERTY_URI ;\\nsh:property [\\n    sh:path TYPE_PROPERTY ;\\n    sh:class rdf:Property ;\\n    sh:minCount 1 ;\\n    sh:maxCount 1 \\n] .",
                         "violations": "; ".join(undefined_properties_properties[vocab]),
                         "num_violations": len(undefined_properties_properties[vocab]),
@@ -1049,19 +1126,40 @@ class DQAssessment:
                         "metric_description": "Verifies that the classes used in the dataset are defined in the vocabulary.",
                         "metric_type": "binary",
                         "metric_calculation": "1 if the class is defined, 0 otherwise",
-                        "meta_metric_calculation": "Number of defined classes / Number of classes used in the dataset",
+                        "meta_metric_calculation": "Number of defined classes used / Number of classes used in the dataset (from the vocabulary)",
+                        'shape_name': 'UndefinedClassShape',
                         "shape_template": "ex:UndefinedClassShape \\na sh:NodeShape ;\\nsh:targetNode CLASS_URI ;\\nsh:property [\\n    sh:path TYPE_PROPERTY ;\\n    sh:class rdfs:Class ;\\n    sh:minCount 1 ;\\n    sh:maxCount 1 ;\\n] .",
                         "violations": "; ".join(undefined_classes_classes[vocab]),
                         "num_violations": len(undefined_classes_classes[vocab]),
                         "vocab": vocab
                     })
 
+            if count_deprecated_properties_shapes > 0:
+                ratio = (deprecated_property_ones/count_deprecated_properties_shapes)
+                rows.append({
+                    "dimension": "Consistency",
+                    "metric_id": "CN4",
+                    "metric": "Members of owl:DeprecatedClass or owl:DeprecatedProperty not used",
+                    "score": ratio,
+                    "message": '',
+                    "metric_description": "Verifies that deprecated properties aren't used",
+                    'metric_type': 'count',
+                    'metric_calculation': '1 - (Number of entities that use the property / Number of entities)',
+                    'meta_metric_calculation': 'Number of unused deprecated properties / Number of deprecated properties',
+                    'shape_name': 'DeprecatedPropertiesShape',
+                    'shape_template': "ex:DeprecatedPropertiesShape a sh:NodeShape ;\\n\\tsh:targetSubjectsOf TYPE_PROPERTY ;\\n\\tsh:or ( \\n\t\t[ sh:path rdf:type ; sh:hasValue rdfs:Class ; ] \\n\t\t[ sh:path rdf:type ; sh:hasValue rdf:Property ; ] \\n\t\t[ sh:path PROPERTY_URI ;\\n\t\t sh:maxCount 0 ; ] \\n\t) .",
+                    'violations': '; '.join([f'({p},{s})' for p, s in deprecated_properties_properties]),
+                    'num_violations': len(deprecated_properties_properties),
+                    'vocab': ''
+                })
+                    
+
             # this shape is instantiated for every property used in the dataset that
             # has a domain defined
             if count_correct_domain_shapes > 0:
                 self.graph_profile['num_properties_domain'] = count_correct_domain_shapes
 
-            # this shape is instantiated for every property defined in the vocab
+            # this shape is instantiated for every property defined in all vocabs
             if count_misuse_properties_shapes > 0:
                 self.graph_profile['num_properties_vocabularies'] = count_misuse_properties_shapes
 
@@ -1074,7 +1172,7 @@ class DQAssessment:
         with open(output_csv_path, 'w', encoding='utf-8', newline='') as csvfile:
             writer = csv.DictWriter(csvfile, fieldnames=['dimension','metric_id', 'metric', 
                                                          'score', 'message', 'metric_description', 'metric_type', 
-                                                         'metric_calculation', 'meta_metric_calculation', 'shape_template',
+                                                         'metric_calculation', 'meta_metric_calculation', 'shape_name', 'shape_template',
                                                          'violations', 'num_violations', 'vocab'])
             writer.writeheader()
             for row in rows:

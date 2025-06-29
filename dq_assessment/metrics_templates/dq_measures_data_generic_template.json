@@ -21,7 +21,7 @@
         "description": "Verifies that entity's URIs don't have a hash (#)",
         "metric_type": "count",
         "metric_calculation": "1 - (Number of violations / Number of entities)",
-        "shape_template": "ex:UsageHashURIsShape\na sh:NodeShape ;\nsh:targetSubjectsOf TYPE_PROPERTY ;\nsh:nodeKind sh:IRI ; \nsh:pattern \"^[ ^#]*$\" ."
+        "shape_template": "ex:UsageHashURIsEntitiesShape\na sh:NodeShape ;\nsh:targetSubjectsOf TYPE_PROPERTY ;\nsh:nodeKind sh:IRI ; \nsh:pattern \"^[ ^#]*$\" ."
     },
     "LabelForEntities":{
         "dimension": "Understandability",
@@ -47,6 +47,18 @@
         "metric_calculation": "1 - (Number of violations / Number of entities)",
         "shape_template": "ex:URIRegexComplianceEntitiesShape\na sh:NodeShape ;\nsh:targetSubjectsOf TYPE_PROPERTY ;\nsh:pattern \"URI_REGEX_PATTERN\"."
     },
+    "URISpaceComplianceEntities": {
+        "dimension": "Understandability",
+        "metric_id": "U3",
+        "metric": "Indication of a regular expression that matches the URIs of a dataset",
+        "measure": 1,
+        "shape": "ex:URISpaceComplianceEntitiesShape",
+        "message": "",
+        "description": "Compliance of URIs in the dataset to the provided URI namespace",
+        "metric_type": "count",
+        "metric_calculation": "1 - (Number of violations / Number of entities)",
+        "shape_template": "ex:URISpaceComplianceEntitiesShape\na sh:NodeShape ;\nsh:targetSubjectsOf TYPE_PROPERTY ;\nsh:pattern \"^URI_NAMESPACE\"."
+    },
     "URIsParametersEntities": {
         "dimension": "Representational Conciseness",
         "metric_id": "RC1",
@@ -71,17 +83,17 @@
         "metric_calculation": "1 - (Number of violations / Number of entities)",
         "shape_template": "ex:URIsLengthEntitiesShape\na sh:NodeShape ;\nsh:targetClass rdfs:Class ;\nsh:maxLength LENGTH_VALUE ."
     },
-    "ProlixRDFFeatures": {
+    "ProlixFeatures": {
         "dimension": "Representational Conciseness",
         "metric_id": "RC2",
         "metric": "No use of prolix RDF features.",
         "measure": 1,
-        "shape": "ex:ProlixRDFFeaturesShape",
+        "shape": "ex:ProlixFeaturesShape",
         "message": "",
         "description": "Verifies there's no usage of RDF prolix features, such as RDF reification, containers and collections.",
         "metric_type": "count",
         "metric_calculation": "1 - (Number of violations / Number of entities)",
-        "shape_template": "ex:ProlixRDFFeaturesShape\na sh:NodeShape ;\nsh:targetSubjectsOf TYPE_PROPERTY ;\nsh:not[\nsh:or(\n[ sh:class rdf:Statement ];\n[ sh:class rdf:List ];\n[ sh:class rdf:Seq ];\n[ sh:class rdf:Bag ];\n[ sh:class rdf:Alt ];\n)\n] ."
+        "shape_template": "ex:ProlixFeaturesShape\na sh:NodeShape ;\nsh:targetSubjectsOf TYPE_PROPERTY ;\nsh:not[\nsh:or(\n[ sh:class rdf:Statement ];\n[ sh:class rdf:List ];\n[ sh:class rdf:Seq ];\n[ sh:class rdf:Bag ];\n[ sh:class rdf:Alt ];\n)\n] ."
     },
     "DifferentLanguagesLabelsEntities": {
         "dimension": "Versatility",

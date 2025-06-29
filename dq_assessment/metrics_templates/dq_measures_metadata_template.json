@@ -23,16 +23,16 @@
         "metric_calculation": "1 if the VoID description has a machine-readable indication of a license, otherwise 0.",
         "shape_template": "ex:MachineReadableShape\na sh:NodeShape ;\nsh:targetClass void:Dataset ;\nsh:property [\nsh:path dcterms:license ;\nsh:minCount 1 ;\n] ."
     },
-    "AuthenticityDataset": {
+    "AuthenticityOfDataset": {
         "dimension": "Security",
         "metric_id": "S2",
         "metric": "Authenticity of the dataset",
         "measure": 1,
-        "shape": "ex:AuthenticityDatasetShape",
+        "shape": "ex:AuthenticityDatasetSourceShape & ex:AuthenticityDatasetAuthorShape",
         "message": "",
-        "description": "Verifies the existence of an author, contributor, and publisher of the data in the VoID description of the dataset.",
+        "description": "Verifies there's someone responsible for the data (creator, contributor or publisher) and indication of the origin of the data (source or provenance) in the VoID description of the dataset.",
         "metric_type": "binary",
-        "metric_calculation": "1 if the VoID description has an author, contributor and publisher, otherwise 0.",
+        "metric_calculation": "1 if the VoID description has indication of someone responsible for the data, as well as indication of the origin of the data; otherwise 0.",
         "shape_template": "ex:AuthenticityOfDatasetShape\na sh:NodeShape ;\nsh:targetClass void:Dataset ;\nsh:and (\n[\nsh:or (\n[\nsh:path dcterms:contributor ;\nsh:minCount 1 ;\n]\n[\nsh:path dcterms:creator ;\nsh:minCount 1 ;\n]\n[\nsh:path dcterms:publisher ;\nsh:minCount 1 ;\n]\n)\n]\n[\nsh:or (\n[\nsh:path dcterms:source ;\nsh:minCount 1 ;\n]\n[\nsh:path dcterms:provenance ;\nsh:minCount 1 ;\n]\n)\n]\n)"
     },
     "PresenceMetadata": {
@@ -59,7 +59,7 @@
         "metric_calculation": "1 if the VoID description has an indication of an exemplary URI, otherwise 0.",
         "shape_template": "ex:ExemplaryResourceShape\na sh:NodeShape ;\nsh:targetClass void:Dataset ;\nsh:property [\nsh:path void:exampleResource ;\nsh:minCount 1 ;\nsh:nodeKind sh:IRI ;\n]"
     },
-    "URIRegexPresence": {
+    "URIRegexPressence": {
         "dimension": "Understandability",
         "metric_id": "U3",
         "metric": "Indication of a regular expression that matches the URIs of a dataset",
@@ -70,6 +70,18 @@
         "metric_type": "binary",
         "metric_calculation": "1 if the VoID description has an indication of a regular expression for the URIs, otherwise 0.",
         "shape_template": "ex:URIRegexPressenceShape\na sh:NodeShape ;\nsh:targetClass void:Dataset ;\nsh:property [\nsh:path void:uriRegexPattern ;\nsh:minCount 1 ;\nsh:datatype xsd:string ;\nsh:pattern \"^http://|^https://\";\n]."
+    },
+    "URISpacePressence": {
+        "dimension": "Understandability",
+        "metric_id": "U3",
+        "metric": "Indication of a regular expression that matches the URIs of a dataset",
+        "measure": 1,
+        "shape": "ex:URIRegexPressenceShape",
+        "message": "",
+        "description": "Verifies if there's and indication of the URI namespace for the URIs of the dataset, in the VoID description of the dataset.",
+        "metric_type": "binary",
+        "metric_calculation": "1 if the VoID description has an indication of the URI namespace, otherwise 0.",
+        "shape_template": "ex:URISpacePressenceShape\na sh:NodeShape ;\nsh:targetClass void:Dataset ;\nsh:property [\nsh:path void:uriSpace ;\nsh:minCount 1 ;\nsh:datatype xsd:string ;\nsh:pattern \"^http://|^https://\";\n]."
     },
     "VocabularyExistence": {
         "dimension": "Understandability",
