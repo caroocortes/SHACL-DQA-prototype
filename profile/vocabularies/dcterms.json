@@ -294,5 +294,7 @@
         }
     },
     "num_classes": 22,
-    "num_properties": 37
+    "num_properties": 37,
+    "num_all_classes": 22,
+    "num_all_properties": 37
 }

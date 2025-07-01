@@ -47,23 +47,23 @@
         },
         "https://www.geonames.org/ontology#parentADM1": {
             "domain": "https://www.geonames.org/ontology#Feature",
-            "range": "Naafa5f0e63ad495b95d61ba11925315e"
+            "range": "N06661692e61e4a44b022f2059e069b51"
         },
         "https://www.geonames.org/ontology#parentADM2": {
             "domain": "https://www.geonames.org/ontology#Feature",
-            "range": "N6fff73ddcd82413e83ccbe6eecc88ff6"
+            "range": "Neb1dd12848534078a40289c20b66d8d4"
         },
         "https://www.geonames.org/ontology#parentADM3": {
             "domain": "https://www.geonames.org/ontology#Feature",
-            "range": "N05c03af8de054e40934a50691361a3cc"
+            "range": "N269755c9f27b45228bc265ce62a30b23"
         },
         "https://www.geonames.org/ontology#parentADM4": {
             "domain": "https://www.geonames.org/ontology#Feature",
-            "range": "N0649cf7b6391406f8afd114a31bc5998"
+            "range": "N2e45a9884dcd44e8937185bdb60e6565"
         },
         "https://www.geonames.org/ontology#parentCountry": {
             "domain": "https://www.geonames.org/ontology#Feature",
-            "range": "N53c2f49c1d6e44aaacf863c40dc36580"
+            "range": "N43b0d44a3ca64e229c0bf4485585ba68"
         },
         "https://www.geonames.org/ontology#parentFeature": {
             "domain": "https://www.geonames.org/ontology#Feature",
@@ -133,5 +133,7 @@
     "disjoint_classes": [],
     "rdf_properties": {},
     "num_classes": 7,
-    "num_properties": 28
+    "num_properties": 28,
+    "num_all_classes": 7,
+    "num_all_properties": 56
 }

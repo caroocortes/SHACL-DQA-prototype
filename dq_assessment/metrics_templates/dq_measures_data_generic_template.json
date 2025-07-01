@@ -9,7 +9,7 @@
         "description": "Checks whether linked entities in the dataset are linked to external data providers.",
         "metric_type": "count",
         "metric_calculation": "1 - (Number of violations / Number of triples with INTERLINKING_PROPERTY)",
-        "shape_template": "ex:UsageExternalURIShape\na sh:NodeShape ;\nsh:targetObjectsOf INTERLINKING_PROPERTY ;\nsh:pattern \"^(?!DATASET_URI)\" ."
+        "shape_template": "ex:UsageExternalURIShape\\n\\ta sh:NodeShape ;\\n\\tsh:targetObjectsOf INTERLINKING_PROPERTY ;\\n\\tsh:pattern \"^(?!DATASET_URI)\" ."
     },
     "UsageHashURIsEntities": {
         "dimension": "Performance",
@@ -21,7 +21,7 @@
         "description": "Verifies that entity's URIs don't have a hash (#)",
         "metric_type": "count",
         "metric_calculation": "1 - (Number of violations / Number of entities)",
-        "shape_template": "ex:UsageHashURIsEntitiesShape\na sh:NodeShape ;\nsh:targetSubjectsOf TYPE_PROPERTY ;\nsh:nodeKind sh:IRI ; \nsh:pattern \"^[ ^#]*$\" ."
+        "shape_template": "ex:UsageHashURIsShape\\n\\ta sh:NodeShape ;\\n\\tsh:targetSubjectsOf TYPE_PROPERTY ;\\n\\tsh:or (\\n\\t[\\n\\t\\tsh:path rdf:type ;\\n\\t\\tsh:hasValue rdfs:Class ;\\n\\t]\\n\\t[\\n\\t\\tsh:path rdf:type ;\\n\\t\\tsh:hasValue rdf:Property ;\\n\\t]\\n\\t[\\n\\t\\tsh:pattern \"^[^#]*$\" ;\\n\\t]\\n\\t) ."
     },
     "LabelForEntities":{
         "dimension": "Understandability",
@@ -33,7 +33,7 @@
         "description": "Human readable labels in entities",
         "metric_type": "count",
         "metric_calculation": "1 - (Number of violations / Number of entities)",
-        "shape_template": "ex:LabelForEntitiesShape\na sh:NodeShape ;\nsh:targetSubjectsOf TYPE_PROPERTY ;\nsh:property [\nsh:path LABELING_PROPERTY ;\nsh:minCount 1 ;\n] ."
+        "shape_template": "ex:LabelForEntitiesShape\\n\\ta sh:NodeShape ;\\n\\tsh:targetSubjectsOf rdf:type ;\\n\\tsh:or (\\n\\t[\\n\\t\\tsh:path rdf:type ;\\n\\t\\tsh:hasValue rdfs:Class ;\\n\\t]\\n\\t[\\n\\t\\tsh:path rdf:type ;\\n\\t\\tsh:hasValue rdf:Property ;\\n\\t]\\n\\t[\\n\\t\\tsh:path rdfs:label ;\\n\\t\\tsh:minCount 1 ;\\n\\t]\\n\\t) ."
     },
     "URIRegexComplianceEntities": {
         "dimension": "Understandability",
@@ -45,7 +45,7 @@
         "description": "Compliance of URIs in the dataset to the provided regular expression",
         "metric_type": "count",
         "metric_calculation": "1 - (Number of violations / Number of entities)",
-        "shape_template": "ex:URIRegexComplianceEntitiesShape\na sh:NodeShape ;\nsh:targetSubjectsOf TYPE_PROPERTY ;\nsh:pattern \"URI_REGEX_PATTERN\"."
+        "shape_template": "ex:URIRegexComplianceShape\\n\\ta sh:NodeShape ;\\n\\tsh:targetSubjectsOf rdf:type ;\\n\\tsh:or (\\n\\t[\\n\\t\\tsh:path rdf:type ;\\n\\t\\tsh:hasValue rdfs:Class ;\\n\\t]\\n\\t[\\n\\t\\tsh:path rdf:type ;\\n\\t\\tsh:hasValue rdf:Property ;\\n\\t]\\n\\t[\\n\\t\\tsh:pattern \"^URI_REGEX_PATTERN\" ;\\n\\t]\\n\\t) ."
     },
     "URISpaceComplianceEntities": {
         "dimension": "Understandability",
@@ -57,7 +57,7 @@
         "description": "Compliance of URIs in the dataset to the provided URI namespace",
         "metric_type": "count",
         "metric_calculation": "1 - (Number of violations / Number of entities)",
-        "shape_template": "ex:URISpaceComplianceEntitiesShape\na sh:NodeShape ;\nsh:targetSubjectsOf TYPE_PROPERTY ;\nsh:pattern \"^URI_NAMESPACE\"."
+        "shape_template": "ex:URISpaceComplianceShape\\n\\ta sh:NodeShape ;\\n\\tsh:targetSubjectsOf rdf:type ;\\n\\tsh:or (\\n\\t[\\n\\t\\tsh:path rdf:type ;\\n\\t\\tsh:hasValue rdfs:Class ;\\n\\t]\\n\\t[\\n\\t\\tsh:path rdf:type ;\\n\\t\\tsh:hasValue rdf:Property ;\\n\\t]\\n\\t[\\n\\t\\tsh:pattern \"^URI_SPACE\" ;\\n\\t]\\n\\t) ."
     },
     "URIsParametersEntities": {
         "dimension": "Representational Conciseness",
@@ -69,7 +69,7 @@
         "description": "Verifies that URIs in the dataset don't contain parameters",
         "metric_type": "count",
         "metric_calculation": "1 - (Number of violations / Number of entities)",
-        "shape_template": "ex:URIsParametersEntitiesShape\na sh:NodeShape ;\nsh:targetClass rdfs:Class ;\nsh:not[\nsh:pattern \"\\\\?|=\" ;\n] ."
+        "shape_template": "ex:URIsParametersShape\\n\\ta sh:NodeShape ;\\n\\tsh:targetSubjectsOf rdf:type ;\\n\\tsh:or (\\n\\t[\\n\\t\\tsh:path rdf:type ;\\n\\t\\tsh:hasValue rdfs:Class ;\\n\\t]\\n\\t[\\n\\t\\tsh:path rdf:type ;\\n\\t\\tsh:hasValue rdf:Property ;\\n\\t]\\n\\t[\\n\\t\\tsh:not [ sh:pattern \"\\\\?.+=.*\" ] ;\\n\\t]\\n\\t) ."
     },
     "URIsLengthEntities": {
         "dimension": "Representational Conciseness",
@@ -81,7 +81,7 @@
         "description": "Verifies that URIs in the dataset have a length of at most 80 characters",
         "metric_type": "count",
         "metric_calculation": "1 - (Number of violations / Number of entities)",
-        "shape_template": "ex:URIsLengthEntitiesShape\na sh:NodeShape ;\nsh:targetClass rdfs:Class ;\nsh:maxLength LENGTH_VALUE ."
+        "shape_template": "ex:URIsLengthShape\\n\\ta sh:NodeShape ;\\n\\tsh:targetSubjectsOf rdf:type ;\\n\\tsh:or (\\n\\t[\\n\\t\\tsh:path rdf:type ;\\n\\t\\tsh:hasValue rdfs:Class ;\\n\\t]\\n\\t[\\n\\t\\tsh:path rdf:type ;\\n\\t\\tsh:hasValue rdf:Property ;\\n\\t]\\n\\t[\\n\\t\\tsh:maxLength LENGTH_VALUE ;\\n\\t]\\n\\t)."
     },
     "ProlixFeatures": {
         "dimension": "Representational Conciseness",
@@ -93,7 +93,7 @@
         "description": "Verifies there's no usage of RDF prolix features, such as RDF reification, containers and collections.",
         "metric_type": "count",
         "metric_calculation": "1 - (Number of violations / Number of entities)",
-        "shape_template": "ex:ProlixFeaturesShape\na sh:NodeShape ;\nsh:targetSubjectsOf TYPE_PROPERTY ;\nsh:not[\nsh:or(\n[ sh:class rdf:Statement ];\n[ sh:class rdf:List ];\n[ sh:class rdf:Seq ];\n[ sh:class rdf:Bag ];\n[ sh:class rdf:Alt ];\n)\n] ."
+        "shape_template": "ex:ProlixRDFFeaturesShape\\n\\ta sh:NodeShape ;\\n\\tsh:targetSubjectsOf rdf:type ;\\n\\tsh:or (\\n\\t[\\n\\t\\tsh:path rdf:type ;\\n\\t\\tsh:hasValue rdfs:Class ;\\n\\t]\\n\\t[\\n\\t\\tsh:path rdf:type ;\\n\\t\\tsh:hasValue rdf:Property ;\\n\\t]\\n\\t[\\n\\t\\tsh:not [\\n\\t\\t\\tsh:or (\\n\\t\\t\\t\\t[ sh:class rdf:Statement ] ;\\n\\t\\t\\t\\t[ sh:class rdf:List ] ;\\n\\t\\t\\t\\t[ sh:class rdf:Seq ] ;\\n\\t\\t\\t\\t[ sh:class rdf:Bag ] ;\\n\\t\\t\\t\\t[ sh:class rdf:Alt ] ;\\n\\t\\t\\t)\\n\\t\\t]\\n\\t]\\n\\t) ."
     },
     "DifferentLanguagesLabelsEntities": {
         "dimension": "Versatility",
@@ -105,7 +105,7 @@
         "description": "Verifies if entity's labels contain language tags.",
         "metric_type": "count",
         "metric_calculation": "1 - (Number of violations / Number of entities with labels)",
-        "shape_template": "ex:DifferentLanguagesLabelsEntitiesShape\na sh:NodeShape ;\nsh:targetSubjectsOf TYPE_PROPERTY ;\nsh:property [\nsh:path LABELING_PROPERTY ;\nsh:datatype rdf:langString;\n]."
+        "shape_template": "ex:DifferentLanguagesLabelsEntitiesShape\\n\\ta sh:NodeShape ;\\n\\tsh:targetSubjectsOf TYPE_PROPERTY ;\\n\\tsh:property [\\n\\t\\tsh:path LABELING_PROPERTY ;\\n\\t\\tsh:datatype rdf:langString ;\\n\\t]."
     },
     "DifferentLanguagesDescriptionsEntities": {
         "dimension": "Versatility",
@@ -117,7 +117,7 @@
         "description": "Verifies if entity's descriptions contain language tags.",
         "metric_type": "count",
         "metric_calculation": "1 - (Number of violations / Number of entities with descriptions)",
-        "shape_template": "ex:DifferentLanguagesDescriptionsEntitiesShape\na sh:NodeShape ;\nsh:targetSubjectsOf TYPE_PROPERTY ;\nsh:property [\nsh:path rdfs:comment ;\nsh:datatype rdf:langString;\n]."
+        "shape_template": "ex:DifferentLanguagesDescriptionsEntitiesShape\\n\\ta sh:NodeShape ;\\n\\tsh:targetSubjectsOf TYPE_PROPERTY ;\\n\\tsh:property [\\n\\t\\tsh:path rdfs:comment ;\\n\\t\\tsh:datatype rdf:langString ;\\n\\t]."
     },
     "SelfDescriptiveFormat": {
         "dimension": "Interpretability",
@@ -129,7 +129,7 @@
         "description": "Verifies if entities in the dataset are identified with URIs.",
         "metric_type": "count",
         "metric_calculation": "1 - (Number of violations / Number of entities)",
-        "shape_template": "ex:SelfDescriptiveFormatEntitiesShape\na sh:NodeShape ;\nsh:targetSubjectsOf TYPE_PROPERTY ;\nsh:nodeKind sh:IRI ."
+        "shape_template": "ex:SelfDescriptiveFormatEntitiesShape\\n\\ta sh:NodeShape ;\\n\\tsh:targetSubjectsOf rdf:type ;\\n\\tsh:or (\\n\\t\\t[\\n\\t\\t\\tsh:path rdf:type ;\\n\\t\\t\\tsh:hasValue rdfs:Class ;\\n\\t\\t]\\n\\t\\t[\\n\\t\\t\\tsh:path rdf:type ;\\n\\t\\t\\tsh:hasValue rdf:Property ;\\n\\t\\t]\\n\\t\\t[\\n\\t\\t\\tsh:nodeKind sh:IRI ;\\n\\t\\t]\\n\\t) ."
     },
     "BlankNodesUsageEntities": {
         "dimension": "Interpretability",
@@ -141,7 +141,7 @@
         "description": "Verifies that blank nodes aren't used to represent entities in the dataset.",
         "metric_type": "count",
         "metric_calculation": "1 - (Number of violations / Number of entities)",
-        "shape_template": "ex:BlankNodesUsageEntitiesShape\na sh:NodeShape ;\nsh:targetSubjectsOf TYPE_PROPERTY ;\nsh:not [ sh:nodeKind sh:BlankNode ]"
+        "shape_template": "ex:BlankNodesUsageEntitiesShape\\n\\ta sh:NodeShape ;\\n\\tsh:targetSubjectsOf rdf:type ;\\n\\tsh:or (\\n\\t\\t[\\n\\t\\t\\tsh:path rdf:type ;\\n\\t\\t\\tsh:hasValue rdfs:Class ;\\n\\t\\t]\\n\\t\\t[\\n\\t\\t\\tsh:path rdf:type ;\\n\\t\\t\\tsh:hasValue rdf:Property ;\\n\\t\\t]\\n\\t\\t[\\n\\t\\t\\tsh:not [ sh:nodeKind sh:BlankNode ] ;\\n\\t\\t]\\n\\t) ."
     },
     "InterlinkingCompleteness": {
         "dimension": "Completeness",
@@ -153,6 +153,6 @@
         "description": "Verifies that entities in the dataset are interlinked.",
         "metric_type": "count",
         "metric_calculation": "1 - (Number of violations / Number of entities)",
-        "shape_template": "ex:InterlinkingCompletenessShape\\na sh:NodeShape ;\\nsh:targetSubjectsOf TYPE_PROPERTY ;\\nsh:property [\\n    sh:path INTERLINKING_PROPERTY ;\\n    sh:minCount 1 ;\\n] ."
+        "shape_template": "ex:InterlinkingCompletenessShape\\n\\ta sh:NodeShape ;\\n\\tsh:targetSubjectsOf rdf:type ;\\n\\tsh:or (\\n\\t\\t[\\n\\t\\t\\tsh:path rdf:type ;\\n\\t\\t\\tsh:hasValue rdfs:Class ;\\n\\t\\t]\\n\\t\\t[\\n\\t\\t\\tsh:path rdf:type ;\\n\\t\\t\\tsh:hasValue rdf:Property ;\\n\\t\\t]\\n\\t\\t[\\n\\t\\t\\tsh:path owl:sameAs ;\\n\\t\\t\\tsh:minCount 1 ;\\n\\t\\t]\\n\\t) ."
     }
 }

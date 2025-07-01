@@ -33,12 +33,12 @@ DQ_MEASURES_VOCABULARIES_TEMPLATE_FILE_PATH = f'{METRICS_TEMPLATE_FOLDER_PATH}/d
 DQ_MEASURES_VOCABULARIES_SPECIFIC_TEMPLATE_FILE_PATH = f'{METRICS_TEMPLATE_FOLDER_PATH}/dq_measures_vocabulary_specific_temp.json'
 
 # Helper data structures for Data Quality Assessment
-BINARY_METRICS_DATA = {"OpenSameAsChainsShapes", 
-                       "MisplacedProperties", 
-                       "SchemaCompletenessClassUsage", 
-                       "DeprecatedClasses",
+BINARY_METRICS_DATA = {"MisplacedProperties", 
+                        "MisplacedClasses",
+                        "SchemaCompletenessClassUsage", 
+                        "DeprecatedClasses",
                         "InverseFunctionalPropertyUniqueness",
-                         "SelfDescriptiveFormatProperties" }
+                        "SelfDescriptiveFormatProperties" }
 
 BINARY_METRICS_METADATA = {"AvailabilityDump", 
                            "MachineReadableLicense", 
@@ -64,8 +64,7 @@ COUNT_METRICS = {"UsageExternalURIEntities",
                  "InterlinkingCompleteness", 
                  "MisuseOwlObjectProperties", 
                 "MisuseOwlDatatypeProperties", 
-                "CorrectRangeObject", 
-                "CorrectRangeDatatype",
+                "CorrectRange", 
                 "CorrectDomain", 
                 "IrreflexiveProperty",
                 "EntitiesDisjointClasses",
@@ -94,17 +93,15 @@ NUM_CLASSES = { "LabelForClasses"}
 
 NUM_PROPERTIES = {"LabelForProperties"}
 
-NUM_SUBJECTS_PER_PROPERTY = { "FunctionalProperty", "IrreflexiveProperty"}
-
-NUM_TRIPLES_PER_PROPERTY = { "MisuseOwlObjectProperties", 
-                            "MisuseOwlDatatypeProperties", 
-                            "CorrectRangeObject", 
-                            "CorrectRangeDatatype",
+NUM_SUBJECTS_PER_PROPERTY = {"FunctionalProperty", 
+                            "IrreflexiveProperty", 
+                            "CorrectRange", 
                             "CorrectDomain", 
+                            "MisuseOwlObjectProperties", 
+                            "MisuseOwlDatatypeProperties", 
                             "MalformedDatatype",
                             "MemberIncompatibleDatatype",
-                            "UsageExternalURIEntities"
-                        }
+                            "UsageExternalURIEntities"}
 
 NUM_ENTITIES_PER_CLASS = { "EntitiesDisjointClasses"}
 
@@ -162,7 +159,7 @@ DQ_MEASURES_DATA_SPECIFIC = {
         "metric_type": "count",
         "meta_metric_calculation": "Number of properties used with a wellformed datatype / Number of properties whose range is a datatype",
         "metric_calculation": "1 - (Number of violations / Number of triples that use the property)",
-        "shape_template": "ex:MalformedDatatypeLiteralsShape\na sh:NodeShape ;\nsh:targetClass ex:Class ;\nsh:property [\nsh:path ex:SomeProperty ;\nsh:datatype DATATYPE;\nsh:pattern \"DATATYPE_PATTERN\";\n]."
+        "shape_template": "ex:MalformedDatatypeLiteralsShape\na sh:NodeShape ;\nsh:targetClass ex:Class ;\nsh:property [\n\tsh:path ex:SomeProperty ;\n\tsh:datatype DATATYPE ;\n\tsh:pattern \"DATATYPE_PATTERN\" ;\n]."
     },
     "MisplacedProperties": {
         "dimension": "Consistency",
@@ -175,7 +172,20 @@ DQ_MEASURES_DATA_SPECIFIC = {
         "metric_type": "binary",
         "metric_calculation": "0 if property is used as a class, 1 otherwise.",
         "meta_metric_calculation": "Number of correctly used properties / Number of properties defined in vocabularies",
-        "shape_template": "ex:MisplacedPropertiesShape\na sh:NodeShape ;\nsh:targetNode ex:someProperty ;\nsh:property [\nsh:path [ sh:inversePath rdf:type ];\nsh:maxCount 0;\n]."
+        "shape_template": "ex:MisplacedPropertiesShape\na sh:NodeShape ;\nsh:targetNode ex:someProperty ;\nsh:property [\n\tsh:path [ sh:inversePath rdf:type ] ;\n\tsh:maxCount 0 ;\n]."
+    },
+    "MisplacedClasses": {
+        "dimension": "Consistency",
+        "metric_id": "CN2",
+        "metric": "No misplaced classes or properties",
+        "measure": 1,
+        "shape": "",
+        "message": "",
+        "description": "Verifies that classes aren't used as properties",
+        "metric_type": "binary",
+        "metric_calculation": "0 if class is used as property, 1 otherwise.",
+        "meta_metric_calculation": "Number of correctly used classes / Number of classes defined in vocabularies",
+        "shape_template": "ex:MisplacedClassesShape\na sh:NodeShape ;\nsh:targetSubjectsOf TYPE_PROPERTY ;\nsh:or (\n[\n\tsh:path rdf:type ;\n\tsh:hasValue rdfs:Class ;\n]\n[\n\tsh:path rdf:type ;\n\tsh:hasValue rdf:Property ;\n]\n[\n\tsh:path CLASS_URI ;\n\tsh:maxCount 0 ;\n]\n) ."
     },
     "EntitiesDisjointClasses": {
         "dimension": "Consistency",
@@ -188,7 +198,7 @@ DQ_MEASURES_DATA_SPECIFIC = {
         "metric_type": "count",
         "metric_calculation": "1 - (Number of violations / Number of entities of the target class)",
         "meta_metric_calculation": "Number of classes with no member as instance of a disjoint class / Number of classes",
-        "shape_template": "ex:EntitiesDisjointClassesShape\na sh:NodeShape ;\nsh:targetClass ex:SomeClass ;\nsh:not [ sh:class ex:DisjointClass ]."
+        "shape_template": "ex:EntitiesDisjointClassesShape\na sh:NodeShape ;\nsh:targetClass ex:SomeClass ;\nsh:not [\n\tsh:class ex:DisjointClass\n]."
     },
     "MisuseOwlObjectProperties": {
         "dimension": "Consistency",
@@ -226,20 +236,12 @@ DQ_MEASURES_DATA_SPECIFIC = {
         'metric_calculation': '1 if no deprecated classes are used, 0 otherwise',
         'meta_metric_calculation': '',
         'shape_name': 'DeprecatedClassesShape',
-        'shape_template': "ex:DeprecatedClassesShape a sh:NodeShape ;\\n\\tsh:targetSubjectsOf rdf:type ;\\n\\tsh:or (\\n\\t\\t[\\n\\t\\t\\tsh:path rdf:type ;\\n\\t\\t\\tsh:hasValue rdfs:Class ;\\n\\t\\t]\\n\\t\\t[\\n\\t\\t\\tsh:path rdf:type ;\\n\\t\\t\\tsh:hasValue rdf:Property ;\\n\\t\\t]\\n\\t\\t[\\n\\t\\t\\tsh:path rdf:type ;\\n\\t\\t\\tsh:not [\\n\\t\\t\\t\\tsh:in ( CLASSES_LIST ) ;\\n\\t\\t\\t] ;\\n\\t\\t]\\n\\t) .",
+        'shape_template': "ex:DeprecatedClassesShape\na sh:NodeShape ;\nsh:targetSubjectsOf TYPE_PROPERTY ;\nsh:or (\n[\n\tsh:path rdf:type ;\n\tsh:hasValue rdfs:Class ;\n]\n[\n\tsh:path rdf:type ;\n\tsh:hasValue rdf:Property ;\n]\n[\n\tsh:path rdf:type ;\n\tsh:not [\n\t\tsh:in ( CLASSES_LIST );\n\t] ;\n]\n) .",
         'violations': '',
         'num_violations': '',
         'vocab': ''
     },
-    "CorrectRangeObject": {
-        "dimension": "Consistency",
-        "metric_id": "CN9",
-        "metric": "Correct domain and range definition.",
-        "measure": 1,
-        "shape": "",
-        "message": "",
-    },
-    "CorrectRangeDatatype": {
+    "CorrectRange": {
         "dimension": "Consistency",
         "metric_id": "CN9",
         "metric": "Correct domain and range definition.",
@@ -274,7 +276,7 @@ DQ_MEASURES_DATA_SPECIFIC = {
         'metric_calculation': '1 if the inverse functional property is correctly used, 0 otherwise',
         "meta_metric_calculation": "Number of inverse-functional properties correctly used / Number of inverse-functional properties",
         'shape_name': 'InverseFunctionalPropertyUniquenessShape',
-        'shape_template': 'ex:InverseFunctionalPropertyUniquenessShape\na sh:NodeShape ;\nsh:targetObjectsOf PROPERTY_URI ;\nsh:property [\nsh:path [ sh:inversePath PROPERTY_URI ];\nsh:maxCount 1;\n].',
+        'shape_template': 'ex:InverseFunctionalPropertyUniquenessShape\na sh:NodeShape ;\nsh:targetObjectsOf PROPERTY_URI ;\nsh:property [\n\tsh:path [ sh:inversePath PROPERTY_URI ];\n\tsh:maxCount 1 ;\n].',
         'violations': '',
         'num_violations': '',
         'vocab': ''
@@ -396,11 +398,11 @@ METRIC_COVERAGE = [
     ["Consistency", "C1", "no use of entities as members of disjoint classes", "Yes"],
     ["Consistency", "C2", "no misplaced classes or properties", "No"],
     ["Consistency", "C3", "no misuse of owl:DatatypeProperty or owl:ObjectProperty", "Yes"],
-    ["Consistency", "C4", "members of owl:DeprecatedClass or owl:DeprecatedProperty not used", "Partial"],
+    ["Consistency", "C4", "members of owl:DeprecatedClass or owl:DeprecatedProperty not used", "Yes"],
     ["Consistency", "C5", "valid usage of inverse-functional properties", "Partial"],
     ["Consistency", "C6", "absence of ontology hijacking", "No"],
     ["Consistency", "C7", "no negative dependencies/correlation among properties", "Yes"],
-    ["Consistency", "C8", "no inconsistencies in spatial data", "?"],
+    ["Consistency", "C8", "no inconsistencies in spatial data", "No"],
     ["Consistency", "C9", "correct domain and range definition", "Yes"],
     ["Consistency", "C10", "no inconsistent values", "Partial"],
     ["Conciseness", "CO1", "high intensional conciseness", "No"],

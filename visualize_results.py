@@ -39,7 +39,6 @@ def show_dq_assessment_results(df):
             for idx, row in group.iterrows():
                 if counter == 0 and num_metrics != 1:
                     st.markdown("---")
-                print(row['metric_id'])
                 
                 if 'vocab' in row and row['vocab'] != '' and last_vocab != row['vocab']:
                     last_vocab = row['vocab']
@@ -59,8 +58,8 @@ def show_dq_assessment_results(df):
 
                 elif 'violations' in row and pd.notna(row['violations']) and str(row['violations']).strip():
                     st.markdown(f"**Violations ({row['num_violations']}):** ")
-
-                    if not row['shape_name'].startswith('DeprecatedClasses'):
+                
+                    if pd.notna(row['meta_metric_calculation']):
                         st.markdown(f"*Individual score:* {row['metric_calculation']}")
                     
                     # Split violations by ';', show only the first 100
@@ -101,8 +100,7 @@ def show_dq_assessment_statistics(run_info, dataset_name, df):
     num_entities_description_property = graph_profile.get('num_entities_description_property', 0)
     num_owl_datatype_props = graph_profile.get('count_owl_datatype_properties', 0)
     num_owl_object_props = graph_profile.get('count_owl_object_properties', 0)
-    count_datatype_range_props = graph_profile.get('count_datatype_range_props', 0)
-    count_object_range_props = graph_profile.get('count_object_range_props', 0)
+    count_range_props = graph_profile.get('count_range_props', 0)
     count_irreflexive_props = graph_profile.get('count_irreflexive_props', 0)
     count_inverse_functional_props = graph_profile.get('count_inverse_functional_props', 0)
     count_functional_props = graph_profile.get('count_functional_props', 0)
@@ -120,16 +118,14 @@ def show_dq_assessment_statistics(run_info, dataset_name, df):
         "Number of entities with descriptions": num_entities_description_property,
         "Number of entities with interlinking property": num_entities_with_interlinking,
         "Number of classes used": num_classes,
-        "Number of properties used": num_properties + num_owl_datatype_props + num_owl_object_props,
+        "Number of properties used": num_properties,
     }
     if num_owl_datatype_props > 0:
         stats["Number of owl:DatatypeProperty used"] = num_owl_datatype_props
     if num_owl_object_props > 0:
         stats["Number of owl:ObjectProperty used"] = num_owl_object_props
-    if count_datatype_range_props > 0:
-        stats["Number of properties used with a datatype range"] = count_datatype_range_props
-    if count_object_range_props > 0:
-        stats["Number of properties used with a class range"] = count_object_range_props
+    if count_range_props > 0:
+        stats["Number of properties used with a defined range"] = count_range_props
     if num_properties_domain > 0:
         stats["Number of properties used that have a defined domain"] = num_properties_domain
     if count_inverse_functional_props > 0:
@@ -139,9 +135,9 @@ def show_dq_assessment_statistics(run_info, dataset_name, df):
     if count_irreflexive_props > 0:
         stats["Irreflexive properties used"] = count_irreflexive_props
     if num_properties_vocabularies > 0:
-        stats["Properties defined in vocabularies"] = num_properties_vocabularies
+        stats["Properties defined in vocabularies (includes deprecated ones)"] = num_properties_vocabularies
     if num_classes_vocabularies > 0:
-        stats["Classes defined in vocabularies"] = num_classes_vocabularies
+        stats["Classes defined in vocabularies (includes deprecated ones)"] = num_classes_vocabularies
 
     st.table(pd.DataFrame(list(stats.items()), columns=["Statistic", "Value"]).set_index('Statistic'))
 
@@ -175,7 +171,7 @@ def show_metric_coverage():
     
     # Values for donut chart
     labels = ["Covered fully", "Covered partial", "Not covered"]
-    shacl_core_values = [23, 20, 26]
+    shacl_core_values = [24, 19, 26]
 
     fig = go.Figure()
 

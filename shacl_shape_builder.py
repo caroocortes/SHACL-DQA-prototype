@@ -22,19 +22,40 @@ class SHACLShapeBuilder:
         self.config = dq_assessment.config
         self.vocab_names = dq_assessment.vocab_names
         self.dataset_name = dq_assessment.dataset_name
+        self.template = dq_assessment.data_template
 
-    def accessibility_data_shapes(self, template):
+        self.counter ={
+            "count_owl_datatype_properties": 0,
+            "count_owl_object_properties": 0,
+            "count_datatype_range_props": 0,
+            "count_range_props": 0,
+            "count_domain_props": 0,
+            "count_irreflexive_props": 0,
+            "count_functional_props": 0,
+            "count_inverse_functional_props": 0,
+            "count_deprecated_classes": 0,
+            "count_deprecated_properties": 0,
+            "property_counter": 1,
+            "property_counter_map": {},
+            "class_counter": 1,
+            "class_counter_map": {}
+        }
+        # Stores the results for metrics that need to be instantiated 
+        # with specific information of classes and properties
+        self.dq_results_intrinsic = {}
+
+    def accessibility_data_shapes(self):
 
         shacl_shapes = ''
 
-        shacl_shapes += template.module.interlinking_external_uris(self.base_namespace, self.interlinking_property) + '\n'
-        shacl_shapes += template.module.performance_hash_uris_entities(self.type_property)
+        shacl_shapes += self.template.module.interlinking_external_uris(self.base_namespace, self.interlinking_property) + '\n'
+        shacl_shapes += self.template.module.performance_hash_uris_entities(self.type_property)
          
         return shacl_shapes
     
 
-    def contextual_data_shapes(self, template):
-        shacl_shapes = template.module.understandability_label_entities(self.type_property, self.labeling_property) + '\n'
+    def contextual_data_shapes(self):
+        shacl_shapes = self.template.module.understandability_label_entities(self.type_property, self.labeling_property) + '\n'
         
         # Check if the metric URIRegexPressence is 1, hence, 
         # there's a regex pattern provided for the URIs
@@ -48,37 +69,37 @@ class SHACLShapeBuilder:
         if "URISpacePressence" in results and results["URIRegexPressence"]['measure'] == 1:
             # If the metric is 1, we need to check the regex pattern against the URIs
             self.regex_pattern = get_uri_regex_pattern(metadata_file_path, metadata_file_format)
-            shacl_shapes += template.module.understandability_uri_regex_compliance_entities(self.type_property, escape_dots_for_turtle_regex(self.regex_pattern))
+            shacl_shapes += self.template.module.understandability_uri_regex_compliance_entities(self.type_property, escape_dots_for_turtle_regex(self.regex_pattern))
         
         if "URISpacePressence" in results and results["URISpacePressence"]['measure'] == 1:
             self.uri_space = get_uri_space(metadata_file_path, metadata_file_format)
-            shacl_shapes += template.module.understandability_uri_space_compliance_entities(self.type_property, self.uri_space)
+            shacl_shapes += self.template.module.understandability_uri_space_compliance_entities(self.type_property, self.uri_space)
             
         return self.regex_pattern, self.uri_space, shacl_shapes
 
     
-    def representational_data_shapes(self, template, graph_profile):
+    def representational_data_shapes(self, graph_profile):
         max_length_value = self.uris_max_length
         shacl_shapes = ''
 
-        shacl_shapes += template.module.representational_conciseness_uris_length(self.type_property, max_length_value) + '\n'
-        shacl_shapes += template.module.representational_conciseness_uris_parameters(self.type_property) + '\n'
-        shacl_shapes += template.module.representational_conciseness_prolix_features(self.type_property) + '\n'
+        shacl_shapes += self.template.module.representational_conciseness_uris_length(self.type_property, max_length_value) + '\n'
+        shacl_shapes += self.template.module.representational_conciseness_uris_parameters(self.type_property) + '\n'
+        shacl_shapes += self.template.module.representational_conciseness_prolix_features(self.type_property) + '\n'
         
         if self.labeling_property:
-            shacl_shapes += template.module.versatility_languages_labels_entities(self.type_property, self.labeling_property) + '\n'
+            shacl_shapes += self.template.module.versatility_languages_labels_entities(self.type_property, self.labeling_property) + '\n'
             
         if self.description_property:
-            shacl_shapes += template.module.versatility_languages_descriptions_entities(self.type_property, self.description_property) + '\n'
+            shacl_shapes += self.template.module.versatility_languages_descriptions_entities(self.type_property, self.description_property) + '\n'
             
-        shacl_shapes += template.module.interpretability_self_descriptive_formats(self.type_property) + '\n'
-        shacl_shapes += template.module.interpretability_usage_blank_nodes(self.type_property) + '\n'
+        shacl_shapes += self.template.module.interpretability_self_descriptive_formats(self.type_property) + '\n'
+        shacl_shapes += self.template.module.interpretability_usage_blank_nodes(self.type_property) + '\n'
 
         property_counter = 0
         property_counter_map = {}
         dq_results = {}
         for prop in graph_profile['properties']:
-            shacl_shapes += template.module.interpretability_self_descriptive_format_properties(property_counter, prop) + '\n'
+            shacl_shapes += self.template.module.interpretability_self_descriptive_format_properties(property_counter, prop) + '\n'
             
             metric_info = copy.deepcopy(DQ_MEASURES_DATA_SPECIFIC['SelfDescriptiveFormatProperties'])
             metric_info['shape'] = f'ex:SelfDescriptiveFormatPropertiesShape_{property_counter}'
@@ -108,36 +129,149 @@ class SHACLShapeBuilder:
 
         return shacl_shapes, property_counter_map
     
+    def create_metric_info_class(self, metric_name, class_uri=None, classes=None):
+        metric_info = copy.deepcopy(DQ_MEASURES_DATA_SPECIFIC[metric_name])
+        metric_info['shape'] = f'ex:{metric_name}Shape_{self.counter["class_counter"]}'
+        metric_name = f'{metric_name}_{self.counter["class_counter"]}'
+        self.dq_results_intrinsic[metric_name] = metric_info
 
-    def intrinsic_data_shapes(self, template, graph_profile):
+        if metric_name.startswith('EntitiesDisjointClasses'):
+            self.counter["class_counter_map"][self.counter["class_counter"]] = {
+                'first_class': str(classes[0]),
+                'second_class': str(classes[1])
+            }
+        else:
+            self.counter["class_counter_map"][self.counter["class_counter"]] = str(class_uri)
+        self.counter["class_counter"] += 1
+
+
+    def create_metric_info_prop(self, metric_name, prop):
+        metric_info = copy.deepcopy(DQ_MEASURES_DATA_SPECIFIC[metric_name])
+        metric_info['shape'] = f'ex:{metric_name}Shape_{self.counter["property_counter"]}'
+        metric_name = f'{metric_name}_{self.counter["property_counter"]}'
+        self.dq_results_intrinsic[metric_name] = metric_info
+
+        self.counter["property_counter_map"][self.counter["property_counter"]] = prop
+        self.counter["property_counter"] += 1
+
+
+    def correct_domain_shape(self, prop, domain):
+        shape = self.template.module.consistency_correct_domain(self.counter["property_counter"], prop, domain) + '\n'
+
+        metric_name = "CorrectDomain"
+        self.create_metric_info_prop(metric_name, prop)
+
+        return shape
+    
+    def correct_domain_node_kind_shape(self, prop):
+        shape = self.template.module.consistency_correct_domain_node_kind(self.counter["property_counter"], prop) + '\n'
+
+        metric_name = "CorrectDomain"
+        self.create_metric_info_prop(metric_name, prop)
+
+        return shape
+    
+    def correct_range_object_shape(self, prop, range_value):
+
+        shape = self.template.module.consistency_correct_range_object(self.counter["property_counter"], prop, range_value) + '\n'
+        metric_name = "CorrectRange"
+        self.create_metric_info_prop(metric_name, prop)
+        
+        return shape
+    
+    def correct_range_datatype_shape(self, prop, range_value=None):
+
+        shape = self.template.module.consistency_correct_range_datatype(self.counter["property_counter"], prop, range_value) + '\n'
+        metric_name = "CorrectRange"
+        self.create_metric_info_prop(metric_name, prop)
+        
+        return shape
+    
+    def correct_range_node_kind_shape(self, prop, node_kind):
+        
+        if node_kind == 'Literal':
+            shape = self.template.module.consistency_correct_range_node_kind_literal(self.counter["property_counter"], prop) + '\n'
+        elif node_kind == 'BlankNodeOrIri':
+            shape = self.template.module.consistency_correct_range_node_kind_owl_thing(self.counter["property_counter"], prop) + '\n'
+        else:
+            shape = self.template.module.consistency_correct_range_node_kind_rdfs_resource(self.counter["property_counter"], prop) + '\n'
+        
+        metric_name = "CorrectRange"
+        self.create_metric_info_prop(metric_name, prop)
+        return shape
+
+    def misuse_owl_datatype_properties(self, prop):
+
+        shape = self.template.module.consistency_misuse_datatype_properties(self.counter["property_counter"], prop) + '\n'
+                        
+        metric_name = "MisuseOwlDatatypeProperties"
+        self.create_metric_info_prop(metric_name, prop)
+
+        return shape
+    
+    def misuse_owl_object_properties(self, prop):
+        shape = self.template.module.consistency_misuse_object_properties(self.counter["property_counter"], prop) + '\n'
+        metric_name = "MisuseOwlObjectProperties"
+        self.create_metric_info_prop(metric_name, prop)
+
+        return shape
+
+    def misplaced_properties(self, prop):
+        shape = self.template.module.consistency_misplaced_properties(self.counter["property_counter"], prop, self.type_property) + '\n'
+        metric_name = "MisplacedProperties"
+        self.create_metric_info_prop(metric_name, prop)
+        return shape
+
+
+    def member_incompatible_datatype(self, prop, range_value):
+        shape = self.template.module.syntactic_validity_incompatible_datatype(self.counter["property_counter"], prop, range_value) + '\n'
+                            
+        metric_name = "MemberIncompatibleDatatype"
+        self.create_metric_info_prop(metric_name, prop)
+
+        return shape
+    
+    def malformed_datatype(self, prop, regex_pattern):
+        shape = self.template.module.syntactic_validity_malformed_datatype(self.counter["property_counter"], prop, python_regex_to_shacl_regex(regex_pattern)) + '\n'
+        metric_name = "MalformedDatatype"
+        self.create_metric_info_prop(metric_name, prop)
+
+        return shape
+    
+    def irreflexive_properties(self, prop):
+        shape = self.template.module.consistency_irreflexive_property(self.counter["property_counter"], prop) + '\n'
+        metric_name = "IrreflexiveProperty"
+        self.create_metric_info_prop(metric_name, prop)
+        return shape
+    
+    def deprecated_properties(self, prop):
+        shape = self.template.module.consistency_deprecated_properties(self.counter["property_counter"], prop, self.type_property) + '\n'
+        metric_name = "DeprecatedProperties"
+        self.create_metric_info_prop(metric_name, prop)
+        return shape
+
+    def inverse_functional_properties(self, prop):
+        shape = self.template.module.consistency_inverse_functional_property(self.counter["property_counter"], prop) + '\n'
+        metric_name = "InverseFunctionalPropertyUniqueness"
+        self.create_metric_info_prop(metric_name, prop)
+        return shape
+
+    def functional_properties(self, prop):
+        shape = self.template.module.consistency_functional_property(self.counter["property_counter"], prop) + '\n'
+        metric_name = "FunctionalProperty"
+        self.create_metric_info_prop(metric_name, prop)
+        return shape
+    
+    def intrinsic_data_shapes(self, graph_profile):
 
         shacl_shapes = ''
 
-        shacl_shapes += template.module.interlinking_completeness(self.type_property, self.interlinking_property)
-        
-        # Stores the results for metrics that need to be instantiated 
-        # with specific information of classes and properties
-        dq_results = {}
+        shacl_shapes += self.template.module.interlinking_completeness(self.type_property, self.interlinking_property)
 
         properties_in_dataset = graph_profile['properties']
         classes_in_dataset = graph_profile['classes']
 
-        count_dt_props_dataset = 0
-        count_o_props_dataset = 0
-
-        count_datatype_range_props = 0
-        count_object_range_props = 0
-        count_irreflexive_props = 0
-        count_functional_props = 0
-        count_inverse_functional_props = 0
-        count_deprecated_classes = 0
-        count_deprecated_properties = 0
-
-        property_counter = 1
-        property_counter_map = {}
-
-        class_counter = 1
-        class_counter_map = {}
+        properties_misplaced = []
 
         for vocab in self.vocab_names:
             vocab_name = self.config[vocab]['vocab_name']
@@ -147,354 +281,226 @@ class SHACLShapeBuilder:
             if len(vocab_profile['classes']) > 0:
                 for class_uri in vocab_profile['classes']:
 
-                    if class_uri not in [RDF.Property, RDFS.Class]:
-     
-                        shacl_shapes += template.module.completeness_schema_completeness_class_usage(class_counter, class_uri, self.type_property)
+                    shacl_shapes += self.template.module.completeness_schema_completeness_class_usage(self.counter["class_counter"], class_uri, self.type_property)
+                    metric_name = "SchemaCompletenessClassUsage"
+                    self.create_metric_info_class(metric_name, class_uri=str(class_uri), classes=None)
 
-                        metric_info = copy.deepcopy(DQ_MEASURES_DATA_SPECIFIC['SchemaCompletenessClassUsage'])
-                        metric_info['shape'] = f'ex:SchemaCompletenessClassUsageShape_{class_counter}'
-                        metric_name = f'SchemaCompletenessClassUsage_{class_counter}'
-                        dq_results[metric_name] = metric_info
-
-                        class_counter_map[class_counter] = str(class_uri)
-                        class_counter += 1
+                    shacl_shapes += self.template.module.consistency_misplaced_classes(self.counter["class_counter"], class_uri, self.type_property)
+                    metric_name = "MisplacedClasses"
+                    self.create_metric_info_class(metric_name, class_uri=str(class_uri), classes=None)
 
             if len(vocab_profile['disjoint_classes']) > 0:
                 for classes in vocab_profile['disjoint_classes']:
                     if classes[0] in classes_in_dataset:
-                        
-                        shacl_shapes +=  template.module.consistency_entities_disjoint_classes(class_counter, classes[0], classes[1]) + '\n'
-                        
-                        metric_info = copy.deepcopy(DQ_MEASURES_DATA_SPECIFIC['EntitiesDisjointClasses'])
-                        metric_info['shape'] = f'ex:EntitiesDisjointClassesShape_{class_counter}'
-                        metric_name = f'EntitiesDisjointClasses_{class_counter}'
-                        dq_results[metric_name] = metric_info
-
-                        class_counter_map[class_counter] = {
-                            'first_class': str(classes[0]),
-                            'second_class': str(classes[1])
-                        }
-                        class_counter += 1
+                        shacl_shapes += self.template.module.consistency_entities_disjoint_classes(self.counter["class_counter"], classes[0], classes[1]) + '\n'
+                        metric_name = "EntitiesDisjointClasses"
+                        self.create_metric_info_class(metric_name, class_uri=None, classes=classes)
 
             if len(vocab_profile['object_properties']) > 0:
                 for prop, info in vocab_profile['object_properties'].items():
                     
-                    if prop in properties_in_dataset:
-                        
-                        count_o_props_dataset += 1
-                        shacl_shapes += template.module.consistency_misuse_object_properties(property_counter, prop) + '\n'
+                    if prop not in properties_misplaced:
+                        shacl_shapes += self.misplaced_properties(prop)
+                        properties_misplaced.append(prop)
 
-                        metric_info = copy.deepcopy(DQ_MEASURES_DATA_SPECIFIC['MisuseOwlObjectProperties'])
-                        metric_info['shape'] = f'ex:MisuseOwlObjectPropertiesShape_{property_counter}'
-                        metric_name = f'MisuseOwlObjectProperties_{property_counter}'
-                        dq_results[metric_name] = metric_info
-                        
-                        property_counter_map[property_counter] = prop
-                        property_counter += 1
+                    if prop in properties_in_dataset:
+                        self.counter['count_owl_object_properties'] += 1
+                        shacl_shapes += self.misuse_owl_object_properties(prop)
 
                         if info['domain']:
-
-                            # only consider specific classes
+                            self.counter['count_domain_props'] += 1
                             if info['domain'] != 'http://www.w3.org/2002/07/owl#Thing':
-                                shacl_shapes += template.module.consistency_correct_domain(property_counter, prop, info['domain']) + '\n'
-                                
-
-                                metric_info = copy.deepcopy(DQ_MEASURES_DATA_SPECIFIC['CorrectDomain'])
-                                metric_info['shape'] = f'ex:CorrectDomainShape_{property_counter}'
-                                metric_name = f'CorrectDomain_{property_counter}'
-                                dq_results[metric_name] = metric_info
-                                
-                                property_counter_map[property_counter] = prop
-                                property_counter += 1
+                                shacl_shapes += self.correct_domain_shape(prop, info['domain'])
+                            else:
+                                shacl_shapes += self.correct_domain_node_kind_shape(prop)
 
                         if info['range']:
-                            
-                            # only consider specific classes
-                            if info['range'] != 'http://www.w3.org/2002/07/owl#Thing':
-
-                                count_object_range_props += 1
-                                shacl_shapes += template.module.consistency_correct_range_object(property_counter, prop, info['range']) + '\n'
-                                
-
-                                metric_info = copy.deepcopy(DQ_MEASURES_DATA_SPECIFIC['CorrectRangeObject'])
-                                metric_info['shape'] = f'ex:CorrectRangeObjectShape_{property_counter}'
-                                metric_name = f'CorrectRangeObject_{property_counter}'
-                                dq_results[metric_name] = metric_info
-                                
-                                property_counter_map[property_counter] = prop
-                                property_counter += 1
-                    else:
-                        # In this case we don't filter properties that aren't used in the dataset
-                        # since we want to check the correct usage of properties (that they are not used as a class)
-                        shacl_shapes +=  template.module.consistency_misuse_properties(property_counter, prop, self.type_property) + '\n'
-                    
-                        metric_info = copy.deepcopy(DQ_MEASURES_DATA_SPECIFIC['MisplacedProperties'])
-                        metric_info['shape'] = f'ex:MisplacedPropertiesShape_{property_counter}'
-                        metric_name = f'MisplacedProperties_{property_counter}'
-                        dq_results[metric_name] = metric_info
-
-                        property_counter_map[property_counter] = prop
-                        property_counter += 1
+                            self.counter['count_range_props'] += 1
+                            if info['range'] == 'http://www.w3.org/2002/07/owl#Thing':
+                                shacl_shapes += self.correct_range_node_kind_shape(prop, node_kind='BlankNodeOrIri')
+                            elif info['range'] == 'http://www.w3.org/2000/01/rdf-schema#Resource':
+                                shacl_shapes += self.correct_range_node_kind_shape(prop, node_kind='both')
+                            else:
+                                shacl_shapes += self.correct_range_object_shape(prop, info['range']) 
 
             if len(vocab_profile['datatype_properties']) > 0:
                 for prop, info in vocab_profile['datatype_properties'].items():
                     
+                    if prop not in properties_misplaced:
+                        shacl_shapes += self.misplaced_properties(prop)
+                        properties_misplaced.append(prop)
+
                     if prop in properties_in_dataset:
-                        count_dt_props_dataset += 1
-
-                        shacl_shapes += template.module.consistency_misuse_datatype_properties(property_counter, prop) + '\n'
-                        
-                        metric_info = copy.deepcopy(DQ_MEASURES_DATA_SPECIFIC['MisuseOwlDatatypeProperties'])
-                        metric_info['shape'] = f'ex:MisuseOwlDatatypePropertiesShape_{property_counter}'
-                        metric_name = f'MisuseOwlDatatypeProperties_{property_counter}'
-                        dq_results[metric_name] = metric_info
-
-                        property_counter_map[property_counter] = prop
-                        property_counter += 1
+                        self.counter['count_owl_datatype_properties'] += 1
+                        shacl_shapes += self.misuse_owl_datatype_properties(prop)
 
                         if info['domain']:
-
-                            # only consider specific classes
+                            self.counter['count_domain_props'] += 1
                             if info['domain'] != 'http://www.w3.org/2002/07/owl#Thing':
-                                shacl_shapes += template.module.consistency_correct_domain(property_counter, prop, info['domain']) + '\n'
-
-                                metric_info = copy.deepcopy(DQ_MEASURES_DATA_SPECIFIC['CorrectDomain'])
-                                metric_info['shape'] = f'ex:CorrectDomainShape_{property_counter}'
-                                metric_name = f'CorrectDomain_{property_counter}'
-                                dq_results[metric_name] = metric_info
-
-                                property_counter_map[property_counter] = prop
-                                property_counter += 1
+                                shacl_shapes += self.correct_domain_shape(prop, info['domain'])
+                            else:
+                                shacl_shapes += self.correct_domain_node_kind_shape(prop)
 
                         if info['range']:
-
-                            count_datatype_range_props += 1
-                            shacl_shapes += template.module.consistency_correct_range_datatype(property_counter, prop, info['range']) + '\n'
                             
-                            metric_info = copy.deepcopy(DQ_MEASURES_DATA_SPECIFIC['CorrectRangeDatatype'])
-                            metric_info['shape'] = f'ex:CorrectRangeDatatypeShape_{property_counter}'
-                            metric_name = f'CorrectRangeDatatype_{property_counter}'
-                            dq_results[metric_name] = metric_info
+                            self.counter['count_range_props'] += 1
+                            self.counter["count_datatype_range_props"] += 1
 
-                            property_counter_map[property_counter] = prop
-                            property_counter += 1
-
-                            shacl_shapes += template.module.syntactic_validity_incompatible_datatype(property_counter, prop, info['range']) + '\n'
-                            
-                            metric_info = copy.deepcopy(DQ_MEASURES_DATA_SPECIFIC['MemberIncompatibleDatatype'])
-                            metric_info['shape'] = f'ex:MemberIncompatibleDatatypeShape_{property_counter}'
-                            metric_name = f'MemberIncompatibleDatatype_{property_counter}'
-                            dq_results[metric_name] = metric_info
-                            
-                            property_counter_map[property_counter] = prop
-                            property_counter += 1
+                            shacl_shapes += self.correct_range_datatype_shape(prop, info['range'])
+                            shacl_shapes += self.member_incompatible_datatype(prop, info['range'])
 
                             datatype = info['range']
                             regex_pattern = REGEX_PATTERNS_DICT[datatype] if datatype in REGEX_PATTERNS_DICT else None
                             
                             if regex_pattern:
-                                shacl_shapes += template.module.syntactic_validity_malformed_datatype(property_counter, prop, python_regex_to_shacl_regex(regex_pattern)) + '\n'
-                        
-                                metric_info = copy.deepcopy(DQ_MEASURES_DATA_SPECIFIC['MalformedDatatype'])
-                                metric_info['shape'] = f'ex:MalformedDatatypeShape_{property_counter}'
-                                metric_name = f'MalformedDatatype_{property_counter}'
-                                dq_results[metric_name] = metric_info
-
-                                property_counter_map[property_counter] = prop
-                                property_counter += 1
-                    else:
-                        # In this case we don't filter properties that aren't used in the dataset
-                        # since we want to check the correct usage of properties (that they are not used as a class)
-                        shacl_shapes +=  template.module.consistency_misuse_properties(property_counter, prop, self.type_property) + '\n'
-                        
-                        metric_info = copy.deepcopy(DQ_MEASURES_DATA_SPECIFIC['MisplacedProperties'])
-                        metric_info['shape'] = f'ex:MisplacedPropertiesShape_{property_counter}'
-                        metric_name = f'MisplacedProperties_{property_counter}'
-                        dq_results[metric_name] = metric_info
-
-                        property_counter_map[property_counter] = prop
-                        property_counter += 1
+                                shacl_shapes += self.malformed_datatype(prop, regex_pattern)
 
             if len(vocab_profile['irreflexive']) > 0:
                 for prop in vocab_profile['irreflexive']:
-                    
-                    if prop in properties_in_dataset:
-                        count_irreflexive_props += 1
-                        
-                        shacl_shapes +=  template.module.consistency_irreflexive_property(property_counter, prop) + '\n'
-                        
-                        metric_info = copy.deepcopy(DQ_MEASURES_DATA_SPECIFIC['IrreflexiveProperty'])
-                        metric_info['shape'] = f'ex:IrreflexivePropertyShape_{property_counter}'
-                        metric_name = f'IrreflexiveProperty_{property_counter}'
-                        dq_results[metric_name] = metric_info
+                    if prop not in properties_misplaced:
+                        shacl_shapes += self.misplaced_properties(prop)
+                        properties_misplaced.append(prop)
 
-                        property_counter_map[property_counter] = prop
-                        property_counter += 1
+                    if prop in properties_in_dataset:
+                        self.counter['count_irreflexive_props'] += 1
+                        shacl_shapes += self.irreflexive_properties(prop)
 
             if len(vocab_profile['inverse_functional']) > 0:
                 for prop in vocab_profile['inverse_functional']:
+                    if prop not in properties_misplaced:
+                        shacl_shapes += self.misplaced_properties(prop)
+                        properties_misplaced.append(prop)
 
                     if prop in properties_in_dataset:
-                        count_inverse_functional_props += 1
-                        
-                        shacl_shapes +=  template.module.consistency_inverse_functional_property(property_counter, prop) + '\n'
-                        
-                        metric_info = copy.deepcopy(DQ_MEASURES_DATA_SPECIFIC['InverseFunctionalPropertyUniqueness'])
-                        metric_info['shape'] = f'ex:InverseFunctionalPropertyUniquenessShape_{property_counter}'
-                        metric_name = f'InverseFunctionalPropertyUniqueness_{property_counter}'
-                        dq_results[metric_name] = metric_info
-
-                        property_counter_map[property_counter] = prop
-                        property_counter += 1
+                        self.counter['count_inverse_functional_props'] += 1
+                        shacl_shapes +=  self.inverse_functional_properties(prop)
 
             if len(vocab_profile['functional']) > 0:
                 for prop in vocab_profile['functional']:
 
+                    if prop not in properties_misplaced:
+                        shacl_shapes += self.misplaced_properties(prop)
+                        properties_misplaced.append(prop)
+                    
                     if prop in properties_in_dataset:
-                        count_functional_props += 1
-
-                        shacl_shapes +=  template.module.consistency_functional_property(property_counter, prop) + '\n'
-                        
-                        metric_info = copy.deepcopy(DQ_MEASURES_DATA_SPECIFIC['FunctionalProperty'])
-                        metric_info['shape'] = f'ex:FunctionalPropertyShape_{property_counter}'
-                        metric_name = f'FunctionalProperty_{property_counter}'
-                        dq_results[metric_name] = metric_info
-
-                        property_counter_map[property_counter] = prop
-                        property_counter += 1
+                        self.counter['count_functional_props'] += 1
+                        shacl_shapes += self.functional_properties(prop)
 
             if len(vocab_profile['deprecated_classes']) > 0:
                 classes_list = " ".join([f"<{v}>" for v in vocab_profile['deprecated_classes']])
-                shacl_shapes += template.module.consistency_deprecated_classes(classes_list, self.type_property) + '\n'
+                shacl_shapes += self.template.module.consistency_deprecated_classes(classes_list, self.type_property) + '\n'
                 
                 metric_info = copy.deepcopy(DQ_MEASURES_DATA_SPECIFIC['DeprecatedClasses'])
                 metric_info['shape'] = f'ex:DeprecatedClassesShape'
                 metric_name = f'DeprecatedClasses'
-                dq_results[metric_name] = metric_info
+                self.dq_results_intrinsic[metric_name] = metric_info
 
-                count_deprecated_classes = len(classes_list)
+                self.counter['count_deprecated_classes'] = len(classes_list)
 
             if len(vocab_profile['deprecated_properties']) > 0:
                 for prop in vocab_profile['deprecated_properties']:
-                    
-                    shacl_shapes += template.module.consistency_deprecated_properties(property_counter, prop, self.type_property) + '\n'
-                    
-                    metric_info = copy.deepcopy(DQ_MEASURES_DATA_SPECIFIC['DeprecatedProperties'])
-                    metric_info['shape'] = f'ex:DeprecatedPropertiesShape_{property_counter}'
-                    metric_name = f'DeprecatedProperties_{property_counter}'
-                    dq_results[metric_name] = metric_info
+                    if prop not in properties_misplaced:
+                        shacl_shapes += self.misplaced_properties(prop)
+                        properties_misplaced.append(prop)
 
-                    property_counter_map[property_counter] = prop
-                    property_counter += 1
-
-                    count_deprecated_properties += 1
+                    self.counter['count_deprecated_properties'] += 1
+                    shacl_shapes += self.deprecated_properties(prop)
 
             if len(vocab_profile['rdf_properties']) > 0:
                 # In this case we don't filter properties that aren't used in the dataset
                 # since we want to check the correct usage of properties (that they are not used as a class)
                 for prop, info in vocab_profile['rdf_properties'].items():
 
-                    shacl_shapes += template.module.consistency_misuse_properties(property_counter, prop, self.type_property) + '\n'
-                    
-                    metric_info = copy.deepcopy(DQ_MEASURES_DATA_SPECIFIC['MisplacedProperties'])
-                    metric_info['shape'] = f'ex:MisplacedPropertiesShape_{property_counter}'
-                    metric_name = f'MisplacedProperties_{property_counter}'
-                    dq_results[metric_name] = metric_info
-
-                    property_counter_map[property_counter] = prop
-                    property_counter += 1
+                    if prop not in properties_misplaced:
+                        shacl_shapes += self.misplaced_properties(prop)
+                        properties_misplaced.append(prop)
 
                     if prop in properties_in_dataset:
-
                         if info['domain']:
-                            # only consider specific classes
+                            self.counter['count_domain_props'] += 1
+                            # rdfs:Resource can't be a domain because it includes Literals
                             if info['domain'] != 'http://www.w3.org/2002/07/owl#Thing':
-                                shacl_shapes += template.module.consistency_correct_domain(property_counter, prop, info['domain']) + '\n'
-                                
-                                metric_info = copy.deepcopy(DQ_MEASURES_DATA_SPECIFIC['CorrectDomain'])
-                                metric_info['shape'] = f'ex:CorrectDomainShape_{property_counter}'
-                                metric_name = f'CorrectDomain_{property_counter}'
-                                dq_results[metric_name] = metric_info
-
-                                property_counter_map[property_counter] = prop
-                                property_counter += 1
+                                shacl_shapes += self.correct_domain_shape(prop, info['domain'])
+                            else:
+                                shacl_shapes += self.correct_domain_node_kind_shape(prop)
 
                         if info['range']:
+                            self.counter["count_range_props"] += 1
                             if info['range']['type'] == 'literal':
                                 
-                                count_datatype_range_props += 1
-                                
-                                shacl_shapes += template.module.consistency_correct_range_datatype(property_counter, prop, info['range']['value']) + '\n'
-                                
-                                metric_info = copy.deepcopy(DQ_MEASURES_DATA_SPECIFIC['CorrectRangeDatatype'])
-                                metric_info['shape'] = f'ex:CorrectRangeDatatypeShape_{property_counter}'
-                                metric_name = f'CorrectRangeDatatype_{property_counter}'
-                                dq_results[metric_name] = metric_info
-                                
-                                property_counter_map[property_counter] = prop
-                                property_counter += 1
-
-                                shacl_shapes += template.module.syntactic_validity_incompatible_datatype(property_counter, prop, info['range']['value']) + '\n'
-                                
-                                metric_info = copy.deepcopy(DQ_MEASURES_DATA_SPECIFIC['MemberIncompatibleDatatype'])
-                                metric_info['shape'] = f'ex:MemberIncompatibleDatatypeShape_{property_counter}'
-                                metric_name = f'MemberIncompatibleDatatype_{property_counter}'
-                                dq_results[metric_name] = metric_info
-                                
-                                property_counter_map[property_counter] = prop
-                                property_counter += 1
-
                                 if info['range']['value'] != 'http://www.w3.org/2000/01/rdf-schema#Literal':
+                                    self.counter["count_datatype_range_props"] += 1
+                                    shacl_shapes += self.correct_range_datatype_shape(prop, info['range']['value'])
+                                    shacl_shapes += self.member_incompatible_datatype(prop, info['range']['value'])
+
                                     datatype = info['range']['value']
                                     regex_pattern = REGEX_PATTERNS_DICT[datatype] if datatype in REGEX_PATTERNS_DICT else None
                                     
                                     if regex_pattern:
-                                        shacl_shapes += template.module.syntactic_validity_malformed_datatype(property_counter, prop, python_regex_to_shacl_regex(regex_pattern)) + '\n'
-                                
-                                        metric_info = copy.deepcopy(DQ_MEASURES_DATA_SPECIFIC['MalformedDatatype'])
-                                        metric_info['shape'] = f'ex:MalformedDatatypeShape_{property_counter}'
-                                        metric_name = f'MalformedDatatype_{property_counter}'
-                                        dq_results[metric_name] = metric_info
-
-                                        property_counter_map[property_counter] = prop
-                                        property_counter += 1
-
+                                        shacl_shapes += self.malformed_datatype(prop, regex_pattern)
+                                else:
+                                    shacl_shapes += self.correct_range_node_kind_shape(prop, node_kind='Literal')
                             else:
-                                # only consider specific classes
-                                if info['range']['value'] != 'http://www.w3.org/2002/07/owl#Thing':
-                                    count_object_range_props += 1
-                                    shacl_shapes += template.module.consistency_correct_range_object(property_counter, prop, info['range']['value']) + '\n'
-                                    
-                                    metric_info = copy.deepcopy(DQ_MEASURES_DATA_SPECIFIC['CorrectRangeObject'])
-                                    metric_info['shape'] = f'ex:CorrectRangeObjectShape_{property_counter}'
-                                    metric_name = f'CorrectRangeObject_{property_counter}'
-                                    dq_results[metric_name] = metric_info
+                                if info['range'] == 'http://www.w3.org/2002/07/owl#Thing':
+                                    shacl_shapes += self.correct_range_node_kind_shape(prop, node_kind='BlankNodeOrIri')
+                                elif info['range'] == 'http://www.w3.org/2000/01/rdf-schema#Resource':
+                                    shacl_shapes += self.correct_range_node_kind_shape(prop, node_kind='both')
+                                else: # specific class
+                                    shacl_shapes += self.correct_range_object_shape(prop, info['range']['value'])
+            
+            if len(vocab_profile['transitive']) > 0:
+                for prop in vocab_profile['transitive']:
+                    # have to check this because if a transitive/reflexive/asymmetric property has 
+                    # a range/domain they will be in the rdf_properties dict
+                    if prop not in properties_misplaced:
+                        shacl_shapes += self.misplaced_properties(prop)
+                        properties_misplaced.append(prop)
 
-                                    property_counter_map[property_counter] = prop
-                                    property_counter += 1
+            if len(vocab_profile['reflexive']) > 0:
+                for prop in vocab_profile['reflexive']:
+                    
+                    if prop not in properties_misplaced:
+                        shacl_shapes += self.misplaced_properties(prop)
+                        properties_misplaced.append(prop)
+
+            if len(vocab_profile['asymmetric']) > 0:
+                for prop in vocab_profile['asymmetric']:
+                    
+                    if prop not in properties_misplaced:
+                        shacl_shapes += self.misplaced_properties(prop)
+                        properties_misplaced.append(prop)
+
+            if len(vocab_profile['symmetric']) > 0:
+                for prop in vocab_profile['symmetric']:
+                    
+                    if prop not in properties_misplaced:
+                        shacl_shapes += self.misplaced_properties(prop)
+                        properties_misplaced.append(prop)
 
         # Add number of owl:DatatypeProperty and owl:ObjectProperty
-        graph_profile['count_owl_datatype_properties'] = count_dt_props_dataset
-        graph_profile['count_owl_object_properties'] = count_o_props_dataset
+        graph_profile['count_owl_datatype_properties'] = self.counter['count_owl_datatype_properties']
+        graph_profile['count_owl_object_properties'] = self.counter['count_owl_object_properties']
+
+        graph_profile['count_domain_props'] = self.counter['count_domain_props']
 
         # Add number of properties with datatype range and object range
-        graph_profile['count_object_range_props'] = count_object_range_props
-        graph_profile['count_datatype_range_props'] = count_datatype_range_props
+        graph_profile['count_range_props'] = self.counter['count_range_props']
+        graph_profile['count_datatype_range_props'] = self.counter['count_datatype_range_props']
 
         # Add number of irreflexive properties
-        graph_profile['count_irreflexive_props'] = count_irreflexive_props
+        graph_profile['count_irreflexive_props'] = self.counter['count_irreflexive_props']
 
         # Add number of inverse-functional properties
-        graph_profile['count_inverse_functional_props'] = count_inverse_functional_props
+        graph_profile['count_inverse_functional_props'] = self.counter['count_inverse_functional_props']
 
         # Add number of functional properties
-        graph_profile['count_functional_props'] = count_functional_props
+        graph_profile['count_functional_props'] = self.counter['count_functional_props']
 
         # Add number of dperecated classes
-        graph_profile['count_deprecated_classes'] = count_deprecated_classes
+        graph_profile['count_deprecated_classes'] = self.counter['count_deprecated_classes']
 
         # Add number of deprecated properties
-        graph_profile['count_deprecated_properties'] = count_deprecated_properties
+        graph_profile['count_deprecated_properties'] = self.counter['count_deprecated_properties']
         
         # Update profile with new information from vocabularies
         with open(f'{PROFILE_DATASETS_FOLDER_PATH}/{self.dataset_name}.json', 'w', encoding='utf-8') as f:
@@ -509,16 +515,16 @@ class SHACLShapeBuilder:
                 except json.JSONDecodeError:
                     existing_data = {}
             # Update existing data with new initial results
-            existing_data.update(dq_results)
+            existing_data.update(self.dq_results_intrinsic)
 
             with open(file_path, 'w', encoding='utf-8') as f:
                 json.dump(existing_data, f, indent=4)
         else:
             # If file doesn't exist, create it with dq_results
             with open(file_path, 'w', encoding='utf-8') as f:
-                json.dump(dq_results, f, indent=4)
+                json.dump(self.dq_results_intrinsic, f, indent=4)
 
-        return shacl_shapes, graph_profile, property_counter_map, class_counter_map
+        return shacl_shapes, graph_profile, self.counter['property_counter_map'], self.counter['class_counter_map']
 
     def vocabulary_shapes(self, dq_assessment, vocab, property_vocab_map, class_vocab_map):
         shacl_shapes = ''

@@ -12,7 +12,8 @@
 @prefix ex_pizza: <http://example.org/pizza#> .
 @prefix pizza: <http://www.co-ode.org/ontologies/pizza/pizza.owl#> .
 
-ex:SelfDescriptiveFormatPropertiesShape
-	a sh:NodeShape ;
-	sh:targetObjectsOf pizza:cookedDate ;
-	sh:nodeKind sh:IRI .
+ex:LabelForPropertiesShape a sh:NodeShape ;
+    sh:property [ sh:message "LabelForProperties - Properties should contain a label" ;
+            sh:minCount 1 ;
+            sh:path rdfs:label ] ;
+    sh:targetClass rdf:Property .

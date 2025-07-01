@@ -111,5 +111,7 @@
     "disjoint_classes": [],
     "rdf_properties": {},
     "num_classes": 4,
-    "num_properties": 22
+    "num_properties": 22,
+    "num_all_classes": 4,
+    "num_all_properties": 44
 }

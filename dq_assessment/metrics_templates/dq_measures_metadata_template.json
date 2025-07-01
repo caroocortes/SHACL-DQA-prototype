@@ -9,7 +9,7 @@
         "description": "Verifies whether an RDF dump is provided in the VoID description of the dataset.",
         "metric_type": "binary",
         "metric_calculation": "1 if the VoID description has an indication of an RDF dump, otherwise 0.",
-        "shape_template": "ex:AvailabilityDumpShape\na sh:NodeShape ;\nsh:targetClass void:Dataset ;\nsh:or (\n[\nsh:path void:dataDump ;\nsh:minCount 1 ;\n]\n[\nsh:path (dcat:distribution dcat:downloadURL) ;\nsh:minCount 1 ;\n]\n) ."
+        "shape_template": "ex:AvailabilityDumpShape\\na sh:NodeShape ;\\nsh:targetClass void:Dataset ;\\nsh:or (\\n[\\n\\tsh:path void:dataDump ;\\n\\tsh:minCount 1 ;\\n]\\n[\\n\\tsh:path (dcat:distribution dcat:downloadURL) ;\\n\\tsh:minCount 1 ;\\n]\\n) ."
     },
     "MachineReadableLicense": {
         "dimension": "Licensing",
@@ -21,7 +21,7 @@
         "description": "Verifies if there's an indication of a machine-readable indication of a license in the VoID description of the dataset.",
         "metric_type": "binary",
         "metric_calculation": "1 if the VoID description has a machine-readable indication of a license, otherwise 0.",
-        "shape_template": "ex:MachineReadableShape\na sh:NodeShape ;\nsh:targetClass void:Dataset ;\nsh:property [\nsh:path dcterms:license ;\nsh:minCount 1 ;\n] ."
+        "shape_template": "ex:MachineReadableShape\\na sh:NodeShape ;\\nsh:targetClass void:Dataset ;\\nsh:property [\\n\\tsh:path dcterms:license ;\\n\\tsh:minCount 1 ;\\n] ."
     },
     "AuthenticityOfDataset": {
         "dimension": "Security",
@@ -33,7 +33,7 @@
         "description": "Verifies there's someone responsible for the data (creator, contributor or publisher) and indication of the origin of the data (source or provenance) in the VoID description of the dataset.",
         "metric_type": "binary",
         "metric_calculation": "1 if the VoID description has indication of someone responsible for the data, as well as indication of the origin of the data; otherwise 0.",
-        "shape_template": "ex:AuthenticityOfDatasetShape\na sh:NodeShape ;\nsh:targetClass void:Dataset ;\nsh:and (\n[\nsh:or (\n[\nsh:path dcterms:contributor ;\nsh:minCount 1 ;\n]\n[\nsh:path dcterms:creator ;\nsh:minCount 1 ;\n]\n[\nsh:path dcterms:publisher ;\nsh:minCount 1 ;\n]\n)\n]\n[\nsh:or (\n[\nsh:path dcterms:source ;\nsh:minCount 1 ;\n]\n[\nsh:path dcterms:provenance ;\nsh:minCount 1 ;\n]\n)\n]\n)"
+        "shape_template": "ex:AuthenticityOfDatasetShape\\na sh:NodeShape ;\\nsh:targetClass void:Dataset ;\\nsh:and (\\n\\t[\\n\\t\\tsh:or (\\n\\t\\t\\t[\\n\\t\\t\\t\\tsh:path dcterms:contributor ;\\n\\t\\t\\t\\tsh:minCount 1 ;\\n\\t\\t\\t]\\n\\t\\t\\t[\\n\\t\\t\\t\\tsh:path dcterms:creator ;\\n\\t\\t\\t\\tsh:minCount 1 ;\\n\\t\\t\\t]\\n\\t\\t\\t[\\n\\t\\t\\t\\tsh:path dcterms:publisher ;\\n\\t\\t\\t\\tsh:minCount 1 ;\\n\\t\\t\\t]\\n\\t\\t)\\n\\t]\\n\\t[\\n\\t\\tsh:or (\\n\\t\\t\\t[\\n\\t\\t\\t\\tsh:path dcterms:source ;\\n\\t\\t\\t\\tsh:minCount 1 ;\\n\\t\\t\\t]\\n\\t\\t\\t[\\n\\t\\t\\t\\tsh:path dcterms:provenance ;\\n\\t\\t\\t\\tsh:minCount 1 ;\\n\\t\\t\\t]\\n\\t\\t)\\n\\t]\\n)"
     },
     "PresenceMetadata": {
         "dimension": "Understandability",
@@ -45,7 +45,7 @@
         "description": "Verifies the presence of a title, description and homepage in the VoID description of the dataset.",
         "metric_type": "binary",
         "metric_calculation": "1 if the VoID description contains a title, description and homepage, otherwise 0.",
-        "shape_template": "ex:DatasetMetadataShape\na sh:NodeShape ;\nsh:targetClass void:Dataset ;\nsh:property [\nsh:path dcterms:title ;\nsh:minCount 1 ;\nsh:datatype xsd:string;\n];\nsh:property [\nsh:path dcterms:description ;\nsh:minCount 1 ;\nsh:datatype xsd:string;\n];\nsh:property [\nsh:path foaf:homepage ;\nsh:minCount 1 ;\nsh:class sh:IRI;\n]."
+        "shape_template": "ex:DatasetMetadataShape\\n\\ta sh:NodeShape ;\\n\\tsh:targetClass void:Dataset ;\\n\\tsh:property [\\n\\t\\tsh:path dcterms:title ;\\n\\t\\tsh:minCount 1 ;\\n\\t\\tsh:or (\\n\\t\\t\\t[\\n\\t\\t\\t\\tsh:datatype xsd:string;\\n\\t\\t\\t]\\n\\t\\t\\t[\\n\\t\\t\\t\\tsh:datatype rdf:langString;\\n\\t\\t\\t]\\n\\t\\t);\\n\\t];\\n\\tsh:property [\\n\\t\\tsh:path dcterms:description ;\\n\\t\\tsh:minCount 1 ;\\n\\t\\tsh:or (\\n\\t\\t\\t[\\n\\t\\t\\t\\tsh:datatype xsd:string;\\n\\t\\t\\t]\\n\\t\\t\\t[\\n\\t\\t\\t\\tsh:datatype rdf:langString;\\n\\t\\t\\t]\\n\\t\\t);\\n\\t];\\n\\tsh:property [\\n\\t\\tsh:path foaf:homepage ;\\n\\t\\tsh:minCount 1 ;\\n\\t\\tsh:nodeKind sh:IRI;\\n\\t]."
     },
     "ExemplaryResources": {
         "dimension": "Understandability",
@@ -57,7 +57,7 @@
         "description": "Verifies if there's and indication of at least one exemplary URI in the VoID description of the dataset.",
         "metric_type": "binary",
         "metric_calculation": "1 if the VoID description has an indication of an exemplary URI, otherwise 0.",
-        "shape_template": "ex:ExemplaryResourceShape\na sh:NodeShape ;\nsh:targetClass void:Dataset ;\nsh:property [\nsh:path void:exampleResource ;\nsh:minCount 1 ;\nsh:nodeKind sh:IRI ;\n]"
+        "shape_template": "ex:ExemplaryResourceShape\\na sh:NodeShape ;\\nsh:targetClass void:Dataset ;\\nsh:property [\\n\\tsh:path void:exampleResource ;\\n\\tsh:minCount 1 ;\\n\\tsh:nodeKind sh:IRI ;\\n] ."
     },
     "URIRegexPressence": {
         "dimension": "Understandability",
@@ -69,7 +69,7 @@
         "description": "Verifies if there's and indication of a regular expression for the URIs of the dataset, in the VoID description of the dataset.",
         "metric_type": "binary",
         "metric_calculation": "1 if the VoID description has an indication of a regular expression for the URIs, otherwise 0.",
-        "shape_template": "ex:URIRegexPressenceShape\na sh:NodeShape ;\nsh:targetClass void:Dataset ;\nsh:property [\nsh:path void:uriRegexPattern ;\nsh:minCount 1 ;\nsh:datatype xsd:string ;\nsh:pattern \"^http://|^https://\";\n]."
+        "shape_template": "ex:URIRegexPressenceShape\\n\\ta sh:NodeShape;\\n\\tsh:targetClass void:Dataset;\\n\\tsh:property [\\n\\t\\tsh:path void:uriRegexPattern ;\\n\\t\\tsh:minCount 1 ;\\n\\t\\tsh:datatype xsd:string ;\\n\\t]."
     },
     "URISpacePressence": {
         "dimension": "Understandability",
@@ -81,7 +81,7 @@
         "description": "Verifies if there's and indication of the URI namespace for the URIs of the dataset, in the VoID description of the dataset.",
         "metric_type": "binary",
         "metric_calculation": "1 if the VoID description has an indication of the URI namespace, otherwise 0.",
-        "shape_template": "ex:URISpacePressenceShape\na sh:NodeShape ;\nsh:targetClass void:Dataset ;\nsh:property [\nsh:path void:uriSpace ;\nsh:minCount 1 ;\nsh:datatype xsd:string ;\nsh:pattern \"^http://|^https://\";\n]."
+       "shape_template": "ex:URISpacePressenceShape\\n\\ta sh:NodeShape;\\n\\tsh:targetClass void:Dataset;\\n\\tsh:property [\\n\\t\\tsh:path void:uriSpace ;\\n\\t\\tsh:minCount 1 ;\\n\\t\\tsh:datatype xsd:string ;\\n\\t\\tsh:message \\\"URISpacePressence - The dataset should specify a URI namespace used for the entities\\\";\\n\\t]."
     },
     "VocabularyExistence": {
         "dimension": "Understandability",
@@ -93,7 +93,7 @@
         "description": "Verifies if a list of vocabularies used in the dataset is provided in the VoID description of the dataset.",
         "metric_type": "binary",
         "metric_calculation": "1 if the VoID description has an indication of the vocabularies used in the dataset, otherwise 0.",
-        "shape_template": "ex:VocabularyExistenceShape\na sh:NodeShape ;\nsh:targetClass void:Dataset ;\nsh:property[\nsh:path void:vocabulary ;\nsh:nodeKind sh:IRI ;\nsh:minCount 1 ;\n]"
+        "shape_template": "ex:VocabularyExistenceShape\\na sh:NodeShape ;\\nsh:targetClass void:Dataset ;\\nsh:property [\\n\\tsh:path void:vocabulary ;\\n\\tsh:nodeKind sh:IRI ;\\n\\tsh:minCount 1 ;\\n] ."
     },
     "SerializationFormats": {
         "dimension": "Versatility",
@@ -105,6 +105,6 @@
         "description": "Verifies if the data is provided in different serialization formats, by checking the VoID description of the dataset",
         "metric_type": "binary",
         "metric_calculation": "1 if the VoID description has an indication of the serialization formats, otherwise 0.",
-        "shape_template": "ex:SerializationFormatsShape\na sh:NodeShape ;\nsh:targetClass void:Dataset ;\nsh:property [\nsh:path void:feature;\nsh:minCount 1;\nsh:maxCount 5;\nsh:nodeKind sh:IRI;\nsh:in (\n<http://www.w3.org/ns/formats/N3>\n<http://www.w3.org/ns/formats/N-Triples>\n<http://www.w3.org/ns/formats/RDF_XML>\n<http://www.w3.org/ns/formats/RDFa>\n<http://www.w3.org/ns/formats/Turtle>\n);\n]."
+        "shape_template": "ex:SerializationFormatsShape\\na sh:NodeShape ;\\nsh:targetClass void:Dataset ;\\nsh:property [\\n\\tsh:path void:feature ;\\n\\tsh:minCount 1 ;\\n\\tsh:maxCount 5 ;\\n\\tsh:nodeKind sh:IRI ;\\n\\tsh:in (\\n\\t\\t<http://www.w3.org/ns/formats/N3>\\n\\t\\t<http://www.w3.org/ns/formats/N-Triples>\\n\\t\\t<http://www.w3.org/ns/formats/RDF_XML>\\n\\t\\t<http://www.w3.org/ns/formats/RDFa>\\n\\t\\t<http://www.w3.org/ns/formats/Turtle>\\n\\t) ;\\n]."
     }
 }

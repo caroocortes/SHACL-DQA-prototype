@@ -72,6 +72,8 @@ class DQAssessment:
         self.regex_pattern = None
         self.uri_space = None
 
+        self.aggregate_dict_counter = {}
+
 
     def run(self):
 
@@ -153,7 +155,7 @@ class DQAssessment:
         logging.info(f'Metadata shapes for dataset {self.dataset_name} saved in {file_path}')
         
         # Run validation 
-        _, val_graph, _ = validate_shacl_constraints(self.metadata_file, self.metadata_file_format, shape_graph, vocabs=None, config=None)
+        _, val_graph, _ , _ = validate_shacl_constraints(None, self.metadata_file, self.metadata_file_format, shape_graph, vocabs=None, config=None)
         # Process & store validation results
         self.process_validation_result_metadata(val_graph)
         
@@ -209,7 +211,7 @@ class DQAssessment:
             # Validate shapes
             file_path = self.config[vocab]["file_path"]
             file_format = self.config[vocab]["file_format"]
-            _, val_graph, _ = validate_shacl_constraints(file_path, file_format, shape_graph, vocabs=[vocab], config=self.config)
+            _, val_graph, _, _ = validate_shacl_constraints(None, file_path, file_format, shape_graph, vocabs=[vocab], config=self.config)
 
             with open(f'{PROFILE_VOCABULARIES_FOLDER_PATH}/{vocab_name}.json', 'r', encoding='utf-8') as f:
                 vocab_profile = json.load(f)
@@ -224,12 +226,12 @@ class DQAssessment:
         """
 
         # Instantiate shapes
-        accessibility_shapes = self.shape_builder.accessibility_data_shapes(self.data_template)
-        self.regex_pattern, self.uri_space, contextual_shapes = self.shape_builder.contextual_data_shapes(self.data_template)
-        representational_shapes, self.shape_property_map_representational = self.shape_builder.representational_data_shapes(self.data_template, self.graph_profile)
+        accessibility_shapes = self.shape_builder.accessibility_data_shapes()
+        self.regex_pattern, self.uri_space, contextual_shapes = self.shape_builder.contextual_data_shapes()
+        representational_shapes, self.shape_property_map_representational = self.shape_builder.representational_data_shapes(self.graph_profile)
 
         # Update graph_profile because it gets updated inside intrinsic_data_shapes
-        intrinsic_shapes, self.graph_profile, self.shape_property_map_intrinsic, self.shape_class_map = self.shape_builder.intrinsic_data_shapes(self.data_template, self.graph_profile)
+        intrinsic_shapes, self.graph_profile, self.shape_property_map_intrinsic, self.shape_class_map = self.shape_builder.intrinsic_data_shapes(self.graph_profile)
 
         shacl_shapes = (accessibility_shapes + '\n' + 
                         contextual_shapes + '\n' +
@@ -247,7 +249,7 @@ class DQAssessment:
         shape_graph.serialize(destination=file_path, format='turtle')
         logging.info(f'Data shapes for dataset {self.dataset_name} saved in {file_path}')
 
-        _, val_graph, _ = validate_shacl_constraints(self.graph_file_path, self.graph_file_format, shape_graph, self.vocab_names, self.config)
+        _, val_graph, _, self.graph_profile = validate_shacl_constraints(self.graph_profile, self.graph_file_path, self.graph_file_format, shape_graph, self.vocab_names, self.config)
         
         # Process validation results
         results = self.process_validation_result_data(val_graph)
@@ -290,7 +292,7 @@ class DQAssessment:
             constraint_type = results_graph.value(result, SH.sourceConstraintComponent)
             results[metric]["measure"] = 0
             
-            if constraint_type != SH.MinCountConstraintComponent:
+            if constraint_type != SH.MinCountConstraintComponent and constraint_type != SH.OrConstraintComponent:
                 # Metadata shapes have constraints to check for the correctness of the values of properties
                 new_message = 'The property is present but the value is incorrect.'
                 results[metric]["message"] = new_message
@@ -433,13 +435,16 @@ class DQAssessment:
                 if metric.startswith("SelfDescriptiveFormatProperties"):
                     results[metric]["property"] = self.shape_property_map_representational[int(counter)]
               
-                if metric.startswith("SchemaCompletenessClassUsage"):
+                if metric.startswith("SchemaCompletenessClassUsage") or metric.startswith("MisplacedClasses"):
                     results[metric]["class"] = self.shape_class_map[int(counter)]
                 
                 # For deprecated classes violations are the entities that use the class
                 # For inverse functional properties violations are the entities that use the property
                 # For self-descriptive format properties violations are the values of the property that aren't IRIs
-                if metric.startswith("DeprecatedClasses") or metric.startswith("InverseFunctionalProperty") or metric.startswith("SelfDescriptiveFormatProperties"):
+                # For misplaced classes violations are the entities that use the class
+                if (metric.startswith("DeprecatedClasses") or 
+                    metric.startswith("InverseFunctionalProperty") or 
+                    metric.startswith("SelfDescriptiveFormatProperties")):
                     
                     focus_node = results_graph.value(result, SH.focusNode)
                     if "violations" not in results[metric] or results[metric]['violations'] == '':
@@ -451,20 +456,26 @@ class DQAssessment:
             
             elif metric in COUNT_METRICS:
 
-                if metric in NUM_TRIPLES_PER_PROPERTY or metric in NUM_SUBJECTS_PER_PROPERTY:
+                if metric in NUM_SUBJECTS_PER_PROPERTY:
                     
+                    # if an entity uses the property with the same value more than once -> 
+                    # the validation result outputs a single result per entity
+
+                    # if the entity uses the property with different values and they all raise a validation result
+                    # -> i have to consider unique focus nodes
+
+                    #  I instantiate the "entities" with a set
                     if counter != -1:
                         metric = f'{metric}_{counter}'
                     if metric not in violating_entities_per_shape:
                         if metric == 'UsageExternalURIEntities':
                             violating_entities_per_shape[metric] = {
-                                "entities": [],
+                                "entities": set(),
                                 "property": self.interlinking_property
                             }
                         else:
-                            
                             violating_entities_per_shape[metric] = {
-                                "entities": [],
+                                "entities": set(),
                                 "property": self.shape_property_map_intrinsic[int(counter)]
                             }
 
@@ -475,11 +486,10 @@ class DQAssessment:
                     if metric not in violating_entities_per_shape:
    
                         violating_entities_per_shape[metric] = {
-                            "entities": [],
+                            "entities": set(),
                             "class": self.shape_class_map[int(counter)]
                         }
                 else:
-
                     if counter != -1:
                         metric = f'{metric}_{counter}'
 
@@ -487,18 +497,18 @@ class DQAssessment:
                         
                         if metric.startswith("DeprecatedProp"):
                             violating_entities_per_shape[metric] = {
-                                "entities": [],
+                                "entities": set(),
                                 "property": self.shape_property_map_intrinsic[int(counter)]
                             }
                         else:
                             violating_entities_per_shape[metric] = {
-                                "entities": []
+                                "entities": set()
                             }
 
                 focus_node = results_graph.value(result, SH.focusNode)
 
                 if metric and focus_node:
-                    violating_entities_per_shape[metric]['entities'].append(focus_node)
+                    violating_entities_per_shape[metric]['entities'].add(focus_node)
 
                 if results[metric]["message"] == "":
                     results[metric]["message"] = message
@@ -524,8 +534,296 @@ class DQAssessment:
                 results[metric]['property'] = info['property']
             
         return results
+    
+    def create_aggregate_metric(self, metric_name, score, uri, type_, tuple_=False):
+        # type_ can be 'classes' or 'properties'
+        self.aggregate_dict_counter[metric_name][f'count_{metric_name}_shapes'] += 1
+        if str(score) == "1":
+            self.aggregate_dict_counter[metric_name][f'{metric_name}_ones'] += 1
+        else:
+            if tuple_:
+                self.aggregate_dict_counter[metric_name][f'{metric_name}_{type_}'].append((uri, score))
+            else:
+                self.aggregate_dict_counter[metric_name][f'{metric_name}_{type_}'].append(uri)
 
+    def create_metric_info(self, metric_name, ratio, violations, num_violations, vocab=None):
 
+        metric_dict = {
+            "misplaced_properties": {
+                'dimension': 'Consistency',
+                'metric_id': 'CN2',
+                'metric': 'No misplaced classes or properties',
+                'metric_description': 'Verifies that properties aren\'t used as classes',
+                'score': 0,
+                'message': 'properties are used as classes',
+                'metric_type': 'binary',
+                'metric_calculation': "0 if property is used as a class, 1 otherwise.",
+                "meta_metric_calculation": "Number of correctly used properties / Number of properties defined in vocabularies",
+                'shape_name': 'MisplacedPropertiesShape',
+                "shape_template": "ex:MisplacedPropertiesShape\\n\\t a sh:NodeShape ;\\n\\t sh:targetNode PROPERTY_URI ;\\n\\t sh:property [\\n\\t\\t sh:path [ sh:inversePath rdf:type ] ;\\n\\t\\t sh:maxCount 0 ;\\n\\t ] .",
+                'violations': '',
+                'num_violations': 0,
+                "vocab": ''
+            },
+            "misplaced_classes": {
+                'dimension': 'Consistency',
+                'metric_id': 'CN2',
+                'metric': 'No misplaced classes or properties',
+                'metric_description': 'Verifies that classes aren\'t used as properties',
+                'score': 0,
+                'message': 'classes are used as properties',
+                'metric_type': 'binary',
+                'metric_calculation': "0 if property is used as a class, 1 otherwise.",
+                "meta_metric_calculation": "Number of correctly used classes / Number of classes defined in vocabularies",
+                'shape_name': 'MisplacedClassesShape',
+                "shape_template": "ex:MisplacedClassesShape\\n\\ta sh:NodeShape ;\\n\\tsh:targetSubjectsOf rdf:type ;\\n\\tsh:or (\\n\\t\\t[\\n\\t\\t\\tsh:path rdf:type ;\\n\\t\\t\\tsh:hasValue rdfs:Class ;\\n\\t\\t]\\n\\t\\t[\\n\\t\\t\\tsh:path rdf:type ;\\n\\t\\t\\tsh:hasValue rdf:Property ;\\n\\t\\t]\\n\\t\\t[\\n\\t\\t\\tsh:path CLASS_URI ;\\n\\t\\t\\tsh:maxCount 0 ;\\n\\t\\t]\\n\\t) .",
+                'violations': '',
+                'num_violations': 0,
+                "vocab": ''
+            },
+            "correct_range": {
+                'dimension': 'Consistency',
+                'metric_id': 'CN9',
+                'metric': 'Correct domain and range definition',
+                'metric_description': 'Verifies that properties are used with the correct range.',
+                'score': 0,
+                'message': 'are used with incorrect range',
+                'metric_type': 'count',
+                'metric_calculation': '1 - (Number of violations / Number of triples that use the property)',
+                'meta_metric_calculation': 'Number of properties used with a correct range / Number of properties with a defined range',
+                'shape_name': 'CorrectRangeShape',
+                "shape_template": "ex:CorrectRangeShape\\n\\ta sh:NodeShape ;\\n\\tsh:targetObjectsOf PROPERTY_URI ;\\n\\tsh:datatype DATATYPE .\\n\\t# Instead of sh:datatype, you may use sh:class CLASS, sh:nodeKind sh:Literal, \\n # or sh:nodeKind sh:BlankNodeOrIRI depending on the property's range.",
+                'violations': '',
+                'num_violations': 0,
+                "vocab": ''
+            },
+            "correct_domain": {
+                'dimension': 'Consistency',
+                'metric_id': 'CN9',
+                'metric': 'Correct domain and range definition.',
+                'metric_description': 'Verifies that properties are used with the correct domain.',
+                'score': 0,
+                'message': 'properties are used with incorrect domains',
+                'metric_type': 'count',
+                'metric_calculation': '1 - (Number of violations / Number of triples that use the property)',
+                "meta_metric_calculation": "Number of properties used with their correct domain / Number of properties with a defined domain",
+                'shape_name': 'CorrectDomainShape',
+                "shape_template": "ex:CorrectDomainShape\\n\\ta sh:NodeShape ;\\n\\tsh:targetSubjectsOf PROPERTY_URI ;\\n\\tsh:class CLASS .\\n\\t# If CLASS is owl:Thing, consider using sh:nodeKind sh:BlankNodeOrIRI instead.",
+                'violations': '',
+                'num_violations': 0,
+                "vocab": ''
+            },
+            "entities_disjoint_classes": {
+                'dimension': 'Consistency',
+                'metric_id': 'CN1',
+                'metric': 'No use of entities as members of disjoint classes',
+                'metric_description': 'Verifies there are no entities that are members of disjoint classes.',
+                'score': 0,
+                'message': 'classes have instances of disjoint classes',
+                'metric_type': 'count',
+                'metric_calculation': '1 - (Number of violations / Number of entities of the target class)',
+                "meta_metric_calculation": "Number of classes with no member as instance of a disjoint class / Number of disjoint classes",
+                'shape_name': 'EntitiesDisjointClassesShape',
+                "shape_template": "ex:EntitiesDisjointClassesShape\\n\\ta sh:NodeShape ;\\n\\tsh:targetClass CLASS_URI ;\\n\\tsh:not [\\n\\t\\tsh:class ex:DisjointClass\\n\\t] .",
+                'violations': '',
+                'num_violations': 0,
+                "vocab": ''
+            },
+            "irreflexive_property": {
+                'dimension': 'Consistency',
+                'metric_id': 'CN10',
+                'metric': 'No inconsistent values',
+                'metric_description': 'Verifies the correct usage of irreflexive properties.',
+                'score': 0,
+                'message': 'properties don\'t conform to their irreflexive characteristic',
+                'metric_type': 'count',
+                'metric_calculation': '1 - (Number of violations / Number of subjects that use the property)',
+                "meta_metric_calculation": "Number of irreflexive properties correctly used / Number of irreflexive properties",
+                'shape_name': 'IrreflexivePropertyShape',
+                "shape_template": "ex:IrreflexivePropertyShape\\n\\ta sh:NodeShape ;\\n\\tsh:targetSubjectsOf PROPERTY_URI ;\\n\\tsh:disjoint PROPERTY_URI .",
+                'violations': '',
+                'num_violations': 0,
+                "vocab": ''
+            },
+            "self_descriptive_format_properties": {
+                "dimension": 'Interpretability',
+                "metric_id": "ITP1",
+                "metric": "Use of self-descriptive formats",
+                'metric_description': 'Verifies if properties use IRIs as values',
+                'score': 0,
+                'message': 'properties use at least one literal or blank node',
+                'metric_type': 'count',
+                'metric_calculation': '1 if the property uses IRIs as values, 0 otherwise.',
+                "meta_metric_calculation": "Number of properties that have IRIs as values / Number of properties used in the dataset",
+                'shape_name': 'SelfDescriptiveFormatPropertiesShape',
+                "shape_template": "ex:SelfDescriptiveFormatPropertiesShape\\n\\ta sh:NodeShape ;\\n\\tsh:targetObjectsOf PROPERTY_URI ;\\n\\tsh:nodeKind sh:IRI .",
+                'violations': '',
+                'num_violations': 0,
+                "vocab": ''
+            },
+            "misuse_object_properties": {
+                'dimension': 'Consistency',
+                'metric_id': 'CN3',
+                'metric': 'No misuse of owl:DatatypeProperty or owl:ObjectProperty',
+                'metric_description': 'Verifies that owl:ObjectProperty aren\'t used with Literals',
+                'score': 0,
+                'message': 'object properties are used with literals or blank nodes',
+                'metric_type': 'count',
+                'metric_calculation': '1 - (Number of violations / Number of triples that use the property)',
+                "meta_metric_calculation": "Number of owl:ObjectProperty correctly used / Number of owl:ObjectProperty",
+                'shape_name': 'MisuseOwlObjectPropertiesShape',
+                "shape_template": "ex:MisuseOwlObjectPropertiesShape\\n\\ta sh:NodeShape ;\\n\\tsh:targetObjectsOf ex:SomeObjectProperty ;\\n\\tsh:nodeKind sh:IRI .",
+                'violations': '',
+                'num_violations': 0,
+                "vocab": ''
+            },
+            "misuse_datatype_properties": {
+                'dimension': 'Consistency',
+                'metric_id': 'CN3',
+                'metric': 'No misuse of owl:DatatypeProperty or owl:ObjectProperty',
+                'metric_description': 'Verifies that owl:DatatypeProperty are used with Literals',
+                'score': 0,
+                'message': 'datatype properties are used with IRIs',
+                'metric_type': 'count',
+                'metric_calculation': '1 - (Number of violations / Number of triples that use the property)',
+                "meta_metric_calculation": "Number of owl:DatatypeProperty correctly used / Number of owl:DatatypeProperty",
+                'shape_name': 'MisuseOwlDatatypePropertiesShape',
+                "shape_template": "ex:MisuseOwlDatatypePropertiesShape\\n\\ta sh:NodeShape ;\\n\\tsh:targetObjectsOf ex:SomeDatatypeProperty ;\\n\\tsh:nodeKind sh:Literal .",
+                'violations': ' ',
+                'num_violations': 0,
+                "vocab": ''
+            },
+            "functional_property": {
+                'dimension': 'Consistency',
+                'metric_id': 'CN10',
+                'metric': 'No inconsistent values',
+                'metric_description': 'Verifies the correct usage of functional properties.',
+                'score': 0,
+                'message': 'properties don\'t conform to their functional characteristic',
+                'metric_type': 'count',
+                'metric_calculation': '1 - (Number of violations / Number of subjects that use the property)',
+                "meta_metric_calculation": "Number of functional properties correctly used / Number of functional properties",
+                'shape_name': 'FunctionalPropertyShape',
+                "shape_template": "ex:FunctionalPropertyShape\\n\\ta sh:NodeShape ;\\n\\tsh:targetSubjectsOf PROPERTY_URI ;\\n\\tsh:property [\\n\\t\\tsh:path PROPERTY_URI ;\\n\\t\\tsh:maxCount 1 ;\\n\\t] .",
+                'violations': '',
+                'num_violations': 0,
+                "vocab": ''
+            },
+            "schema_completeness_class_usage": {
+                    'dimension': 'Completeness',
+                    'metric_id': 'CP1',
+                    'metric': 'Schema completeness',
+                    'metric_description': 'Verifies that classes defined in vocabularies are used in the dataset.',
+                    'score': 0,
+                    'message': 'classes aren\'t used in the dataset',
+                    'metric_type': 'binary',
+                    "metric_calculation": "1 if the class is used, 0 otherwise",
+                    "meta_metric_calculation": "Number of classes used from the vocabularies / Number of classes defined in vocabularies",
+                    'shape_name': 'SchemaCompletenessClassUsageShape',
+                    "shape_template": "ex:SchemaCompletenessClassUsageShape\\n\\ta sh:NodeShape ;\\nsh:targetNode CLASS_URI ;\\nsh:property [\\n\\tsh:path [ sh:inversePath rdf:type ] ;\\n\\tsh:minCount 1 ;\\n] .",
+                    'violations': '',
+                    'num_violations': 0,
+                    "vocab": ''
+                },
+            "incompatible_datatype": {
+                "dimension": "Syntactic Validity",
+                "metric_id": "SV3",
+                "metric": "No malformed datatype literals",
+                "score": 0,
+                "message": "",
+                "metric_description": "Verifies that datatype properties aren't used with incorrect datatypes.",
+                "metric_type": "count",
+                "metric_calculation": "1 - (Number of violations / Number of triples that use the property)",
+                "meta_metric_calculation": "Number of correctly used properties / Number of properties with a datatype range",
+                'shape_name': 'MemberIncompatibleDatatypeShape',
+                "shape_template": "ex:MemberIncompatibleDatatypeShape\\n\\ta sh:NodeShape ;\\nsh:targetSubjectsOf PROPERTY_URI ;\\nsh:property [\\n\\tsh:path PROPERTY_URI ;\\n\\tsh:datatype DATATYPE_URI \\n] .",
+                "violations": '',
+                "num_violations": 0,
+                "vocab": ''
+            },
+            "malformed_datatype": {
+                "dimension": "Syntactic Validity",
+                "metric_id": "SV3",
+                "metric": "No malformed datatype literals",
+                "score": 0,
+                "message": "properties are used with malformed datatype values",
+                "metric_description": "Verifies that datatype property's values follow the expected lexical syntax of the datatype.",
+                "metric_type": "count",
+                "metric_calculation": "1 - (Number of violations / Number of triples that use the property)",
+                "meta_metric_calculation": "Number of correctly used properties / Number of properties with a datatype range",
+                'shape_name': 'MalformedDatatypeShape',
+                "shape_template": "ex:MalformedDatatypeShape \\na sh:NodeShape ;\\nsh:targetSubjectsOf PROPERTY_URI ;\\nsh:property [\\n\\tsh:path PROPERTY_URI ;\\n\\tsh:pattern DATATYPE_PATTERN ;\\n] .",
+                "violations": "",
+                "num_violations": 0,
+                "vocab": ''
+            },
+            "deprecated_property": {
+                "dimension": "Consistency",
+                "metric_id": "CN4",
+                "metric": "Members of owl:DeprecatedClass or owl:DeprecatedProperty not used",
+                "score": 0,
+                "message": 'deprecated properties are used in the dataset',
+                "metric_description": "Verifies that deprecated properties aren't used",
+                'metric_type': 'count',
+                'metric_calculation': '1 - (Number of entities that use the property / Number of entities)',
+                'meta_metric_calculation': 'Number of unused deprecated properties / Number of deprecated properties',
+                'shape_name': 'DeprecatedPropertiesShape',
+                "shape_template": "ex:DeprecatedPropertiesUsageShape\\na sh:NodeShape ;\\nsh:targetSubjectsOf TYPE_PROPERTY ;\\nsh:or (\\n[\\n\\tsh:path rdf:type ;\\n\\tsh:hasValue rdfs:Class ;\\n]\\n[\\n\\tsh:path rdf:type ;\\n\\tsh:hasValue rdf:Property ;\\n]\\n[\\n\\tsh:path PROPERTY_URI ;\\n\\tsh:maxCount 0 ;\\n]\\n) .",
+                'violations': '',
+                'num_violations': 0,
+                'vocab': ''
+            },
+            "undefined_classes": {
+                "dimension": "Interpretability",
+                "metric_id": "ITP3",
+                "metric": "Invalid usage of undefined classes and properties",
+                "score": 0,
+                "message": "",
+                "metric_description": "Verifies that the classes used in the dataset are defined in the vocabulary.",
+                "metric_type": "binary",
+                "metric_calculation": "1 if the class is defined, 0 otherwise",
+                "meta_metric_calculation": "Number of defined classes (from the vocabulary) used / Number of classes (from the vocabulary) used in the dataset",
+                'shape_name': 'UndefinedClassShape',
+                "shape_template": "ex:UndefinedClassShape \\na sh:NodeShape ;\\nsh:targetNode CLASS_URI ;\\nsh:property [\\n\\tsh:path TYPE_PROPERTY ;\\n\\tsh:class rdfs:Class ;\\n\\tsh:minCount 1 ;\\n\\tsh:maxCount 1 ;\\n] .",
+                "violations": "",
+                "num_violations": 0,
+                "vocab": ''
+            },
+            "undefined_properties": {
+                "dimension": "Interpretability",
+                "metric_id": "ITP3",
+                "metric": "Invalid usage of undefined classes and properties",
+                "score": 0,
+                "message": "",
+                "metric_description": "Verifies that the properties used in the dataset are defined in the vocabulary.",
+                "metric_type": "binary",
+                "metric_calculation": "1 if the property is defined, 0 otherwise",
+                "meta_metric_calculation": "Number of defined properties (from the vocabulary) used / Number of properties (from the vocabulary) used in the dataset",
+                'shape_name': 'UndefinedPropertyShape',
+                "shape_template": "ex:UndefinedPropertyShape \\na sh:NodeShape ;\\nsh:targetNode PROPERTY_URI ;\\nsh:property [\\n\\tsh:path TYPE_PROPERTY ;\\n\\tsh:class rdf:Property ;\\n\\tsh:minCount 1 ;\\n\\tsh:maxCount 1 \\n] .",
+                "violations": "",
+                "num_violations": 0,
+                "vocab": ''
+            }
+
+        }
+
+        metric_dict[metric_name]["score"] = ratio
+        
+        if ratio < 1 and not vocab:
+            metric_dict[metric_name]["message"] = f'{self.aggregate_dict_counter[metric_name][f'count_{metric_name}_shapes'] - self.aggregate_dict_counter[metric_name][f'{metric_name}_ones']} ' + metric_dict[metric_name]["message"]
+        else:
+            metric_dict[metric_name]["message"] = ''
+
+        metric_dict[metric_name]["violations"] = violations
+        metric_dict[metric_name]["num_violations"] = num_violations
+
+        if vocab:
+            metric_dict[metric_name]["vocab"] = vocab
+
+        return metric_dict[metric_name]
+
+        
     def create_dq_results_csv(self):
 
         """
@@ -558,84 +856,88 @@ class DQAssessment:
             with open(file_path, 'r', encoding='utf-8') as f:
                 data = json.load(f)
             
-            # misuse properties
-            misuse_properties_ones = 0
-            count_misuse_properties_shapes = 0
-            misuse_properties_properties = []
-
-            # correct range datatype
-            correct_range_datatype_ones = 0
-            count_correct_range_datatype_shapes = 0
-            range_datatype_properties = []
-            
-            # correct range object
-            correct_range_object_ones = 0
-            count_correct_range_object_shapes = 0
-            range_object_properties = []
-
-            # correct domain
-            correct_domain_ones = 0
-            count_correct_domain_shapes = 0
-            correct_domain_properties = []
-
-            # correct entities disjoint classes
-            count_entities_disjoint_classes_shapes = 0
-            entities_disjoint_classes_ones = 0
-            entities_disjoint_classes = []
-
-            # misuse datatype properties
-            misuse_datatype_properties_ones = 0
-            count_datatype_misuse_properties_shapes = 0
-            misuse_datatype_properties_properties = []
-
-            # misuse object properties
-            misuse_object_properties_ones = 0
-            count_object_misuse_properties_shapes = 0
-            misuse_object_properties_properties = []
-
-            # irreflexive property
-            irreflexive_property_ones = 0
-            count_irreflexive_properties_shapes = 0
-            irreflexive_properties_properties = []
-
-            self_descriptive_format_properties_ones = 0
-            count_self_descriptive_format_properties_shapes = 0
-            self_descriptive_format_properties_properties = []
-
-            # functional property
-            functional_property_ones = 0
-            count_functional_properties_shapes = 0
-            functional_properties_properties = []
-
-            # schema completeness class
-            schema_completeness_class_usage_ones = 0
-            count_schema_completeness_class_usage_shapes = 0
-            schema_completeness_class_usage_classes = []
-
-            # malformed datatype
-            count_malformed_dataype_shapes = 0
-            malformed_dataype_ones = 0
-            malformed_dataype_properties = []
-
-            # incompatible datatype
-            count_incompatible_dataype_shapes = 0
-            incompatible_dataype_ones = 0
-            incompatible_dataype_properties = []
-
-            # undefined classes
-            count_undefined_classes_shapes = {}
-            undefined_classes_ones = {}
-            undefined_classes_classes = {}
-
-            # undefined properties
-            count_undefined_properties_shapes = {}
-            undefined_properties_ones = {}
-            undefined_properties_properties = {}
-
-            # deprecated property
-            deprecated_property_ones = 0
-            count_deprecated_properties_shapes = 0
-            deprecated_properties_properties = []
+            self.aggregate_dict_counter = {
+                "misplaced_properties": {
+                    "misplaced_properties_ones": 0,
+                    "count_misplaced_properties_shapes": 0,
+                    "misplaced_properties_properties": []
+                },
+                "misplaced_classes": {
+                    "misplaced_classes_ones": 0,
+                    "count_misplaced_classes_shapes": 0,
+                    "misplaced_classes_classes": []
+                },
+                "correct_range": {
+                    "correct_range_ones": 0,
+                    "count_correct_range_shapes": 0,
+                    "correct_range_properties": []
+                },
+                "correct_domain": {
+                    "correct_domain_ones": 0,
+                    "count_correct_domain_shapes": 0,
+                    "correct_domain_properties": []
+                },
+                "entities_disjoint_classes": {
+                    "entities_disjoint_classes_ones": 0,
+                    "count_entities_disjoint_classes_shapes": 0,
+                    "entities_disjoint_classes_classes": []
+                },
+                "misuse_datatype_properties": {
+                    "misuse_datatype_properties_ones": 0,
+                    "count_misuse_datatype_properties_shapes": 0,
+                    "misuse_datatype_properties_properties": []
+                },
+                "misuse_object_properties": {
+                    "misuse_object_properties_ones": 0,
+                    "count_misuse_object_properties_shapes": 0,
+                    "misuse_object_properties_properties": []
+                },
+                "irreflexive_property": {
+                    "irreflexive_property_ones": 0,
+                    "count_irreflexive_property_shapes": 0,
+                    "irreflexive_property_properties": []
+                },
+                "self_descriptive_format_properties": {
+                    "self_descriptive_format_properties_ones": 0,
+                    "count_self_descriptive_format_properties_shapes": 0,
+                    "self_descriptive_format_properties_properties": []
+                },
+                "functional_property": {
+                    "functional_property_ones": 0,
+                    "count_functional_property_shapes": 0,
+                    "functional_property_properties": []
+                },
+                "schema_completeness_class_usage": {
+                    "schema_completeness_class_usage_ones": 0,
+                    "count_schema_completeness_class_usage_shapes": 0,
+                    "schema_completeness_class_usage_classes": []
+                },
+                "malformed_datatype": {
+                    "malformed_datatype_ones": 0,
+                    "count_malformed_datatype_shapes": 0,
+                    "malformed_datatype_properties": []
+                },
+                "incompatible_datatype": {
+                    "incompatible_datatype_ones": 0,
+                    "count_incompatible_datatype_shapes": 0,
+                    "incompatible_datatype_properties": []
+                },
+                "undefined_classes": {
+                    "undefined_classes_ones": {},
+                    "count_undefined_classes_shapes": {},
+                    "undefined_classes_classes": {}
+                },
+                "undefined_properties": {
+                    "undefined_properties_ones": {},
+                    "count_undefined_properties_shapes": {},
+                    "undefined_properties_properties": {}
+                },
+                "deprecated_property": {
+                    "deprecated_property_ones": 0,
+                    "count_deprecated_property_shapes": 0,
+                    "deprecated_property_properties": []
+                }
+            }
 
             for shape_name, info in data.items():
                 counter_shapes += 1
@@ -659,146 +961,88 @@ class DQAssessment:
                 property_uri = info.get('property', '')
                 vocab = info.get('vocab', '')
 
-                if shape_name.startswith("MisplacedProperties_"):
-
+                if shape_name.startswith("MisplacedProp"):
                     # this counts the number of properties, since I create 1 shape 
                     # per property and in the results I have a result per shape
-                    count_misuse_properties_shapes += 1 
-                    if str(score) == "1":
-                        misuse_properties_ones += 1
-                    else:
-                        misuse_properties_properties.append((property_uri, score))
+                    self.create_aggregate_metric("misplaced_properties", score, property_uri, type_="properties", tuple_=False)
 
-                elif shape_name.startswith("CorrectRangeDatatype_"):
-                    count_correct_range_datatype_shapes += 1
-                    if str(score) == "1":
-                        correct_range_datatype_ones += 1
-                    else:
-                        range_datatype_properties.append((property_uri, score))
+                elif shape_name.startswith("MisplacedClasses"):
 
-                elif shape_name.startswith("CorrectRangeObject_"):
-                    count_correct_range_object_shapes += 1
-                    if str(score) == "1":
-                        correct_range_object_ones += 1
-                    else:
-                        range_object_properties.append((property_uri, score))
+                    # this counts the number of classes, since I create 1 shape 
+                    # per class and in the results I have a result per shape
+                    self.create_aggregate_metric("misplaced_classes", score, class_uri, type_='classes', tuple_=False)
+                # TODO: cambiar
+                elif shape_name.startswith("CorrectRange_"):
+                    self.create_aggregate_metric("correct_range", score, property_uri, type_="properties", tuple_=True)
 
                 elif shape_name.startswith("CorrectDomain_"):
-                    count_correct_domain_shapes += 1
-                    if str(score) == "1":
-                        correct_domain_ones += 1
-                    else:
-                        correct_domain_properties.append((property_uri, score))
+                    self.create_aggregate_metric("correct_domain", score, property_uri, type_="properties", tuple_=True)
 
                 elif shape_name.startswith("EntitiesDisjointClasses_"):
-                    count_entities_disjoint_classes_shapes += 1
+                    self.aggregate_dict_counter['entities_disjoint_classes']['count_entities_disjoint_classes_shapes'] += 2
                     if str(score) == "1":
                         # I only instantiate with 1 of the classes, not with both
                         # is this correct????
-                        entities_disjoint_classes_ones += 2
+                        self.aggregate_dict_counter['entities_disjoint_classes']['entities_disjoint_classes_ones'] += 2 # is this ok?????
                     else:
-                        entities_disjoint_classes.append((class_uri['first_class'], class_uri['second_class'], score))
+                        self.aggregate_dict_counter['entities_disjoint_classes']['entities_disjoint_classes_classes'].append((class_uri['first_class'], class_uri['second_class'], score))
                 
                 elif shape_name.startswith("MisuseOwlObjectProperties_"):
                     # Count the number of properties that are used correctly (there's no triple that uses them incorrectly) 
                     # over total number of owl object properties
-                    count_object_misuse_properties_shapes += 1
-                    if str(score) == "1":
-                        misuse_object_properties_ones += 1
-                    else:
-                        misuse_object_properties_properties.append((property_uri, score))
+                    self.create_aggregate_metric("misuse_object_properties", score, property_uri, type_="properties", tuple_=True)
 
                 elif shape_name.startswith("MisuseOwlDatatypeProperties_"):
-                    count_datatype_misuse_properties_shapes += 1
-                    if str(score) == "1":
-                        misuse_datatype_properties_ones += 1
-                    else:   
-                        misuse_datatype_properties_properties.append((property_uri, score))
+                    self.create_aggregate_metric("misuse_datatype_properties", score, property_uri, type_="properties", tuple_=True)
 
                 elif shape_name.startswith("IrreflexiveProperty_"):
-                    count_irreflexive_properties_shapes += 1
-                    if str(score) == "1":
-                        irreflexive_property_ones += 1
-                    else:   
-                        irreflexive_properties_properties.append((property_uri, score))
+                    self.create_aggregate_metric("irreflexive_property", score, property_uri, type_="properties", tuple_=True)
 
                 elif shape_name.startswith("SelfDescriptiveFormatProperties"):
-                    count_self_descriptive_format_properties_shapes += 1
-                    if str(score) == "1":
-                        self_descriptive_format_properties_ones += 1
-                    else:   
-                        self_descriptive_format_properties_properties.append(property_uri)
+                    self.create_aggregate_metric("self_descriptive_format_properties", score, property_uri, type_="properties", tuple_=False)
 
                 elif shape_name.startswith("FunctionalProperty"):
-                    count_functional_properties_shapes += 1
-                    if str(score) == "1":
-                        functional_property_ones += 1
-                    else:   
-                        functional_properties_properties.append((property_uri, score))
+                    self.create_aggregate_metric("functional_property", score, property_uri, type_="properties", tuple_=True)
 
                 elif shape_name.startswith("SchemaCompletenessClassUsage_"):
-
-                    # 1 shape per class, so this counts the number of classes
-                    count_schema_completeness_class_usage_shapes += 1
-                    if str(score) == "1":
-                        # The metric is binary, so this returns the number of classes used
-                        schema_completeness_class_usage_ones += 1
-                    else:   
-                        schema_completeness_class_usage_classes.append(class_uri)
+                    self.create_aggregate_metric("schema_completeness_class_usage", score, class_uri, type_='classes', tuple_=False)
 
                 elif shape_name.startswith("MalformedDatatype"):
                     # 1 shape per property, so this counts the number of properties
-                    count_malformed_dataype_shapes += 1
-                    if str(score) == "1":
-                        # The metric is count, so this returns the number of properties that
-                        # are correctly used
-                        malformed_dataype_ones += 1
-                    else:   
-                        malformed_dataype_properties.append((property_uri, score))
+                    self.create_aggregate_metric("malformed_datatype", score, property_uri, type_="properties", tuple_=True)
 
                 elif shape_name.startswith("MemberIncompatibleDatatype"):
-                    # 1 shape per property, so this counts the number of properties
-                    count_incompatible_dataype_shapes += 1
-                    if str(score) == "1":
-                        # The metric is count, so this returns the number of properties that
-                        # are correctly used
-                        incompatible_dataype_ones += 1
-                    else:   
-                        incompatible_dataype_properties.append((property_uri, score))
+                    self.create_aggregate_metric("incompatible_datatype", score, property_uri, type_="properties", tuple_=True)
 
                 elif shape_name.startswith("DeprecatedProperties"):
                     # 1 shape per property, so this counts the number of properties
-                    count_deprecated_properties_shapes += 1
-                    if str(score) == "1":
-                        # The metric is count, so this returns the number of properties that
-                        # are correctly used
-                        deprecated_property_ones += 1
-                    else:   
-                        deprecated_properties_properties.append((property_uri, score))
+                    self.create_aggregate_metric("deprecated_property", score, property_uri, type_="properties", tuple_=True)
 
                 elif shape_name.startswith("UndefinedClass"):
-                    if vocab not in count_undefined_classes_shapes.keys():
-                        count_undefined_classes_shapes[vocab] = 0
-                        undefined_classes_ones[vocab] = 0
-                        undefined_classes_classes[vocab] = []
+                    metric_name = "undefined_classes"
+                    if vocab not in self.aggregate_dict_counter[metric_name]['count_undefined_classes_shapes'].keys():
+                        self.aggregate_dict_counter[metric_name]['count_undefined_classes_shapes'][vocab] = 0
+                        self.aggregate_dict_counter[metric_name]['undefined_classes_ones'][vocab] = 0
+                        self.aggregate_dict_counter[metric_name]['undefined_classes_classes'][vocab] = []
 
-                    count_undefined_classes_shapes[vocab] += 1
+                    self.aggregate_dict_counter[metric_name]['count_undefined_classes_shapes'][vocab] += 1
                     if str(score) == '1':
-                        undefined_classes_ones[vocab] += 1
+                        self.aggregate_dict_counter[metric_name]['undefined_classes_ones'][vocab] += 1
                     else:
-                        undefined_classes_classes[vocab].append(class_uri)
+                        self.aggregate_dict_counter[metric_name]['undefined_classes_classes'][vocab].append(class_uri)
 
                 elif shape_name.startswith("UndefinedProperty"):
-                    if vocab not in count_undefined_properties_shapes.keys():
-                        count_undefined_properties_shapes[vocab] = 0
-                        undefined_properties_ones[vocab] = 0
-                        undefined_properties_properties[vocab] = []
+                    metric_name = "undefined_properties"
+                    if vocab not in self.aggregate_dict_counter[metric_name]['count_undefined_properties_shapes'].keys():
+                        self.aggregate_dict_counter[metric_name]['count_undefined_properties_shapes'][vocab] = 0
+                        self.aggregate_dict_counter[metric_name]['undefined_properties_ones'][vocab] = 0
+                        self.aggregate_dict_counter[metric_name]['undefined_properties_properties'][vocab] = []
 
-                    count_undefined_properties_shapes[vocab] += 1
+                    self.aggregate_dict_counter[metric_name]['count_undefined_properties_shapes'][vocab] += 1
                     if str(score) == '1':
-                        undefined_properties_ones[vocab] += 1
+                        self.aggregate_dict_counter[metric_name]['undefined_properties_ones'][vocab] += 1
                     else:
-                        undefined_properties_properties[vocab].append(property_uri)
+                        self.aggregate_dict_counter[metric_name]['undefined_properties_properties'][vocab].append(property_uri)
 
                 else:
 
@@ -831,341 +1075,151 @@ class DQAssessment:
                     })
 
             # Misuse properties
-            if count_misuse_properties_shapes > 0:
+            metric_name = "misplaced_properties"
+            if self.aggregate_dict_counter[metric_name][f'count_{metric_name}_shapes'] > 0:
                 # I create a shape for each property and from the validation result
                 # I save the score 1 or 0 for each shape 
 
-                # misuse_properties_ones : counts the number of properties correctly used
-                # count_misuse_properties_shapes : counts the number of properties (shapes)
-                ratio = (misuse_properties_ones/count_misuse_properties_shapes)
-                rows.append({
-                    'dimension': 'Consistency',
-                    'metric_id': 'CN2',
-                    'metric': 'No misplaced classes or properties',
-                    'metric_description': 'Verifies that properties aren\'t used as classes',
-                    'score': ratio,
-                    'message': f'{(count_misuse_properties_shapes - misuse_properties_ones)} properties are used as classes' if ratio < 1 else '',
-                    'metric_type': 'binary',
-                    'metric_calculation': "0 if property is used as a class, 1 otherwise.",
-                    "meta_metric_calculation": "Number of correctly used properties / Number of properties defined in vocabularies",
-                    'shape_name': 'MisplacedPropertiesShape',
-                    'shape_template': 'ex:MisplacedPropertiesShape\na sh:NodeShape ;\nsh:targetNode PROPERTY_URI ;\nsh:property [\nsh:path [ sh:inversePath rdf:type ];\nsh:maxCount 0;\n].',
-                    'violations': '; '.join([f'({p},{s})' for p, s in misuse_properties_properties]),
-                    'num_violations': len(misuse_properties_properties),
-                    "vocab": ''
-                })
-            
-            # Correct range datatype
-            if count_correct_range_datatype_shapes > 0:
-                ratio = (correct_range_datatype_ones/count_correct_range_datatype_shapes)
-                number_violations = count_correct_range_datatype_shapes - correct_range_datatype_ones
-                rows.append({
-                    'dimension': 'Consistency',
-                    'metric_id': 'CN9',
-                    'metric': 'Correct domain and range definition',
-                    'metric_description': 'Verifies that properties are used with the correct range (datatype).',
-                    'score': ratio,
-                    'message': f'{number_violations} {'properties' if number_violations > 1 else 'property'} are used with incorrect range' if ratio < 1 else '',
-                    'metric_type': 'count',
-                    'metric_calculation': '1 - (Number of violations / Number of triples that use the property)',
-                    'meta_metric_calculation': 'Number of properties used with a correct datatype/literal  range / Number of properties with datatype/literal range',
-                    'shape_name': 'CorrectRangeShape',
-                    'shape_template': 'ex:CorrectRangeShape\na sh:NodeShape ;\nsh:targetObjectsOf PROPERTY_URI ;\nsh:datatype DATATYPE.',
-                    'violations': '; '.join([f'({p},{s})' for p, s in range_datatype_properties]),
-                    'num_violations': len(range_datatype_properties),
-                    "vocab": ''
-                })
+                # misplaced_properties_ones : counts the number of properties correctly used
+                # count_misplaced_properties_shapes : counts the number of properties (shapes)
+                ratio = (self.aggregate_dict_counter[metric_name][f'{metric_name}_ones']/self.aggregate_dict_counter[metric_name][f'count_{metric_name}_shapes'])
+                violations = '; '.join(self.aggregate_dict_counter[metric_name][f'{metric_name}_properties'])
+                num_violations = len(self.aggregate_dict_counter[metric_name][f'{metric_name}_properties'])
+                rows.append(self.create_metric_info(metric_name, ratio, violations, num_violations))
+                
+            metric_name = "misplaced_classes"
+            if self.aggregate_dict_counter[metric_name][f'count_{metric_name}_shapes'] > 0:
 
+                ratio = (self.aggregate_dict_counter[metric_name][f'{metric_name}_ones']/self.aggregate_dict_counter[metric_name][f'count_{metric_name}_shapes'])
+                violations = '; '.join(self.aggregate_dict_counter[metric_name][f'{metric_name}_classes'])
+                num_violations = len(self.aggregate_dict_counter[metric_name][f'{metric_name}_classes'])
+                rows.append(self.create_metric_info(metric_name, ratio, violations, num_violations))
+                
             # Correct range object
-            if count_correct_range_object_shapes > 0:
-                ratio = (correct_range_object_ones/count_correct_range_object_shapes)
-                rows.append({
-                    'dimension': 'Consistency',
-                    'metric_id': 'CN9',
-                    'metric': 'Correct domain and range definition.',
-                    'metric_description': 'Verifies that properties are used with the correct range (object).',
-                    'score': ratio,
-                    'message': f'{count_correct_range_object_shapes - correct_range_object_ones} properties are used with incorrect ranges' if ratio < 1 else '',
-                    'metric_type': 'count',
-                    'metric_calculation': '1 - (Number of violations / Number of triples that use the property)',
-                    "meta_metric_calculation": "Number of properties used with a correct object range / Number of properties with object range",
-                    'shape_name': 'CorrectRangeObjectShape',
-                    'shape_template': 'ex:CorrectRangeObjectShape\na sh:NodeShape ;\nsh:targetObjectsOf PROPERTY_URI ;\nsh:class CLASS.',
-                    'violations': '; '.join([f'({p},{s})' for p, s in range_object_properties]),
-                    'num_violations': len(range_object_properties),
-                    "vocab": ''
-                })
+            metric_name = "correct_range"
+            if self.aggregate_dict_counter[metric_name][f'count_{metric_name}_shapes'] > 0:
+                ratio = (self.aggregate_dict_counter[metric_name][f'{metric_name}_ones']/self.aggregate_dict_counter[metric_name][f'count_{metric_name}_shapes'])
+                violations = '; '.join([f'({p},{s})' for p, s in self.aggregate_dict_counter[metric_name][f'{metric_name}_properties']])
+                num_violations = len(self.aggregate_dict_counter[metric_name][f'{metric_name}_properties'])
+                rows.append(self.create_metric_info(metric_name, ratio, violations, num_violations))
 
             # Correct domain
-            if count_correct_domain_shapes > 0:
-                ratio = (correct_domain_ones/count_correct_domain_shapes)
-                rows.append({
-                    'dimension': 'Consistency',
-                    'metric_id': 'CN9',
-                    'metric': 'Correct domain and range definition.',
-                    'metric_description': 'Verifies that properties are used with the correct domain.',
-                    'score': ratio,
-                    'message': f'{count_correct_domain_shapes - correct_domain_ones} properties are used with incorrect domains' if ratio < 1 else '',
-                    'metric_type': 'count',
-                    'metric_calculation': '1 - (Number of violations / Number of triples that use the property)',
-                    "meta_metric_calculation": "Number of properties used with their correct domain / Number of properties with a defined domain",
-                    'shape_name': 'CorrectDomainShape',
-                    "shape_template": "ex:CorrectDomainShape\\na sh:NodeShape ;\\nsh:targetSubjectsOf PROPERTY_URI ;\\nsh:class CLASS .",
-                    'violations': '; '.join([f'({p},{s})' for p, s in correct_domain_properties]),
-                    'num_violations': len(correct_domain_properties),
-                    "vocab": ''
-                })
+            metric_name = "correct_domain"
+            if self.aggregate_dict_counter[metric_name][f'count_{metric_name}_shapes'] > 0:
+                ratio = (self.aggregate_dict_counter[metric_name][f'{metric_name}_ones']/self.aggregate_dict_counter[metric_name][f'count_{metric_name}_shapes'])
+                violations = '; '.join([f'({p},{s})' for p, s in self.aggregate_dict_counter[metric_name][f'{metric_name}_properties']])
+                num_violations = len(self.aggregate_dict_counter[metric_name][f'{metric_name}_properties'])
+                rows.append(self.create_metric_info(metric_name, ratio, violations, num_violations))
 
             # Entities in disjoint classes
-            if count_entities_disjoint_classes_shapes > 0:
-                ratio = (entities_disjoint_classes_ones/count_entities_disjoint_classes_shapes)
-                rows.append({
-                    'dimension': 'Consistency',
-                    'metric_id': 'CN1',
-                    'metric': 'No use of entities as members of disjoint classes',
-                    'metric_description': 'Verifies there are no entities that are members of disjoint classes.',
-                    'score': ratio,
-                    'message': f'{count_entities_disjoint_classes_shapes - entities_disjoint_classes_ones} classes have instances of disjoint classes' if ratio < 1 else '',
-                    'metric_type': 'count',
-                    'metric_calculation': '1 - (Number of violations / Number of entities of the target class)',
-                    "meta_metric_calculation": "Number of classes with no member as instance of a disjoint class / Number of classes",
-                    'shape_name': 'EntitiesDisjointClassesShape',
-                    'shape_template': 'ex:EntitiesDisjointClassesShape\na sh:NodeShape ;\nsh:targetClass CLASS_URI ;\nsh:not [ sh:class ex:DisjointClass ].',
-                    'violations': '; '.join([f'({fc},{sc},{s})' for fc, sc, s in entities_disjoint_classes]),
-                    'num_violations': len(entities_disjoint_classes),
-                    "vocab": ''
-                })
+            metric_name = "entities_disjoint_classes"
+            if self.aggregate_dict_counter[metric_name][f'count_{metric_name}_shapes'] > 0:
+                ratio = (self.aggregate_dict_counter[metric_name][f'{metric_name}_ones']/self.aggregate_dict_counter[metric_name][f'count_{metric_name}_shapes'])
+                violations = '; '.join([f'({fc},{sc},{s})' for fc, sc, s in self.aggregate_dict_counter[metric_name][f'{metric_name}_classes']])
+                num_violations = len(self.aggregate_dict_counter[metric_name][f'{metric_name}_classes'])
+                rows.append(self.create_metric_info(metric_name, ratio, violations, num_violations))
 
             # Irreflexive properties
-            if count_irreflexive_properties_shapes > 0:
-                ratio = (irreflexive_property_ones/count_irreflexive_properties_shapes)
-                rows.append({
-                    'dimension': 'Consistency',
-                    'metric_id': 'CN10',
-                    'metric': 'No inconsistent values',
-                    'metric_description': 'Verifies the correct usage of irreflexive properties.',
-                    'score': ratio,
-                    'message': f'{count_irreflexive_properties_shapes - irreflexive_property_ones} properties don\'t conform to their irreflexive characteristic' if ratio < 1 else '',
-                    'metric_type': 'count',
-                    'metric_calculation': '1 - (Number of violations / Number of subjects that use the property)',
-                    "meta_metric_calculation": "Number of irreflexive properties correctly used / Number of irreflexive properties",
-                    'shape_name': 'IrreflexivePropertyShape',
-                    'shape_template': "ex:IrreflexivePropertyShape\\na sh:NodeShape ;\\n \tsh:targetSubjectsOf PROPERTY_URI ;\\n \tsh:disjoint PROPERTY_URI .",
-                    'violations': '; '.join([f'({p},{s})' for p, s in irreflexive_properties_properties]),
-                    'num_violations': len(irreflexive_properties_properties),
-                    "vocab": ''
-                })
+            metric_name = "irreflexive_property"
+            if self.aggregate_dict_counter[metric_name][f'count_{metric_name}_shapes'] > 0:
+                ratio = (self.aggregate_dict_counter[metric_name][f'{metric_name}_ones']/self.aggregate_dict_counter[metric_name][f'count_{metric_name}_shapes'])
+                violations = '; '.join([f'({p},{s})' for p, s in self.aggregate_dict_counter[metric_name][f'{metric_name}_properties']])
+                num_violations = len(self.aggregate_dict_counter[metric_name][f'{metric_name}_properties'])
+                rows.append(self.create_metric_info(metric_name, ratio, violations, num_violations))
             
             # Self descriptive formats properties
-            if count_self_descriptive_format_properties_shapes > 0:
-                ratio = (self_descriptive_format_properties_ones/count_self_descriptive_format_properties_shapes)
-                rows.append({
-                    "dimension": 'Interpretability',
-                    "metric_id": "ITP1",
-                    "metric": "Use of self-descriptive formats",
-                    'metric_description': 'Verifies if properties use IRIs as values',
-                    'score': ratio,
-                    'message': f'{count_self_descriptive_format_properties_shapes - self_descriptive_format_properties_ones} properties use at least one literal or blank node' if ratio < 1 else '',
-                    'metric_type': 'count',
-                    'metric_calculation': '1 if the property uses IRIs as values, 0 otherwise.',
-                    "meta_metric_calculation": "Number of properties that have IRIs as values / Number of properties used in the dataset",
-                    'shape_name': 'SelfDescriptiveFormatPropertiesShape',
-                    "shape_template": "ex:SelfDescriptiveFormatPropertiesShape\\n\\ta sh:NodeShape ;\\n\\tsh:targetObjectsOf PROPERTY_URI ;\\n\\tsh:nodeKind sh:IRI .",
-                    'violations': '; '.join([p for p in self_descriptive_format_properties_properties]),
-                    'num_violations': len(self_descriptive_format_properties_properties),
-                    "vocab": ''
-                })
+            metric_name = "self_descriptive_format_properties"
+            if self.aggregate_dict_counter[metric_name][f'count_{metric_name}_shapes'] > 0:
+                ratio = (self.aggregate_dict_counter[metric_name][f'{metric_name}_ones']/self.aggregate_dict_counter[metric_name][f'count_{metric_name}_shapes'])
+                violations = '; '.join(self.aggregate_dict_counter[metric_name][f'{metric_name}_properties'])
+                num_violations = len(self.aggregate_dict_counter[metric_name][f'{metric_name}_properties'])
+                rows.append(self.create_metric_info(metric_name, ratio, violations, num_violations))
 
             # Misuse object properties
-            if count_object_misuse_properties_shapes > 0:
-                ratio = (misuse_object_properties_ones/count_object_misuse_properties_shapes)
-                rows.append({
-                    'dimension': 'Consistency',
-                    'metric_id': 'CN3',
-                    'metric': 'No misuse of owl:DatatypeProperty or owl:ObjectProperty',
-                    'metric_description': 'Verifies that owl:ObjectProperty aren\'t used with Literals',
-                    'score': ratio,
-                    'message': f'{count_object_misuse_properties_shapes - misuse_object_properties_ones} object properties are used with literals or blank nodes' if ratio < 1 else '',
-                    'metric_type': 'count',
-                    'metric_calculation': '1 - (Number of violations / Number of triples that use the property)',
-                    "meta_metric_calculation": "Number of owl:ObjectProperty correctly used / Number of owl:ObjectProperty",
-                    'shape_name': 'MisuseOwlObjectPropertiesShape',
-                    'shape_template': 'ex:MisuseOwlObjectPropertiesShape\\na sh:NodeShape ;\\nsh:targetObjectsOf ex:SomeObjectProperty ;\\nsh:nodeKind sh:IRI.',
-                    'violations': '; '.join([f'({p},{s})' for p, s in misuse_object_properties_properties]),
-                    'num_violations': len(misuse_object_properties_properties),
-                    "vocab": ''
-                })
+            metric_name = "misuse_object_properties"
+            if self.aggregate_dict_counter[metric_name][f'count_{metric_name}_shapes'] > 0:
+                ratio = (self.aggregate_dict_counter[metric_name][f'{metric_name}_ones']/self.aggregate_dict_counter[metric_name][f'count_{metric_name}_shapes'])
+                violations = '; '.join([f'({p},{s})' for p, s in self.aggregate_dict_counter[metric_name][f'{metric_name}_properties']])
+                num_violations = len(self.aggregate_dict_counter[metric_name][f'{metric_name}_properties'])
+                rows.append(self.create_metric_info(metric_name, ratio, violations, num_violations))
 
             # Misuse datatype properties
-            if count_datatype_misuse_properties_shapes > 0:
-                ratio = (misuse_datatype_properties_ones/count_datatype_misuse_properties_shapes)
-                rows.append({
-                    'dimension': 'Consistency',
-                    'metric_id': 'CN3',
-                    'metric': 'No misuse of owl:DatatypeProperty or owl:ObjectProperty',
-                    'metric_description': 'Verifies that owl:DatatypeProperty are used with Literals',
-                    'score': ratio,
-                    'message': f'{count_datatype_misuse_properties_shapes - misuse_datatype_properties_ones} datatype properties are used with IRIs' if ratio < 1 else '',
-                    'metric_type': 'count',
-                    'metric_calculation': '1 - (Number of violations / Number of triples that use the property)',
-                    "meta_metric_calculation": "Number of owl:DatatypeProperty correctly used / Number of owl:DatatypeProperty",
-                    'shape_name': 'MisuseOwlDatatypePropertiesShape',
-                    'shape_template': 'ex:MisuseOwlDatatypePropertiesShape\\na sh:NodeShape ;\\nsh:targetObjectsOf ex:SomeDatatypeProperty ;\\nsh:nodeKind sh:Literal.',
-                    'violations': '; '.join([f'({p},{s})' for p, s in misuse_datatype_properties_properties]),
-                    'num_violations': len(misuse_datatype_properties_properties),
-                    "vocab": ''
-                })
+            metric_name = "misuse_datatype_properties"
+            if self.aggregate_dict_counter[metric_name][f'count_{metric_name}_shapes'] > 0:
+                ratio = (self.aggregate_dict_counter[metric_name][f'{metric_name}_ones']/self.aggregate_dict_counter[metric_name][f'count_{metric_name}_shapes'])
+                violations = '; '.join([f'({p},{s})' for p, s in self.aggregate_dict_counter[metric_name][f'{metric_name}_properties']])
+                num_violations = len(self.aggregate_dict_counter[metric_name][f'{metric_name}_properties'])
+                rows.append(self.create_metric_info(metric_name, ratio, violations, num_violations))
 
-            if count_functional_properties_shapes > 0:
-                ratio = (functional_property_ones/count_functional_properties_shapes)
-                rows.append({
-                    'dimension': 'Consistency',
-                    'metric_id': 'CN10',
-                    'metric': 'No inconsistent values',
-                    'metric_description': 'Verifies the correct usage of functional properties.',
-                    'score': ratio,
-                    'message': f'{count_functional_properties_shapes - functional_property_ones} properties don\'t conform to their functional characteristic' if ratio < 1 else '',
-                    'metric_type': 'count',
-                    'metric_calculation': '1 - (Number of violations / Number of subjects that use the property)',
-                    "meta_metric_calculation": "Number of functional properties correctly used / Number of functional properties",
-                    'shape_name': 'FunctionalPropertyShape',
-                    "shape_template": "ex:FunctionalPropertyShape\\na sh:NodeShape ;\\nsh:targetSubjectsOf PROPERTY_URI ;\\nsh:property [\\n    sh:path PROPERTY_URI ;\\n    sh:maxCount 1 ;\\n] .",
-                    'violations': '; '.join([f'({p},{s})' for p, s in functional_properties_properties]),
-                    'num_violations': len(functional_properties_properties),
-                    "vocab": ''
-                })
+            # Functional properties
+            metric_name = "functional_property"
+            if self.aggregate_dict_counter[metric_name][f'count_{metric_name}_shapes'] > 0:
+                ratio = (self.aggregate_dict_counter[metric_name][f'{metric_name}_ones']/self.aggregate_dict_counter[metric_name][f'count_{metric_name}_shapes'])
+                violations = '; '.join([f'({p},{s})' for p, s in self.aggregate_dict_counter[metric_name][f'{metric_name}_properties']])
+                num_violations = len(self.aggregate_dict_counter[metric_name][f'{metric_name}_properties'])
+                rows.append(self.create_metric_info(metric_name, ratio, violations, num_violations))
 
             # Schema completeness class usage
-            if count_schema_completeness_class_usage_shapes > 0:
-                ratio = (schema_completeness_class_usage_ones/count_schema_completeness_class_usage_shapes)
-                rows.append({
-                    'dimension': 'Completeness',
-                    'metric_id': 'CP1',
-                    'metric': 'Schema completeness',
-                    'metric_description': 'Verifies that classes defined in vocabularies are used in the dataset.',
-                    'score': ratio,
-                    'message': f'{count_schema_completeness_class_usage_shapes - schema_completeness_class_usage_ones} classes aren\'t used in the dataset' if ratio < 1 else '',
-                    'metric_type': 'binary',
-                    "metric_calculation": "1 if the class is used, 0 otherwise",
-                    "meta_metric_calculation": "Number of classes used / Number of classes defined in vocabularies",
-                    'shape_name': 'SchemaCompletenessClassUsageShape',
-                    'shape_template': 'ex:SchemaCompletenessClassUsageShape\\na sh:NodeShape ;\\nsh:targetNode CLASS_URI ;\\nsh:property [\\nsh:path [ sh:inversePath rdf:type ];\\nsh:minCount 1;\\n].',
-                    'violations': '; '.join(schema_completeness_class_usage_classes),
-                    'num_violations': len(schema_completeness_class_usage_classes),
-                    "vocab": ''
-                })
+            metric_name = "schema_completeness_class_usage"
+            if self.aggregate_dict_counter[metric_name][f'count_{metric_name}_shapes'] > 0:
+                ratio = (self.aggregate_dict_counter[metric_name][f'{metric_name}_ones']/self.aggregate_dict_counter[metric_name][f'count_{metric_name}_shapes'])
+                violations = '; '.join(self.aggregate_dict_counter[metric_name][f'{metric_name}_classes'])
+                num_violations = len(self.aggregate_dict_counter[metric_name][f'{metric_name}_classes'])
+                rows.append(self.create_metric_info(metric_name, ratio, violations, num_violations))
+                
+            metric_name = "incompatible_datatype"
+            if self.aggregate_dict_counter[metric_name][f'count_{metric_name}_shapes'] > 0:
+                ratio = (self.aggregate_dict_counter[metric_name][f'{metric_name}_ones']/self.aggregate_dict_counter[metric_name][f'count_{metric_name}_shapes'])
+                violations = '; '.join([f'({p},{s})' for p, s in self.aggregate_dict_counter[metric_name][f'{metric_name}_properties']])
+                num_violations = len(self.aggregate_dict_counter[metric_name][f'{metric_name}_properties'])
+                rows.append(self.create_metric_info(metric_name, ratio, violations, num_violations))
+
+            metric_name = "malformed_datatype"
+            if self.aggregate_dict_counter[metric_name][f'count_{metric_name}_shapes'] > 0:
+                ratio = (self.aggregate_dict_counter[metric_name][f'{metric_name}_ones']/self.aggregate_dict_counter[metric_name][f'count_{metric_name}_shapes'])
+                violations = '; '.join([f'({p},{s})' for p, s in self.aggregate_dict_counter[metric_name][f'{metric_name}_properties']])
+                num_violations = len(self.aggregate_dict_counter[metric_name][f'{metric_name}_properties'])
+                rows.append(self.create_metric_info(metric_name, ratio, violations, num_violations))
             
-            if count_incompatible_dataype_shapes > 0:
-                ratio = (incompatible_dataype_ones / count_incompatible_dataype_shapes)
-                rows.append({
-                    "dimension": "Syntactic Validity",
-                    "metric_id": "SV3",
-                    "metric": "No malformed datatype literals",
-                    "score": ratio,
-                    "message": "",
-                    "metric_description": "Verifies that datatype properties aren't used with incorrect datatypes.",
-                    "metric_type": "count",
-                    "metric_calculation": "1 - (Number of violations / Number of triples that use the property)",
-                    "meta_metric_calculation": "Number of correctly used properties / Number of properties with a datatype range",
-                    'shape_name': 'MemberIncompatibleDatatypeShape',
-                    "shape_template": "ex:MemberIncompatibleDatatypeShape\\na sh:NodeShape ;\\nsh:targetSubjectsOf PROPERTY_URI ;\\nsh:property [\\n    sh:path PROPERTY_URI ;\\n    sh:datatype DATATYPE_URI \\n] .",
-                    "violations": "; ".join([f'({p},{s})' for p, s in incompatible_dataype_properties]),
-                    "num_violations": len(incompatible_dataype_properties),
-                    "vocab": ''
-                })
-
-            if count_malformed_dataype_shapes > 0:
-                ratio = (malformed_dataype_ones / count_malformed_dataype_shapes)
-                rows.append({
-                    "dimension": "Syntactic Validity",
-                    "metric_id": "SV3",
-                    "metric": "No malformed datatype literals",
-                    "score": ratio,
-                    "message": "",
-                    "metric_description": "Verifies that datatype property's values follow the expected lexical syntax of the datatype.",
-                    "metric_type": "count",
-                    "metric_calculation": "1 - (Number of violations / Number of triples that use the property)",
-                    "meta_metric_calculation": "Number of correctly used properties / Number of properties with a datatype range",
-                    'shape_name': 'MalformedDatatypeShape',
-                    "shape_template": "ex:MalformedDatatypeShape \\na sh:NodeShape ;\\nsh:targetSubjectsOf PROPERTY_URI ;\\nsh:property [\\n    sh:path PROPERTY_URI ;\\n    sh:pattern DATATYPE_PATTERN;\\n] .",
-                    "violations": "; ".join([f'({p},{s})' for p, s in malformed_dataype_properties]),
-                    "num_violations": len(malformed_dataype_properties),
-                    "vocab": ''
-                })
+            metric_name = "undefined_properties"
+            if len(self.aggregate_dict_counter[metric_name][f'count_{metric_name}_shapes'].keys()) > 0:
+                for vocab in self.aggregate_dict_counter[metric_name][f'count_{metric_name}_shapes'].keys():
+                    ratio = (self.aggregate_dict_counter[metric_name][f'{metric_name}_ones'][vocab] / self.aggregate_dict_counter[metric_name][f'count_{metric_name}_shapes'][vocab])
+                    violations = "; ".join(self.aggregate_dict_counter[metric_name][f'{metric_name}_properties'][vocab])
+                    num_violations = len(self.aggregate_dict_counter[metric_name][f'{metric_name}_properties'][vocab])
+                    rows.append(self.create_metric_info(metric_name, ratio, violations, num_violations, vocab=vocab))
             
-            if len(count_undefined_properties_shapes.keys()) > 0:
+            metric_name = "undefined_classes"
+            if len(self.aggregate_dict_counter[metric_name][f'count_{metric_name}_shapes'].keys()) > 0:
+                for vocab in self.aggregate_dict_counter[metric_name][f'count_{metric_name}_shapes'].keys():
+                    ratio = (self.aggregate_dict_counter[metric_name][f'{metric_name}_ones'][vocab] / self.aggregate_dict_counter[metric_name][f'count_{metric_name}_shapes'][vocab])
+                    violations = "; ".join(self.aggregate_dict_counter[metric_name][f'{metric_name}_classes'][vocab])
+                    num_violations = len(self.aggregate_dict_counter[metric_name][f'{metric_name}_classes'][vocab])
+                    rows.append(self.create_metric_info(metric_name, ratio, violations, num_violations, vocab=vocab))
 
-                for vocab in count_undefined_properties_shapes.keys():
-                    ratio = (undefined_properties_ones[vocab] / count_undefined_properties_shapes[vocab])
-                    rows.append({
-                        "dimension": "Interpretability",
-                        "metric_id": "ITP3",
-                        "metric": "Invalid usage of undefined classes and properties",
-                        "score": ratio,
-                        "message": "",
-                        "metric_description": "Verifies that the properties used in the dataset are defined in the vocabulary.",
-                        "metric_type": "binary",
-                        "metric_calculation": "1 if the property is defined, 0 otherwise",
-                        "meta_metric_calculation": "Number of defined properties used / Number of properties used in the dataset (from the vocabulary)",
-                        'shape_name': 'UndefinedPropertyShape',
-                        "shape_template": "ex:UndefinedPropertyShape \\na sh:NodeShape ;\\nsh:targetNode PROPERTY_URI ;\\nsh:property [\\n    sh:path TYPE_PROPERTY ;\\n    sh:class rdf:Property ;\\n    sh:minCount 1 ;\\n    sh:maxCount 1 \\n] .",
-                        "violations": "; ".join(undefined_properties_properties[vocab]),
-                        "num_violations": len(undefined_properties_properties[vocab]),
-                        "vocab": vocab
-                    })
-
-            if len(count_undefined_classes_shapes.keys()) > 0:
-                for vocab in count_undefined_classes_shapes.keys():
-                    ratio = (undefined_classes_ones[vocab] / count_undefined_classes_shapes[vocab])
-                    rows.append({
-                        "dimension": "Interpretability",
-                        "metric_id": "ITP3",
-                        "metric": "Invalid usage of undefined classes and properties",
-                        "score": ratio,
-                        "message": "",
-                        "metric_description": "Verifies that the classes used in the dataset are defined in the vocabulary.",
-                        "metric_type": "binary",
-                        "metric_calculation": "1 if the class is defined, 0 otherwise",
-                        "meta_metric_calculation": "Number of defined classes used / Number of classes used in the dataset (from the vocabulary)",
-                        'shape_name': 'UndefinedClassShape',
-                        "shape_template": "ex:UndefinedClassShape \\na sh:NodeShape ;\\nsh:targetNode CLASS_URI ;\\nsh:property [\\n    sh:path TYPE_PROPERTY ;\\n    sh:class rdfs:Class ;\\n    sh:minCount 1 ;\\n    sh:maxCount 1 ;\\n] .",
-                        "violations": "; ".join(undefined_classes_classes[vocab]),
-                        "num_violations": len(undefined_classes_classes[vocab]),
-                        "vocab": vocab
-                    })
-
-            if count_deprecated_properties_shapes > 0:
-                ratio = (deprecated_property_ones/count_deprecated_properties_shapes)
-                rows.append({
-                    "dimension": "Consistency",
-                    "metric_id": "CN4",
-                    "metric": "Members of owl:DeprecatedClass or owl:DeprecatedProperty not used",
-                    "score": ratio,
-                    "message": '',
-                    "metric_description": "Verifies that deprecated properties aren't used",
-                    'metric_type': 'count',
-                    'metric_calculation': '1 - (Number of entities that use the property / Number of entities)',
-                    'meta_metric_calculation': 'Number of unused deprecated properties / Number of deprecated properties',
-                    'shape_name': 'DeprecatedPropertiesShape',
-                    'shape_template': "ex:DeprecatedPropertiesShape a sh:NodeShape ;\\n\\tsh:targetSubjectsOf TYPE_PROPERTY ;\\n\\tsh:or ( \\n\t\t[ sh:path rdf:type ; sh:hasValue rdfs:Class ; ] \\n\t\t[ sh:path rdf:type ; sh:hasValue rdf:Property ; ] \\n\t\t[ sh:path PROPERTY_URI ;\\n\t\t sh:maxCount 0 ; ] \\n\t) .",
-                    'violations': '; '.join([f'({p},{s})' for p, s in deprecated_properties_properties]),
-                    'num_violations': len(deprecated_properties_properties),
-                    'vocab': ''
-                })
+            metric_name = "deprecated_property"
+            if self.aggregate_dict_counter[metric_name][f'count_{metric_name}_shapes'] > 0:
+                ratio = (self.aggregate_dict_counter[metric_name][f'{metric_name}_ones']/self.aggregate_dict_counter[metric_name][f'count_{metric_name}_shapes'])
+                violations = '; '.join([f'({p},{s})' for p, s in self.aggregate_dict_counter[metric_name][f'{metric_name}_properties']])
+                num_violations = len(self.aggregate_dict_counter[metric_name][f'{metric_name}_properties'])
+                rows.append(self.create_metric_info(metric_name, ratio, violations, num_violations))
                     
 
             # this shape is instantiated for every property used in the dataset that
             # has a domain defined
-            if count_correct_domain_shapes > 0:
-                self.graph_profile['num_properties_domain'] = count_correct_domain_shapes
+            metric_name = "correct_domain"
+            if self.aggregate_dict_counter[metric_name][f'count_{metric_name}_shapes'] > 0:
+                self.graph_profile['num_properties_domain'] = self.aggregate_dict_counter[metric_name][f'count_{metric_name}_shapes']
 
             # this shape is instantiated for every property defined in all vocabs
-            if count_misuse_properties_shapes > 0:
-                self.graph_profile['num_properties_vocabularies'] = count_misuse_properties_shapes
+            metric_name = "misplaced_properties"
+            if self.aggregate_dict_counter[metric_name][f'count_{metric_name}_shapes'] > 0:
+                self.graph_profile['num_properties_vocabularies'] = self.aggregate_dict_counter[metric_name][f'count_{metric_name}_shapes']
 
             # this shapes is instantiated for every class defined in the vocab
-            if count_schema_completeness_class_usage_shapes > 0:
-                self.graph_profile['num_classes_vocabularies'] = count_schema_completeness_class_usage_shapes
+            metric_name = 'schema_completeness_class_usage'
+            if self.aggregate_dict_counter[metric_name][f'count_{metric_name}_shapes'] > 0:
+                self.graph_profile['num_classes_vocabularies'] = self.aggregate_dict_counter[metric_name][f'count_{metric_name}_shapes']
 
         output_csv_path = f'{results_folder}/dq_assessment_{self.dataset_name}.csv'
 

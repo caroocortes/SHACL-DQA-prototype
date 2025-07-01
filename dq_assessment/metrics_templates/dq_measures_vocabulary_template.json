@@ -9,7 +9,7 @@
         "description": "Human readable labels in classes",
         "metric_type": "count",
         "metric_calculation": "1 - (Number of violations / Number of classes)",
-        "shape_template": "ex:LabelForClassesShape\na sh:NodeShape ;\nsh:targetClass rdfs:Class ;\nsh:property [\nsh:path LABELING_PROPERTY ;\nsh:minCount 1 ;\n]."
+        "shape_template": "ex:LabelForClassesShape\\na sh:NodeShape ;\\nsh:targetClass rdfs:Class ;\\nsh:property [\\n\\tsh:path LABELING_PROPERTY ;\\n\\tsh:minCount 1 ;\\n]."
     },
     "LabelForProperties": {
         "dimension": "Understandability",
@@ -21,6 +21,6 @@
         "description": "Human readable labels in properties",
         "metric_type": "count",
         "metric_calculation": "1 - (Number of violations / Number of properties)",
-        "shape_template": "ex:LabelForPropertiesShape\na sh:NodeShape ;\nsh:targetClass rdf:Property ;\nsh:property [\nsh:path LABELING_PROPERTY ;\nsh:minCount 1 ;\n]."
+        "shape_template": "ex:LabelForPropertiesShape\\na sh:NodeShape ;\\nsh:targetClass rdf:Property ;\\nsh:property [\\n\\tsh:path LABELING_PROPERTY ;\\n\\tsh:minCount 1 ;\\n]."
     }
 }

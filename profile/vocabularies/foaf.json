@@ -284,6 +284,10 @@
     "irreflexive": [],
     "disjoint_classes": [
         [
+            "http://xmlns.com/foaf/0.1/Document",
+            "http://xmlns.com/foaf/0.1/Project"
+        ],
+        [
             "http://xmlns.com/foaf/0.1/Organization",
             "http://xmlns.com/foaf/0.1/Person"
         ],
@@ -293,10 +297,6 @@
         ],
         [
             "http://xmlns.com/foaf/0.1/Person",
-            "http://xmlns.com/foaf/0.1/Project"
-        ],
-        [
-            "http://xmlns.com/foaf/0.1/Document",
             "http://xmlns.com/foaf/0.1/Project"
         ]
     ],
@@ -310,5 +310,7 @@
         }
     },
     "num_classes": 13,
-    "num_properties": 61
+    "num_properties": 61,
+    "num_all_classes": 13,
+    "num_all_properties": 121
 }

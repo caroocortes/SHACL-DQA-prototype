@@ -196,12 +196,12 @@ ex:DifferentLanguagesLabelsEntitiesShape
     sh:targetSubjectsOf <{{type_property}}> ;
     sh:or (
         [
-            sh:path rdf:type ;
-            sh:hasValue rdfs:Class ;
+            sh:path rdf:type;
+            sh:hasValue rdfs:Class;
         ]
         [
-            sh:path rdf:type ;
-            sh:hasValue rdf:Property ;
+            sh:path rdf:type;
+            sh:hasValue rdf:Property;
         ]
         [
             sh:path <{{labeling_property}}> ;
@@ -217,12 +217,12 @@ ex:DifferentLanguagesDescriptionsEntitiesShape
     sh:targetSubjectsOf <{{type_property}}> ;
     sh:or (
         [
-            sh:path rdf:type ;
-            sh:hasValue rdfs:Class ;
+            sh:path rdf:type;
+            sh:hasValue rdfs:Class;
         ]
         [
-            sh:path rdf:type ;
-            sh:hasValue rdf:Property ;
+            sh:path rdf:type;
+            sh:hasValue rdf:Property;
         ]
         [
             sh:path <{{description_property}}> ;
@@ -290,7 +290,7 @@ ex:EntitiesDisjointClassesShape_{{shape_id}}
     ].
 {%- endmacro %}
 
-{% macro consistency_misuse_properties(shape_index, property_uri, type_property) -%}
+{% macro consistency_misplaced_properties(shape_index, property_uri, type_property) -%}
 ex:MisplacedPropertiesShape_{{shape_index}}
     a sh:NodeShape ;
     sh:targetNode <{{property_uri}}> ;
@@ -299,6 +299,27 @@ ex:MisplacedPropertiesShape_{{shape_index}}
         sh:maxCount 0;
         sh:message "MisplacedProperties_{{shape_index}} - The property {{property_uri}} is being used as a class" ;
     ].
+{%- endmacro %}
+
+{% macro consistency_misplaced_classes(shape_index, class_uri, type_property) -%}
+ex:MisplacedClassesShape_{{shape_index}}
+    a sh:NodeShape ;
+    sh:targetSubjectsOf <{{type_property}}> ;
+    sh:or (
+        [
+            sh:path rdf:type ;
+            sh:hasValue rdfs:Class ;
+        ]
+        [
+            sh:path rdf:type ;
+            sh:hasValue rdf:Property ;
+        ]
+        [
+            sh:path  <{{class_uri}}> ;
+            sh:maxCount 0;
+            sh:message "MisplacedClasses_{{shape_index}} - The class {{class_uri}} is being used as a property" ;
+        ]
+    ).
 {%- endmacro %}
 
 {% macro consistency_misuse_object_properties(shape_index, property_uri) -%}
@@ -397,20 +418,74 @@ ex:CorrectDomainShape_{{shape_index}}
     sh:class <{{domain_class}}> .
 {%- endmacro %}
 
-{% macro consistency_correct_range_datatype(shape_index, property_uri, datatype_uri) -%}
-ex:CorrectRangeDatatypeShape_{{shape_index}}
+{% macro consistency_correct_domain_node_kind(shape_index, property_uri) -%}
+ex:CorrectDomainShape_{{shape_index}}
     a sh:NodeShape ;
-    sh:targetObjectsOf <{{property_uri}}> ;
-    sh:message "CorrectRangeDatatype_{{shape_index}} - The property {{property_uri}} is used with an incorrect range" ;
-    sh:datatype <{{datatype_uri}}> .
+    sh:targetSubjectsOf <{{property_uri}}> ;
+    sh:nodeKind sh:BlankNodeOrIri ;
+    sh:message "CorrectDomain_{{shape_index}} - The property {{property_uri}} is used with an incorrect domain" .
+{%- endmacro %}
+
+{% macro consistency_correct_range_datatype(shape_index, property_uri, datatype_uri) -%}
+ex:CorrectRangeShape_{{shape_index}}
+    a sh:NodeShape ;
+    sh:targetSubjectsOf <{{property_uri}}>;
+    sh:property [
+        sh:path <{{property_uri}}> ;
+        sh:message "CorrectRange_{{shape_index}} - The property {{property_uri}} is used with an incorrect range" ;
+        sh:datatype <{{datatype_uri}}>
+    ].
+{%- endmacro %}
+
+{% macro consistency_correct_range_node_kind_literal(shape_index, property_uri) -%}
+ex:CorrectRangeShape_{{shape_index}}
+    a sh:NodeShape ;
+    sh:targetSubjectsOf <{{property_uri}}>;
+    sh:property [
+        sh:path <{{property_uri}}> ;
+        sh:nodeKind sh:Literal ;
+        sh:message "CorrectRange_{{shape_index}} - The property {{property_uri}} is used with an incorrect range"
+    ].
 {%- endmacro %}
 
 {% macro consistency_correct_range_object(shape_index, property_uri, class_uri) -%}
-ex:CorrectRangeObjectShape_{{shape_index}}
+ex:CorrectRangeShape_{{shape_index}}
     a sh:NodeShape ;
-    sh:targetObjectsOf <{{property_uri}}> ;
-    sh:message "CorrectRangeObject_{{shape_index}} - The property {{property_uri}} is used with an incorrect range" ;
-    sh:class <{{class_uri}}> .
+    sh:targetSubjectsOf <{{property_uri}}>;
+    sh:property [
+        sh:path <{{property_uri}}> ;
+        sh:message "CorrectRange_{{shape_index}} - The property {{property_uri}} is used with an incorrect range" ;
+        sh:class <{{class_uri}}> 
+    ].
+{%- endmacro %}
+
+{% macro consistency_correct_range_node_kind_owl_thing(shape_index, property_uri) -%}
+ex:CorrectRangeShape_{{shape_index}}
+    a sh:NodeShape ;
+    sh:targetSubjectsOf <{{property_uri}}>;
+    sh:property [
+        sh:path <{{property_uri}}> ;
+        sh:nodeKind sh:BlankNodeOrIri ;
+        sh:message "CorrectRange_{{shape_index}} - The property {{property_uri}} is used with an incorrect range"
+    ] .
+{%- endmacro %}
+
+{% macro consistency_correct_range_node_kind_rdfs_resource(shape_index, property_uri) -%}
+ex:CorrectRangeShape_{{shape_index}}
+    a sh:NodeShape ;
+    sh:targetSubjectsOf <{{property_uri}}>;
+    sh:property [
+    sh:path <{{property_uri}}> ;
+        sh:or (
+            [
+                sh:nodeKind sh:BlankNodeOrIri ;
+                sh:message "CorrectRange_{{shape_index}} - The property {{property_uri}} is used with an incorrect range"]
+            [
+                sh:nodeKind sh:Literal ;
+                sh:message "CorrectRange_{{shape_index}} - The property {{property_uri}} is used with an incorrect range"
+            ]
+        );
+    ] .
 {%- endmacro %}
 
 {% macro consistency_irreflexive_property(shape_index, property_uri) -%}

@@ -5,6 +5,7 @@ ex:MachineReadableShape
     sh:property [
         sh:message "MachineReadableLicense - The dataset must provide a machine readable indication of a license";
         sh:path dcterms:license ;
+        sh:class dcterms:LicenseDocument;
         sh:minCount 1 ;
     ].
 

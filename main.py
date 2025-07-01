@@ -10,7 +10,7 @@ def execute_assessment():
     dq_assessment = DQAssessment(CONFIG_FILE_PATH, 
                                  metadata_shapes=True, 
                                  data_shapes=True, 
-                                 vocab_shapes=False)
+                                 vocab_shapes=True)
 
     dq_assessment.run()
 
@@ -34,6 +34,9 @@ def execute_assessment():
 
     with open(output_path, "w", encoding="utf-8") as f:
         json.dump(run_info, f, indent=4)
+
+    with open(f'{PROFILE_DATASETS_FOLDER_PATH}/{dq_assessment.dataset_name}.json', "w", encoding="utf-8") as f:
+        json.dump(dq_assessment.graph_profile, f, indent=4)
 
 if "__main__":
     execute_assessment()

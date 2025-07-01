@@ -202,35 +202,51 @@
         "http://www.co-ode.org/ontologies/pizza/pizza.owl#cookedDate",
         "http://www.co-ode.org/ontologies/pizza/pizza.owl#madeIn"
     ],
-    "reflexive": [],
+    "reflexive": [
+        "http://www.co-ode.org/ontologies/pizza/pizza.owl#isDifferentFrom"
+    ],
     "irreflexive": [
         "http://www.co-ode.org/ontologies/pizza/pizza.owl#isDifferentFrom"
     ],
+    "transitive": [
+        "http://www.co-ode.org/ontologies/pizza/pizza.owl#hasIngredient",
+        "http://www.co-ode.org/ontologies/pizza/pizza.owl#isIngredientOf"
+    ],
+    "asymmetric": [],
+    "symmetric": [],
     "disjoint_classes": [
         [
             "http://www.co-ode.org/ontologies/pizza/pizza.owl#NonVegetarianPizza",
             "http://www.co-ode.org/ontologies/pizza/pizza.owl#VegetarianPizza"
         ],
         [
-            "http://www.co-ode.org/ontologies/pizza/pizza.owl#SlicedTomatoTopping",
-            "http://www.co-ode.org/ontologies/pizza/pizza.owl#SundriedTomatoTopping"
+            "http://www.co-ode.org/ontologies/pizza/pizza.owl#DomainConcept",
+            "http://www.co-ode.org/ontologies/pizza/pizza.owl#ValuePartition"
         ],
         [
             "http://www.co-ode.org/ontologies/pizza/pizza.owl#DeepPanBase",
             "http://www.co-ode.org/ontologies/pizza/pizza.owl#ThinAndCrispyBase"
         ],
         [
-            "http://www.co-ode.org/ontologies/pizza/pizza.owl#DomainConcept",
-            "http://www.co-ode.org/ontologies/pizza/pizza.owl#ValuePartition"
-        ],
-        [
             "http://www.co-ode.org/ontologies/pizza/pizza.owl#CajunSpiceTopping",
             "http://www.co-ode.org/ontologies/pizza/pizza.owl#RosemaryTopping"
+        ],
+        [
+            "http://www.co-ode.org/ontologies/pizza/pizza.owl#SlicedTomatoTopping",
+            "http://www.co-ode.org/ontologies/pizza/pizza.owl#SundriedTomatoTopping"
         ]
     ],
-    "rdf_properties": {},
+    "rdf_properties": {
+        "http://www.co-ode.org/ontologies/pizza/pizza.owl#AuxPropertyNoLabel": {
+            "domain": null,
+            "range": {
+                "type": null,
+                "value": null
+            }
+        }
+    },
     "num_classes": 101,
-    "num_properties": 19,
+    "num_properties": 20,
     "num_all_classes": 103,
-    "num_all_properties": 39
+    "num_all_properties": 21
 }

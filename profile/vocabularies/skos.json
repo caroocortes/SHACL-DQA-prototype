@@ -44,7 +44,7 @@
         },
         "http://www.w3.org/2004/02/skos/core#member": {
             "domain": "http://www.w3.org/2004/02/skos/core#Collection",
-            "range": "N9bc633ff2a3a4a599a255b24ffe6f918"
+            "range": "Nc3a16b0ca81a4eb9906e0e8078885581"
         },
         "http://www.w3.org/2004/02/skos/core#memberList": {
             "domain": "http://www.w3.org/2004/02/skos/core#OrderedCollection",
@@ -105,5 +105,7 @@
     ],
     "rdf_properties": {},
     "num_classes": 4,
-    "num_properties": 18
+    "num_properties": 18,
+    "num_all_classes": 4,
+    "num_all_properties": 36
 }

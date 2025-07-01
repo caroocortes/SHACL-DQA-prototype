@@ -175,6 +175,9 @@ def profile_vocab(dq_assessment, vocab):
         "functional": [],
         "reflexive": [],
         "irreflexive": [],
+        "transitive": [],
+        "asymmetric": [],
+        "symmetric": [],
         "disjoint_classes": set(), 
         "rdf_properties": {},
         "num_classes": 0,
@@ -224,6 +227,9 @@ def profile_vocab(dq_assessment, vocab):
     # Number of properties      
     ontology_info['num_properties'] += len(ontology_info['datatype_properties'].keys())
 
+    dt_props = ontology_info["object_properties"].keys()
+    obj_props = ontology_info["datatype_properties"].keys()
+
     # Deprecated properties
     for s in g.subjects(OWL.deprecated, Literal(True)):
         if (s, RDF.type, OWL.ObjectProperty) in g or (s, RDF.type, OWL.DatatypeProperty) in g:
@@ -246,29 +252,258 @@ def profile_vocab(dq_assessment, vocab):
 
     # Inverse functional
     for s in g.subjects(RDF.type, OWL.InverseFunctionalProperty):
-        if vocab_ns and str(s).startswith(vocab_ns) and not s in g.subjects(OWL.deprecated, Literal(True)) and not s in g.subjects(RDF.type, OWL.DeprecatedProperty):
+        if (vocab_ns and str(s).startswith(vocab_ns) and 
+            s not in g.subjects(OWL.deprecated, Literal(True)) and 
+            s not in g.subjects(RDF.type, OWL.DeprecatedProperty)):
+
             ontology_info["inverse_functional"].append(s)
+
+            if (s not in dt_props and s not in obj_props and s not in ontology_info["rdf_properties"].keys()):
+                ontology_info['num_properties'] += 1
+                if range_ is not None and (str(range_) == str(RDFS.Literal) or str(range_).startswith(str(XSD))):
+                        ontology_info["rdf_properties"][s] = {
+                            "domain": domain,
+                            "range": {
+                                "type": "literal",
+                                "value": range_
+                            }
+                        }
+                elif range_ is not None:   
+                    ontology_info["rdf_properties"][s] = {
+                        "domain": domain,
+                        "range": {
+                            "type": "class",
+                            "value": range_
+                        }
+                    }
+                else:
+                    ontology_info["rdf_properties"][s] = {
+                        "domain": domain,
+                        "range": {
+                            "type": None,
+                            "value": None
+                        }
+                    }
 
     # Functional
     for s in g.subjects(RDF.type, OWL.FunctionalProperty):
-        if vocab_ns and str(s).startswith(vocab_ns) and not s in g.subjects(OWL.deprecated, Literal(True)) and not s in g.subjects(RDF.type, OWL.DeprecatedProperty):
+        if (vocab_ns and str(s).startswith(vocab_ns) and 
+            s not in g.subjects(OWL.deprecated, Literal(True)) and 
+            s not in g.subjects(RDF.type, OWL.DeprecatedProperty)):
+            
             ontology_info["functional"].append(s)
+            
+            if (s not in dt_props and s not in obj_props and s not in ontology_info["rdf_properties"].keys()):
+                ontology_info['num_properties'] += 1
+                if range_ is not None and (str(range_) == str(RDFS.Literal) or str(range_).startswith(str(XSD))):
+                        ontology_info["rdf_properties"][s] = {
+                            "domain": domain,
+                            "range": {
+                                "type": "literal",
+                                "value": range_
+                            }
+                        }
+                elif range_ is not None:   
+                    ontology_info["rdf_properties"][s] = {
+                        "domain": domain,
+                        "range": {
+                            "type": "class",
+                            "value": range_
+                        }
+                    }
+                else:
+                    ontology_info["rdf_properties"][s] = {
+                        "domain": domain,
+                        "range": {
+                            "type": None,
+                            "value": None
+                        }
+                    }
 
     # Irreflexive
     for s in g.subjects(RDF.type, OWL.IrreflexiveProperty):
-        if vocab_ns and str(s).startswith(vocab_ns) and not s in g.subjects(OWL.deprecated, Literal(True)) and not s in g.subjects(RDF.type, OWL.DeprecatedProperty):
+        if (vocab_ns and str(s).startswith(vocab_ns) and 
+            s not in g.subjects(OWL.deprecated, Literal(True)) and 
+            s not in g.subjects(RDF.type, OWL.DeprecatedProperty)):
+            
             ontology_info["irreflexive"].append(s)
 
+            if (s not in dt_props and s not in obj_props and s not in ontology_info["rdf_properties"].keys()):
+                ontology_info['num_properties'] += 1
+                if range_ is not None and (str(range_) == str(RDFS.Literal) or str(range_).startswith(str(XSD))):
+                        ontology_info["rdf_properties"][s] = {
+                            "domain": domain,
+                            "range": {
+                                "type": "literal",
+                                "value": range_
+                            }
+                        }
+                elif range_ is not None:   
+                    ontology_info["rdf_properties"][s] = {
+                        "domain": domain,
+                        "range": {
+                            "type": "class",
+                            "value": range_
+                        }
+                    }
+                else:
+                    ontology_info["rdf_properties"][s] = {
+                        "domain": domain,
+                        "range": {
+                            "type": None,
+                            "value": None
+                        }
+                    }
+
+   # Reflexive 
+    for s in g.subjects(RDF.type, OWL.IrreflexiveProperty):
+        if (vocab_ns and str(s).startswith(vocab_ns) and 
+            s not in g.subjects(OWL.deprecated, Literal(True)) and 
+            s not in g.subjects(RDF.type, OWL.DeprecatedProperty)):
+            
+            ontology_info["reflexive"].append(s)
+
+            if (s not in dt_props and s not in obj_props and s not in ontology_info["rdf_properties"].keys()):
+                ontology_info['num_properties'] += 1
+                if range_ is not None and (str(range_) == str(RDFS.Literal) or str(range_).startswith(str(XSD))):
+                        ontology_info["rdf_properties"][s] = {
+                            "domain": domain,
+                            "range": {
+                                "type": "literal",
+                                "value": range_
+                            }
+                        }
+                elif range_ is not None:   
+                    ontology_info["rdf_properties"][s] = {
+                        "domain": domain,
+                        "range": {
+                            "type": "class",
+                            "value": range_
+                        }
+                    }
+                else:
+                    ontology_info["rdf_properties"][s] = {
+                        "domain": domain,
+                        "range": {
+                            "type": None,
+                            "value": None
+                        }
+                    }
+
+    # Symmetric
+    for s in g.subjects(RDF.type, OWL.SymmetricProperty):
+        if (vocab_ns and str(s).startswith(vocab_ns) and 
+            s not in g.subjects(OWL.deprecated, Literal(True)) and 
+            s not in g.subjects(RDF.type, OWL.DeprecatedProperty)):
+
+            ontology_info["symmetric"].append(s)
+            
+            if (s not in dt_props and s not in obj_props and s not in ontology_info["rdf_properties"].keys()):
+                ontology_info['num_properties'] += 1
+                if range_ is not None and (str(range_) == str(RDFS.Literal) or str(range_).startswith(str(XSD))):
+                        ontology_info["rdf_properties"][s] = {
+                            "domain": domain,
+                            "range": {
+                                "type": "literal",
+                                "value": range_
+                            }
+                        }
+                elif range_ is not None:   
+                    ontology_info["rdf_properties"][s] = {
+                        "domain": domain,
+                        "range": {
+                            "type": "class",
+                            "value": range_
+                        }
+                    }
+                else:
+                    ontology_info["rdf_properties"][s] = {
+                        "domain": domain,
+                        "range": {
+                            "type": None,
+                            "value": None
+                        }
+                    }
+
+    # Asymmetric
+    for s in g.subjects(RDF.type, OWL.AsymmetricProperty):
+        if (vocab_ns and str(s).startswith(vocab_ns) and 
+            s not in g.subjects(OWL.deprecated, Literal(True)) and 
+            s not in g.subjects(RDF.type, OWL.DeprecatedProperty) ):
+            
+            ontology_info["asymmetric"].append(s)
+
+            if (s not in dt_props and s not in obj_props and s not in ontology_info["rdf_properties"].keys()):
+                ontology_info['num_properties'] += 1
+                if range_ is not None and (str(range_) == str(RDFS.Literal) or str(range_).startswith(str(XSD))):
+                        ontology_info["rdf_properties"][s] = {
+                            "domain": domain,
+                            "range": {
+                                "type": "literal",
+                                "value": range_
+                            }
+                        }
+                elif range_ is not None:   
+                    ontology_info["rdf_properties"][s] = {
+                        "domain": domain,
+                        "range": {
+                            "type": "class",
+                            "value": range_
+                        }
+                    }
+                else:
+                    ontology_info["rdf_properties"][s] = {
+                        "domain": domain,
+                        "range": {
+                            "type": None,
+                            "value": None
+                        }
+                    }
+
+    # Transitive
+    for s in g.subjects(RDF.type, OWL.TransitiveProperty):
+        if (vocab_ns and str(s).startswith(vocab_ns) and 
+            s not in g.subjects(OWL.deprecated, Literal(True)) and 
+            s not in g.subjects(RDF.type, OWL.DeprecatedProperty)):
+            
+            ontology_info["transitive"].append(s)
+
+            if (s not in dt_props and s not in obj_props and s not in ontology_info["rdf_properties"].keys()):
+                ontology_info['num_properties'] += 1
+                if range_ is not None and (str(range_) == str(RDFS.Literal) or str(range_).startswith(str(XSD))):
+                    ontology_info["rdf_properties"][s] = {
+                        "domain": domain,
+                        "range": {
+                            "type": "literal",
+                            "value": range_
+                        }
+                    }
+                elif range_ is not None:   
+                    ontology_info["rdf_properties"][s] = {
+                        "domain": domain,
+                        "range": {
+                            "type": "class",
+                            "value": range_
+                        }
+                    }
+                else:
+                    ontology_info["rdf_properties"][s] = {
+                        "domain": domain,
+                        "range": {
+                            "type": None,
+                            "value": None
+                        }
+                    }
+
     # RDF properties
-    dt_props = ontology_info["object_properties"].keys()
-    obj_props = ontology_info["datatype_properties"].keys()
-    
     for s in g.subjects(RDF.type, RDF.Property):
 
-        if s not in dt_props and s not in obj_props:
+        if (s not in dt_props and s not in obj_props and s not in ontology_info["rdf_properties"].keys()):
             if vocab_ns and str(s).startswith(vocab_ns) and not s in g.subjects(OWL.deprecated, Literal(True)) and not s in g.subjects(RDF.type, OWL.DeprecatedProperty):
                 domain = g.value(s, RDFS.domain)
                 range_ = g.value(s, RDFS.range)
+
+                ontology_info['num_properties'] += 1
 
                 if range_ is not None and (str(range_) == str(RDFS.Literal) or str(range_).startswith(str(XSD))):
                     ontology_info["rdf_properties"][s] = {
@@ -286,13 +521,25 @@ def profile_vocab(dq_assessment, vocab):
                             "value": range_
                         }
                     }
-    
+                else:
+                    ontology_info["rdf_properties"][s] = {
+                        "domain": domain,
+                        "range": {
+                            "type": None,
+                            "value": None
+                        }
+                    }
+
     for s in g.subjects(RDF.type, OWL.OntologyProperty):
 
-        if s not in dt_props and s not in obj_props:
+        if (s not in dt_props and s not in obj_props and s not in ontology_info["rdf_properties"].keys()):
             if vocab_ns and str(s).startswith(vocab_ns) and not s in g.subjects(OWL.deprecated, Literal(True)) and not s in g.subjects(RDF.type, OWL.DeprecatedProperty):
                 domain = g.value(s, RDFS.domain)
                 range_ = g.value(s, RDFS.range)
+
+                ontology_info['num_properties'] += 1
+                print('LA ONTOLOGY PROPERTY!!!!!!')
+                print(s)
 
                 if range_ is not None and (str(range_) == str(RDFS.Literal) or str(range_).startswith(str(XSD))):
                     ontology_info["rdf_properties"][s] = {
@@ -310,9 +557,15 @@ def profile_vocab(dq_assessment, vocab):
                             "value": range_
                         }
                     }
+                else:
+                    ontology_info["rdf_properties"][s] = {
+                        "domain": domain,
+                        "range": {
+                            "type": None,
+                            "value": None
+                        }
+                    }
     
-    # Number of properties      
-    ontology_info['num_properties'] += len(ontology_info['rdf_properties'].keys())
 
     # Disjoint via owl:disjointWith
     disjoint_pairs = set()
@@ -322,12 +575,12 @@ def profile_vocab(dq_assessment, vocab):
 
     ontology_info['disjoint_classes'] = [sorted(list(pair)) for pair in disjoint_pairs]
 
+    # num_classes includes all classes, except deprecated ones
     ontology_info['num_all_classes'] = ontology_info["num_classes"] + len(ontology_info['deprecated_classes'])
+
+    # num_properties includes all properties, except deprecated ones
     ontology_info['num_all_properties'] = ( ontology_info['num_properties'] + 
-                                           len(ontology_info['datatype_properties']) +
-                                            len(ontology_info['object_properties'])  + 
-                                            len(ontology_info['deprecated_properties'])
-                                        )
+                                            len(ontology_info['deprecated_properties']))
 
     os.makedirs(PROFILE_VOCABULARIES_FOLDER_PATH, exist_ok=True)
     with open(f'{PROFILE_VOCABULARIES_FOLDER_PATH}/{vocab_name}.json', "w", encoding="utf-8") as f:
@@ -363,7 +616,7 @@ def create_shape_graph(shacl_shapes):
 
     return shapes_graph
 
-def validate_shacl_constraints(data_graph_file_path, data_graph_file_format, shapes_graph, vocabs=None, config=None):
+def validate_shacl_constraints(graph_profile, data_graph_file_path, data_graph_file_format, shapes_graph, vocabs=None, config=None):
     """
     Validates a data graph against a shapes graph
     If ont_files are provided, the ontologies are incorporated to the data graph. In this case, we also generate triples
@@ -397,49 +650,68 @@ def validate_shacl_constraints(data_graph_file_path, data_graph_file_format, sha
             OWL.OntologyProperty,
         }
 
-        # Types of OWL classes to consider
-        owl_classes = {
-            OWL.Class,
-            OWL.DeprecatedClass,
-        }
+        if graph_profile: # data instances
+        
+            # Types of OWL classes to consider
+            owl_classes = {
+                OWL.Class,
+                OWL.DeprecatedClass,
+                OWL.Restriction,
+                OWL.AllDisjointClasses,
+                OWL.AllDisjointProperties,
+                OWL.AllDifferent,
+            }
 
-        # Allowed properties to retain structure
-        allowed_predicates = {
-            RDFS.domain,
-            RDFS.range
-        }
+            # Not allowed
+            not_allowed = {
+                OWL.AnnotationProperty,
+                OWL.Ontology,
+            }
 
-        # Collect classes and properties
-        relevant_subjects = set()
-        for g in ont_graphs:
-            for owl_prop in owl_properties:
-                for s in g.subjects(RDF.type, owl_prop):
-                    if isinstance(s, BNode):
-                        continue
-                    relevant_subjects.add(s)
-                    merged_ont.add((s, RDF.type, owl_prop))
-                    merged_ont.add((s, RDF.type, RDF.Property))
+            # Collect all subjects to exclude (those typed as a 'not_allowed' property)
+            excluded_subjects = set()
+            for g in ont_graphs:
+                for prop in not_allowed:
+                    excluded_subjects.update(g.subjects(RDF.type, prop))
 
-            for owl_class in owl_classes:
-                for s in g.subjects(RDF.type, owl_class):
-                    if isinstance(s, BNode):
-                        continue
-                    relevant_subjects.add(s)
-                    merged_ont.add((s, RDF.type, owl_class))
-                    merged_ont.add((s, RDF.type, RDFS.Class))
-
-        # Copy only allowed triples related to classes and properties (I remove everything that can be in the vocab - e.g. metadata)
-        for g in ont_graphs:
-            for s in relevant_subjects:
-                for p, o in g.predicate_objects(subject=s):
-                    if p in allowed_predicates:
+            # Add triples skipping excluded subjects
+            for g in ont_graphs:
+                for s, p, o in g:
+                    if s not in excluded_subjects:
                         merged_ont.add((s, p, o))
+                        
+                        if p == RDF.type:
+                            if o in owl_properties:
+                                merged_ont.add((s, RDF.type, RDF.Property))
+                            elif o in owl_classes:
+                                merged_ont.add((s, RDF.type, RDFS.Class))
+        
+        else: # vocabularies
+            owl_classes = {
+                OWL.Class,
+                OWL.DeprecatedClass,
+            }
+
+            for g in ont_graphs:
+                for s, p, o in g:
+                    merged_ont.add((s, p, o))
+                    
+                    if p == RDF.type:
+                        if o in owl_properties:
+                            merged_ont.add((s, RDF.type, RDF.Property))
+                        elif o in owl_classes:
+                            merged_ont.add((s, RDF.type, RDFS.Class))
 
         data_graph = Graph().parse(data_graph_file_path, format=data_graph_file_format)
 
         # Merge Abox (data) + Tbox (filtered ontology)
         graph_to_validate = data_graph + merged_ont
-        graph_to_validate.serialize('aux.ttl', 'ttl')
+        graph_to_validate.serialize(format="turtle", destination='aux.ttl')
+
+        # Update for the metric calculation
+        if graph_profile and 'num_entities' in graph_profile:
+            graph_profile['num_entities'] += len(set(graph_to_validate.subjects(RDF.type, OWL.NamedIndividual)))
+
     else:
         graph_to_validate = Graph().parse(data_graph_file_path, format=data_graph_file_format)
 
@@ -449,7 +721,7 @@ def validate_shacl_constraints(data_graph_file_path, data_graph_file_format, sha
         debug=False
     )
 
-    return conforms, report_graph, validation_report
+    return conforms, report_graph, validation_report, graph_profile
 
 def get_metric_message(results_graph, result):
     
@@ -507,9 +779,6 @@ def get_denominator(metric, info, dataset_profile):
     elif metric_prefix in NUM_SUBJECTS_PER_PROPERTY:
         if "property" in info:
             return dataset_profile.get("subjects_per_property", {}).get(info['property'], 1)
-    elif metric_prefix in NUM_TRIPLES_PER_PROPERTY:
-        if "property" in info:
-            return dataset_profile.get("triples_per_property", {}).get(info['property'], 1)
     elif metric_prefix in NUM_ENTITIES_PER_CLASS:  
         if "class" in info:
             return dataset_profile.get("entities_per_class", {}).get(info['class']['first_class'], 1)
