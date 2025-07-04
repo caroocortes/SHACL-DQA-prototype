@@ -150,6 +150,9 @@
     "functional": [],
     "reflexive": [],
     "irreflexive": [],
+    "transitive": [],
+    "asymmetric": [],
+    "symmetric": [],
     "disjoint_classes": [
         [
             "http://www.opengis.net/ont/geosparql#Feature",
@@ -160,5 +163,5 @@
     "num_classes": 3,
     "num_properties": 34,
     "num_all_classes": 3,
-    "num_all_properties": 68
+    "num_all_properties": 34
 }

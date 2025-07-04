@@ -1,5 +1,5 @@
 {% macro metadata_shape() -%}
-ex:MachineReadableShape
+ex:MachineReadableLicenseShape
     a sh:NodeShape ;
     sh:targetClass void:Dataset ;
     sh:property [
@@ -109,6 +109,7 @@ ex:AvailabilityDumpShape
     sh:or (
         [
             sh:path void:dataDump ;
+            sh:nodeKind sh:IRI ;
             sh:minCount 1 ;
             sh:message "AvailabilityDump - The dataset must provide an accessible RDF dump that can be downloaded.";
         ] 
@@ -116,11 +117,6 @@ ex:AvailabilityDumpShape
             sh:path ( dcat:distribution dcat:downloadURL );
             sh:minCount 1 ;
             sh:nodeKind sh:IRI ;
-            sh:message "AvailabilityDump - The dataset must provide an accessible RDF dump that can be downloaded";
-        ]
-        [
-            sh:path ( dcat:distribution dcat:accessURL );
-            sh:minCount 1 ;
             sh:message "AvailabilityDump - The dataset must provide an accessible RDF dump that can be downloaded";
         ]
     ).

@@ -1,5 +1,5 @@
 # Path to the configuration file of the dataset
-CONFIG_FILE_PATH = 'config/pizza.ini'
+CONFIG_FILE_PATH = 'config/temples.ini'
 
 # FOLDERS PATHS
 # Stores templates for the dq assessment results
@@ -70,7 +70,7 @@ COUNT_METRICS = {"UsageExternalURIEntities",
                 "EntitiesDisjointClasses",
                 "FunctionalProperty",
                 "MalformedDatatype",
-                "MemberIncompatibleDatatype", 
+                "MalformedLiteral", 
                 "DeprecatedProperties",
                 "URISpaceComplianceEntities",
                 "URIRegexComplianceEntities"}
@@ -100,7 +100,7 @@ NUM_SUBJECTS_PER_PROPERTY = {"FunctionalProperty",
                             "MisuseOwlObjectProperties", 
                             "MisuseOwlDatatypeProperties", 
                             "MalformedDatatype",
-                            "MemberIncompatibleDatatype",
+                            "MalformedLiteral",
                             "UsageExternalURIEntities"}
 
 NUM_ENTITIES_PER_CLASS = { "EntitiesDisjointClasses"}
@@ -297,7 +297,7 @@ DQ_MEASURES_DATA_SPECIFIC = {
         "shape": "",
         "message": ""
     },
-    "MemberIncompatibleDatatype": {
+    "MalformedLiteral": {
         "dimension": "Syntactic Validity",
         "metric_id": "SV3",
         "metric": "No malformed datatype literals",

@@ -31,6 +31,9 @@
     "functional": [],
     "reflexive": [],
     "irreflexive": [],
+    "transitive": [],
+    "asymmetric": [],
+    "symmetric": [],
     "disjoint_classes": [],
     "rdf_properties": {
         "http://purl.org/dc/terms/title": {
@@ -45,6 +48,20 @@
             "range": {
                 "type": "class",
                 "value": "http://purl.org/dc/terms/Agent"
+            }
+        },
+        "http://purl.org/dc/terms/subject": {
+            "domain": null,
+            "range": {
+                "type": null,
+                "value": null
+            }
+        },
+        "http://purl.org/dc/terms/description": {
+            "domain": null,
+            "range": {
+                "type": null,
+                "value": null
             }
         },
         "http://purl.org/dc/terms/publisher": {
@@ -89,11 +106,25 @@
                 "value": "http://www.w3.org/2000/01/rdf-schema#Literal"
             }
         },
+        "http://purl.org/dc/terms/source": {
+            "domain": null,
+            "range": {
+                "type": null,
+                "value": null
+            }
+        },
         "http://purl.org/dc/terms/language": {
             "domain": null,
             "range": {
                 "type": "class",
                 "value": "http://purl.org/dc/terms/LinguisticSystem"
+            }
+        },
+        "http://purl.org/dc/terms/relation": {
+            "domain": null,
+            "range": {
+                "type": null,
+                "value": null
             }
         },
         "http://purl.org/dc/terms/coverage": {
@@ -122,6 +153,20 @@
             "range": {
                 "type": "literal",
                 "value": "http://www.w3.org/2000/01/rdf-schema#Literal"
+            }
+        },
+        "http://purl.org/dc/terms/tableOfContents": {
+            "domain": null,
+            "range": {
+                "type": null,
+                "value": null
+            }
+        },
+        "http://purl.org/dc/terms/abstract": {
+            "domain": null,
+            "range": {
+                "type": null,
+                "value": null
             }
         },
         "http://purl.org/dc/terms/created": {
@@ -171,6 +216,90 @@
             "range": {
                 "type": "class",
                 "value": "http://purl.org/dc/terms/PhysicalMedium"
+            }
+        },
+        "http://purl.org/dc/terms/isVersionOf": {
+            "domain": null,
+            "range": {
+                "type": null,
+                "value": null
+            }
+        },
+        "http://purl.org/dc/terms/hasVersion": {
+            "domain": null,
+            "range": {
+                "type": null,
+                "value": null
+            }
+        },
+        "http://purl.org/dc/terms/isReplacedBy": {
+            "domain": null,
+            "range": {
+                "type": null,
+                "value": null
+            }
+        },
+        "http://purl.org/dc/terms/replaces": {
+            "domain": null,
+            "range": {
+                "type": null,
+                "value": null
+            }
+        },
+        "http://purl.org/dc/terms/isRequiredBy": {
+            "domain": null,
+            "range": {
+                "type": null,
+                "value": null
+            }
+        },
+        "http://purl.org/dc/terms/requires": {
+            "domain": null,
+            "range": {
+                "type": null,
+                "value": null
+            }
+        },
+        "http://purl.org/dc/terms/isPartOf": {
+            "domain": null,
+            "range": {
+                "type": null,
+                "value": null
+            }
+        },
+        "http://purl.org/dc/terms/hasPart": {
+            "domain": null,
+            "range": {
+                "type": null,
+                "value": null
+            }
+        },
+        "http://purl.org/dc/terms/isReferencedBy": {
+            "domain": null,
+            "range": {
+                "type": null,
+                "value": null
+            }
+        },
+        "http://purl.org/dc/terms/references": {
+            "domain": null,
+            "range": {
+                "type": null,
+                "value": null
+            }
+        },
+        "http://purl.org/dc/terms/isFormatOf": {
+            "domain": null,
+            "range": {
+                "type": null,
+                "value": null
+            }
+        },
+        "http://purl.org/dc/terms/hasFormat": {
+            "domain": null,
+            "range": {
+                "type": null,
+                "value": null
             }
         },
         "http://purl.org/dc/terms/conformsTo": {
@@ -294,7 +423,7 @@
         }
     },
     "num_classes": 22,
-    "num_properties": 37,
+    "num_properties": 55,
     "num_all_classes": 22,
-    "num_all_properties": 37
+    "num_all_properties": 55
 }

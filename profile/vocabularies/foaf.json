@@ -282,6 +282,9 @@
     ],
     "reflexive": [],
     "irreflexive": [],
+    "transitive": [],
+    "asymmetric": [],
+    "symmetric": [],
     "disjoint_classes": [
         [
             "http://xmlns.com/foaf/0.1/Document",
@@ -302,15 +305,22 @@
     ],
     "rdf_properties": {
         "http://xmlns.com/foaf/0.1/isPrimaryTopicOf": {
-            "domain": "http://www.w3.org/2002/07/owl#Thing",
+            "domain": "http://xmlns.com/foaf/0.1/Agent",
             "range": {
-                "type": "class",
-                "value": "http://xmlns.com/foaf/0.1/Document"
+                "type": "literal",
+                "value": "http://www.w3.org/2000/01/rdf-schema#Literal"
+            }
+        },
+        "http://xmlns.com/foaf/0.1/membershipClass": {
+            "domain": null,
+            "range": {
+                "type": null,
+                "value": null
             }
         }
     },
     "num_classes": 13,
-    "num_properties": 61,
+    "num_properties": 62,
     "num_all_classes": 13,
-    "num_all_properties": 121
+    "num_all_properties": 62
 }

@@ -12,8 +12,52 @@
 @prefix ex_pizza: <http://example.org/pizza#> .
 @prefix pizza: <http://www.co-ode.org/ontologies/pizza/pizza.owl#> .
 
-ex:LabelForPropertiesShape a sh:NodeShape ;
-    sh:property [ sh:message "LabelForProperties - Properties should contain a label" ;
+ex:DatasetMetadataShape
+    a sh:NodeShape ;
+    sh:targetClass void:Dataset ;
+    sh:property [ 
+        sh:path dcterms:title ;
+        sh:minCount 1 ;
+        sh:or (
+            [
+                sh:datatype xsd:string;
+            ]
+            [
+                sh:datatype rdf:langString;
+            ]
+        );
+        sh:message "PresenceMetadata - The dataset should specify a title, description and web page";
+    ];
+    sh:property [
+        sh:path dcterms:description ;
+        sh:minCount 1 ;
+        sh:or (
+            [
+                sh:datatype xsd:string;
+            ]
+            [
+                sh:datatype rdf:langString;
+            ]
+        );
+        sh:message "PresenceMetadata - The dataset should specify a title, description and web page";
+    ];
+    sh:property [
+        sh:path foaf:homepage ;
+        sh:minCount 1 ;
+        sh:nodeKind sh:IRI;
+        sh:message "PresenceMetadata - The dataset should specify a title, description and web page";
+    ];
+    sh:or (
+        [
+            sh:path void:dataDump ;
+            sh:nodeKind sh:IRI ;
             sh:minCount 1 ;
-            sh:path rdfs:label ] ;
-    sh:targetClass rdf:Property .
+            sh:message "AvailabilityDump - The dataset must provide an accessible RDF dump that can be downloaded.";
+        ] 
+        [
+            sh:path ( dcat:distribution dcat:downloadURL );
+            sh:minCount 1 ;
+            sh:nodeKind sh:IRI ;
+            sh:message "AvailabilityDump - The dataset must provide an accessible RDF dump that can be downloaded";
+        ]
+    )    .

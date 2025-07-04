@@ -496,24 +496,13 @@ ex:IrreflexivePropertyShape_{{shape_index}}
     sh:disjoint <{{property_uri}}> .
 {%- endmacro %}
 
-{% macro syntactic_validity_malformed_datatype(shape_index, property_uri, datatype_pattern) -%}
-ex:MalformedDatatypeShape_{{shape_index}}
-    a sh:NodeShape ;
-    sh:targetSubjectsOf <{{property_uri}}> ;
-    sh:property [
-        sh:path <{{property_uri}}> ;
-        sh:pattern "{{datatype_pattern}}" ;
-        sh:message "MalformedDatatype_{{shape_index}} - The property {{property_uri}} is used with a malformed datatype" ;
-    ].
-{%- endmacro %}
-
 {% macro syntactic_validity_incompatible_datatype(shape_index, property_uri, datatype_uri) -%}
-ex:MemberIncompatibleDatatypeShape_{{shape_index}}
+ex:MalformedLiteralShape_{{shape_index}}
     a sh:NodeShape ;
     sh:targetSubjectsOf <{{property_uri}}> ;
     sh:property [
         sh:path <{{property_uri}}> ;
         sh:datatype <{{datatype_uri}}>;
-        sh:message "MemberIncompatibleDatatype_{{shape_index}} - The property {{property_uri}} is used with an incompatible datatype" ;
+        sh:message "MalformedLiteral_{{shape_index}} - The property {{property_uri}} is used with an incompatible datatype or an il-typed literal" ;
     ].
 {%- endmacro %}

@@ -11,18 +11,49 @@
     "functional": [],
     "reflexive": [],
     "irreflexive": [],
+    "transitive": [],
+    "asymmetric": [],
+    "symmetric": [],
     "disjoint_classes": [],
     "rdf_properties": {
+        "http://www.w3.org/2003/01/geo/wgs84_pos#lat": {
+            "domain": "http://www.w3.org/2003/01/geo/wgs84_pos#SpatialThing",
+            "range": {
+                "type": null,
+                "value": null
+            }
+        },
         "http://www.w3.org/2003/01/geo/wgs84_pos#location": {
             "domain": null,
             "range": {
                 "type": "class",
                 "value": "http://www.w3.org/2003/01/geo/wgs84_pos#SpatialThing"
             }
+        },
+        "http://www.w3.org/2003/01/geo/wgs84_pos#long": {
+            "domain": "http://www.w3.org/2003/01/geo/wgs84_pos#SpatialThing",
+            "range": {
+                "type": null,
+                "value": null
+            }
+        },
+        "http://www.w3.org/2003/01/geo/wgs84_pos#alt": {
+            "domain": "http://www.w3.org/2003/01/geo/wgs84_pos#SpatialThing",
+            "range": {
+                "type": null,
+                "value": null
+            }
+        },
+        "http://www.w3.org/2003/01/geo/wgs84_pos#lat_long": {
+            "domain": null,
+            "range": {
+                "type": null,
+                "value": null
+            }
         }
     },
     "num_classes": 2,
-    "num_properties": 1,
+    "num_properties": 5,
     "num_all_classes": 2,
-    "num_all_properties": 1
+    "num_all_properties": 5
 }

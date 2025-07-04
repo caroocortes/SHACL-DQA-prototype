@@ -84,7 +84,7 @@ def validate_shacl_constraints(data_graph, shape_graph, ont_files):
     return conforms, report_graph
 
 if "__main__":
-    conforms, report_graph = validate_shacl_constraints('../aux.ttl', 'test/test_shacl_shape.ttl', [])
+    conforms, report_graph = validate_shacl_constraints('test/test_graph.ttl', 'test/test_shacl_shape.ttl', [])
 
 
 # sh:or (

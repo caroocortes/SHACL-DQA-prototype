@@ -226,17 +226,17 @@ class SHACLShapeBuilder:
     def member_incompatible_datatype(self, prop, range_value):
         shape = self.template.module.syntactic_validity_incompatible_datatype(self.counter["property_counter"], prop, range_value) + '\n'
                             
-        metric_name = "MemberIncompatibleDatatype"
+        metric_name = "MalformedLiteral"
         self.create_metric_info_prop(metric_name, prop)
 
         return shape
     
-    def malformed_datatype(self, prop, regex_pattern):
-        shape = self.template.module.syntactic_validity_malformed_datatype(self.counter["property_counter"], prop, python_regex_to_shacl_regex(regex_pattern)) + '\n'
-        metric_name = "MalformedDatatype"
-        self.create_metric_info_prop(metric_name, prop)
+    # def malformed_datatype(self, prop, regex_pattern):
+    #     shape = self.template.module.syntactic_validity_malformed_datatype(self.counter["property_counter"], prop, python_regex_to_shacl_regex(regex_pattern)) + '\n'
+    #     metric_name = "MalformedDatatype"
+    #     self.create_metric_info_prop(metric_name, prop)
 
-        return shape
+    #     return shape
     
     def irreflexive_properties(self, prop):
         shape = self.template.module.consistency_irreflexive_property(self.counter["property_counter"], prop) + '\n'
@@ -349,11 +349,11 @@ class SHACLShapeBuilder:
                             shacl_shapes += self.correct_range_datatype_shape(prop, info['range'])
                             shacl_shapes += self.member_incompatible_datatype(prop, info['range'])
 
-                            datatype = info['range']
-                            regex_pattern = REGEX_PATTERNS_DICT[datatype] if datatype in REGEX_PATTERNS_DICT else None
+                            # datatype = info['range']
+                            # regex_pattern = REGEX_PATTERNS_DICT[datatype] if datatype in REGEX_PATTERNS_DICT else None
                             
-                            if regex_pattern:
-                                shacl_shapes += self.malformed_datatype(prop, regex_pattern)
+                            # if regex_pattern:
+                            #     shacl_shapes += self.malformed_datatype(prop, regex_pattern)
 
             if len(vocab_profile['irreflexive']) > 0:
                 for prop in vocab_profile['irreflexive']:
@@ -433,11 +433,11 @@ class SHACLShapeBuilder:
                                     shacl_shapes += self.correct_range_datatype_shape(prop, info['range']['value'])
                                     shacl_shapes += self.member_incompatible_datatype(prop, info['range']['value'])
 
-                                    datatype = info['range']['value']
-                                    regex_pattern = REGEX_PATTERNS_DICT[datatype] if datatype in REGEX_PATTERNS_DICT else None
+                                    # datatype = info['range']['value']
+                                    # regex_pattern = REGEX_PATTERNS_DICT[datatype] if datatype in REGEX_PATTERNS_DICT else None
                                     
-                                    if regex_pattern:
-                                        shacl_shapes += self.malformed_datatype(prop, regex_pattern)
+                                    # if regex_pattern:
+                                    #     shacl_shapes += self.malformed_datatype(prop, regex_pattern)
                                 else:
                                     shacl_shapes += self.correct_range_node_kind_shape(prop, node_kind='Literal')
                             else:

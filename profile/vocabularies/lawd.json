@@ -115,10 +115,15 @@
     "functional": [],
     "reflexive": [],
     "irreflexive": [],
+    "transitive": [],
+    "asymmetric": [],
+    "symmetric": [
+        "http://lawd.info/ontology/conjunctOf"
+    ],
     "disjoint_classes": [],
     "rdf_properties": {},
     "num_classes": 28,
     "num_properties": 19,
     "num_all_classes": 28,
-    "num_all_properties": 38
+    "num_all_properties": 19
 }

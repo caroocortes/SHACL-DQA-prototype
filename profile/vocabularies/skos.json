@@ -44,7 +44,7 @@
         },
         "http://www.w3.org/2004/02/skos/core#member": {
             "domain": "http://www.w3.org/2004/02/skos/core#Collection",
-            "range": "Nc3a16b0ca81a4eb9906e0e8078885581"
+            "range": "N0f2c3142dd24468bbc8054276ffd5c82"
         },
         "http://www.w3.org/2004/02/skos/core#memberList": {
             "domain": "http://www.w3.org/2004/02/skos/core#OrderedCollection",
@@ -89,13 +89,25 @@
     ],
     "reflexive": [],
     "irreflexive": [],
+    "transitive": [
+        "http://www.w3.org/2004/02/skos/core#broaderTransitive",
+        "http://www.w3.org/2004/02/skos/core#narrowerTransitive",
+        "http://www.w3.org/2004/02/skos/core#exactMatch"
+    ],
+    "asymmetric": [],
+    "symmetric": [
+        "http://www.w3.org/2004/02/skos/core#related",
+        "http://www.w3.org/2004/02/skos/core#relatedMatch",
+        "http://www.w3.org/2004/02/skos/core#exactMatch",
+        "http://www.w3.org/2004/02/skos/core#closeMatch"
+    ],
     "disjoint_classes": [
         [
-            "http://www.w3.org/2004/02/skos/core#Collection",
+            "http://www.w3.org/2004/02/skos/core#Concept",
             "http://www.w3.org/2004/02/skos/core#ConceptScheme"
         ],
         [
-            "http://www.w3.org/2004/02/skos/core#Concept",
+            "http://www.w3.org/2004/02/skos/core#Collection",
             "http://www.w3.org/2004/02/skos/core#ConceptScheme"
         ],
         [
@@ -103,9 +115,80 @@
             "http://www.w3.org/2004/02/skos/core#Concept"
         ]
     ],
-    "rdf_properties": {},
+    "rdf_properties": {
+        "http://www.w3.org/2004/02/skos/core#prefLabel": {
+            "domain": null,
+            "range": {
+                "type": null,
+                "value": null
+            }
+        },
+        "http://www.w3.org/2004/02/skos/core#altLabel": {
+            "domain": null,
+            "range": {
+                "type": null,
+                "value": null
+            }
+        },
+        "http://www.w3.org/2004/02/skos/core#hiddenLabel": {
+            "domain": null,
+            "range": {
+                "type": null,
+                "value": null
+            }
+        },
+        "http://www.w3.org/2004/02/skos/core#note": {
+            "domain": null,
+            "range": {
+                "type": null,
+                "value": null
+            }
+        },
+        "http://www.w3.org/2004/02/skos/core#changeNote": {
+            "domain": null,
+            "range": {
+                "type": null,
+                "value": null
+            }
+        },
+        "http://www.w3.org/2004/02/skos/core#definition": {
+            "domain": null,
+            "range": {
+                "type": null,
+                "value": null
+            }
+        },
+        "http://www.w3.org/2004/02/skos/core#editorialNote": {
+            "domain": null,
+            "range": {
+                "type": null,
+                "value": null
+            }
+        },
+        "http://www.w3.org/2004/02/skos/core#example": {
+            "domain": null,
+            "range": {
+                "type": null,
+                "value": null
+            }
+        },
+        "http://www.w3.org/2004/02/skos/core#historyNote": {
+            "domain": null,
+            "range": {
+                "type": null,
+                "value": null
+            }
+        },
+        "http://www.w3.org/2004/02/skos/core#scopeNote": {
+            "domain": null,
+            "range": {
+                "type": null,
+                "value": null
+            }
+        }
+    },
     "num_classes": 4,
-    "num_properties": 18,
+    "num_properties": 28,
     "num_all_classes": 4,
-    "num_all_properties": 36
+    "num_all_properties": 28
 }

@@ -216,16 +216,8 @@
     "symmetric": [],
     "disjoint_classes": [
         [
-            "http://www.co-ode.org/ontologies/pizza/pizza.owl#NonVegetarianPizza",
-            "http://www.co-ode.org/ontologies/pizza/pizza.owl#VegetarianPizza"
-        ],
-        [
             "http://www.co-ode.org/ontologies/pizza/pizza.owl#DomainConcept",
             "http://www.co-ode.org/ontologies/pizza/pizza.owl#ValuePartition"
-        ],
-        [
-            "http://www.co-ode.org/ontologies/pizza/pizza.owl#DeepPanBase",
-            "http://www.co-ode.org/ontologies/pizza/pizza.owl#ThinAndCrispyBase"
         ],
         [
             "http://www.co-ode.org/ontologies/pizza/pizza.owl#CajunSpiceTopping",
@@ -234,6 +226,14 @@
         [
             "http://www.co-ode.org/ontologies/pizza/pizza.owl#SlicedTomatoTopping",
             "http://www.co-ode.org/ontologies/pizza/pizza.owl#SundriedTomatoTopping"
+        ],
+        [
+            "http://www.co-ode.org/ontologies/pizza/pizza.owl#NonVegetarianPizza",
+            "http://www.co-ode.org/ontologies/pizza/pizza.owl#VegetarianPizza"
+        ],
+        [
+            "http://www.co-ode.org/ontologies/pizza/pizza.owl#DeepPanBase",
+            "http://www.co-ode.org/ontologies/pizza/pizza.owl#ThinAndCrispyBase"
         ]
     ],
     "rdf_properties": {

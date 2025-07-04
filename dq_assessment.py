@@ -4,7 +4,7 @@ import csv
 from jinja2 import Environment, FileSystemLoader
 import time
 import glob
-
+from collections import defaultdict
 from shacl_shape_builder import SHACLShapeBuilder
 from utils import *
 
@@ -589,7 +589,7 @@ class DQAssessment:
                 'score': 0,
                 'message': 'are used with incorrect range',
                 'metric_type': 'count',
-                'metric_calculation': '1 - (Number of violations / Number of triples that use the property)',
+                'metric_calculation': '1 - (Number of violations / Number of entities that use the property)',
                 'meta_metric_calculation': 'Number of properties used with a correct range / Number of properties with a defined range',
                 'shape_name': 'CorrectRangeShape',
                 "shape_template": "ex:CorrectRangeShape\\n\\ta sh:NodeShape ;\\n\\tsh:targetObjectsOf PROPERTY_URI ;\\n\\tsh:datatype DATATYPE .\\n\\t# Instead of sh:datatype, you may use sh:class CLASS, sh:nodeKind sh:Literal, \\n # or sh:nodeKind sh:BlankNodeOrIRI depending on the property's range.",
@@ -605,7 +605,7 @@ class DQAssessment:
                 'score': 0,
                 'message': 'properties are used with incorrect domains',
                 'metric_type': 'count',
-                'metric_calculation': '1 - (Number of violations / Number of triples that use the property)',
+                'metric_calculation': '1 - (Number of violations / Number of entities that use the property)',
                 "meta_metric_calculation": "Number of properties used with their correct domain / Number of properties with a defined domain",
                 'shape_name': 'CorrectDomainShape',
                 "shape_template": "ex:CorrectDomainShape\\n\\ta sh:NodeShape ;\\n\\tsh:targetSubjectsOf PROPERTY_URI ;\\n\\tsh:class CLASS .\\n\\t# If CLASS is owl:Thing, consider using sh:nodeKind sh:BlankNodeOrIRI instead.",
@@ -669,7 +669,7 @@ class DQAssessment:
                 'score': 0,
                 'message': 'object properties are used with literals or blank nodes',
                 'metric_type': 'count',
-                'metric_calculation': '1 - (Number of violations / Number of triples that use the property)',
+                'metric_calculation': '1 - (Number of violations / Number of entities that use the property)',
                 "meta_metric_calculation": "Number of owl:ObjectProperty correctly used / Number of owl:ObjectProperty",
                 'shape_name': 'MisuseOwlObjectPropertiesShape',
                 "shape_template": "ex:MisuseOwlObjectPropertiesShape\\n\\ta sh:NodeShape ;\\n\\tsh:targetObjectsOf ex:SomeObjectProperty ;\\n\\tsh:nodeKind sh:IRI .",
@@ -685,7 +685,7 @@ class DQAssessment:
                 'score': 0,
                 'message': 'datatype properties are used with IRIs',
                 'metric_type': 'count',
-                'metric_calculation': '1 - (Number of violations / Number of triples that use the property)',
+                'metric_calculation': '1 - (Number of violations / Number of entities that use the property)',
                 "meta_metric_calculation": "Number of owl:DatatypeProperty correctly used / Number of owl:DatatypeProperty",
                 'shape_name': 'MisuseOwlDatatypePropertiesShape',
                 "shape_template": "ex:MisuseOwlDatatypePropertiesShape\\n\\ta sh:NodeShape ;\\n\\tsh:targetObjectsOf ex:SomeDatatypeProperty ;\\n\\tsh:nodeKind sh:Literal .",
@@ -701,7 +701,7 @@ class DQAssessment:
                 'score': 0,
                 'message': 'properties don\'t conform to their functional characteristic',
                 'metric_type': 'count',
-                'metric_calculation': '1 - (Number of violations / Number of subjects that use the property)',
+                'metric_calculation': '1 - (Number of violations / Number of entities that use the property)',
                 "meta_metric_calculation": "Number of functional properties correctly used / Number of functional properties",
                 'shape_name': 'FunctionalPropertyShape',
                 "shape_template": "ex:FunctionalPropertyShape\\n\\ta sh:NodeShape ;\\n\\tsh:targetSubjectsOf PROPERTY_URI ;\\n\\tsh:property [\\n\\t\\tsh:path PROPERTY_URI ;\\n\\t\\tsh:maxCount 1 ;\\n\\t] .",
@@ -731,12 +731,12 @@ class DQAssessment:
                 "metric": "No malformed datatype literals",
                 "score": 0,
                 "message": "",
-                "metric_description": "Verifies that datatype properties aren't used with incorrect datatypes.",
+                "metric_description": "Verifies that datatype properties aren't used with incorrect datatypes or ill-formed literals.",
                 "metric_type": "count",
-                "metric_calculation": "1 - (Number of violations / Number of triples that use the property)",
+                "metric_calculation": "1 - (Number of violations / Number of entities that use the property)",
                 "meta_metric_calculation": "Number of correctly used properties / Number of properties with a datatype range",
-                'shape_name': 'MemberIncompatibleDatatypeShape',
-                "shape_template": "ex:MemberIncompatibleDatatypeShape\\n\\ta sh:NodeShape ;\\nsh:targetSubjectsOf PROPERTY_URI ;\\nsh:property [\\n\\tsh:path PROPERTY_URI ;\\n\\tsh:datatype DATATYPE_URI \\n] .",
+                'shape_name': 'MalformedLiteralShape',
+                "shape_template": "ex:MalformedLiteralShape\\n\\ta sh:NodeShape ;\\nsh:targetSubjectsOf PROPERTY_URI ;\\nsh:property [\\n\\tsh:path PROPERTY_URI ;\\n\\tsh:datatype DATATYPE_URI \\n] .",
                 "violations": '',
                 "num_violations": 0,
                 "vocab": ''
@@ -749,7 +749,7 @@ class DQAssessment:
                 "message": "properties are used with malformed datatype values",
                 "metric_description": "Verifies that datatype property's values follow the expected lexical syntax of the datatype.",
                 "metric_type": "count",
-                "metric_calculation": "1 - (Number of violations / Number of triples that use the property)",
+                "metric_calculation": "1 - (Number of violations / Number of entities that use the property)",
                 "meta_metric_calculation": "Number of correctly used properties / Number of properties with a datatype range",
                 'shape_name': 'MalformedDatatypeShape',
                 "shape_template": "ex:MalformedDatatypeShape \\na sh:NodeShape ;\\nsh:targetSubjectsOf PROPERTY_URI ;\\nsh:property [\\n\\tsh:path PROPERTY_URI ;\\n\\tsh:pattern DATATYPE_PATTERN ;\\n] .",
@@ -765,7 +765,7 @@ class DQAssessment:
                 "message": 'deprecated properties are used in the dataset',
                 "metric_description": "Verifies that deprecated properties aren't used",
                 'metric_type': 'count',
-                'metric_calculation': '1 - (Number of entities that use the property / Number of entities)',
+                'metric_calculation': '1 - (Number of violations / Number of entities)',
                 'meta_metric_calculation': 'Number of unused deprecated properties / Number of deprecated properties',
                 'shape_name': 'DeprecatedPropertiesShape',
                 "shape_template": "ex:DeprecatedPropertiesUsageShape\\na sh:NodeShape ;\\nsh:targetSubjectsOf TYPE_PROPERTY ;\\nsh:or (\\n[\\n\\tsh:path rdf:type ;\\n\\tsh:hasValue rdfs:Class ;\\n]\\n[\\n\\tsh:path rdf:type ;\\n\\tsh:hasValue rdf:Property ;\\n]\\n[\\n\\tsh:path PROPERTY_URI ;\\n\\tsh:maxCount 0 ;\\n]\\n) .",
@@ -1011,7 +1011,7 @@ class DQAssessment:
                     # 1 shape per property, so this counts the number of properties
                     self.create_aggregate_metric("malformed_datatype", score, property_uri, type_="properties", tuple_=True)
 
-                elif shape_name.startswith("MemberIncompatibleDatatype"):
+                elif shape_name.startswith("MalformedLiteral"):
                     self.create_aggregate_metric("incompatible_datatype", score, property_uri, type_="properties", tuple_=True)
 
                 elif shape_name.startswith("DeprecatedProperties"):
@@ -1055,7 +1055,7 @@ class DQAssessment:
                         num_violations = len(value_violations)
                         
                         if len(value_violations) > 0:
-                            violations = '; '.join([f'({property_uri},{v})' for v in value_violations])
+                            violations = f'({property_uri}); ' + violations + ' )'
 
                     rows.append({
                         'dimension': dimension,

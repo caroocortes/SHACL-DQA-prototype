@@ -183,7 +183,8 @@ def show_metric_coverage():
         hole=0.5,
         domain={'x': [0, 0.48]},
         hoverinfo="label+percent+value",
-        textinfo='percent+label'
+        textinfo='percent+label',
+        marker=dict(colors=["#76C97D", "#E9D362", "#CB614E"])
     ))
 
     fig.update_layout(

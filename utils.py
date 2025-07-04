@@ -1,13 +1,10 @@
 from pyshacl import validate
-from rdflib import Graph, RDF, RDFS, OWL, Literal, SH, URIRef, Namespace, XSD, BNode
-import pandas as pd
-from collections import defaultdict
+from rdflib import Graph, RDF, RDFS, OWL, Literal, SH, URIRef, Namespace, XSD
 import json
 import re
 from const import *
 from collections import Counter
 import os
-import requests
 
 composite_components = { 
     SH.OrConstraintComponent,
@@ -538,8 +535,6 @@ def profile_vocab(dq_assessment, vocab):
                 range_ = g.value(s, RDFS.range)
 
                 ontology_info['num_properties'] += 1
-                print('LA ONTOLOGY PROPERTY!!!!!!')
-                print(s)
 
                 if range_ is not None and (str(range_) == str(RDFS.Literal) or str(range_).startswith(str(XSD))):
                     ontology_info["rdf_properties"][s] = {
@@ -685,6 +680,9 @@ def validate_shacl_constraints(graph_profile, data_graph_file_path, data_graph_f
                                 merged_ont.add((s, RDF.type, RDF.Property))
                             elif o in owl_classes:
                                 merged_ont.add((s, RDF.type, RDFS.Class))
+                        
+                        if p == RDFS.subClassOf:
+                            merged_ont.add((s, RDF.type, o))
         
         else: # vocabularies
             owl_classes = {
@@ -711,7 +709,8 @@ def validate_shacl_constraints(graph_profile, data_graph_file_path, data_graph_f
         # Update for the metric calculation
         if graph_profile and 'num_entities' in graph_profile:
             graph_profile['num_entities'] += len(set(graph_to_validate.subjects(RDF.type, OWL.NamedIndividual)))
-
+        
+        graph_to_validate.serialize('aux.ttl', 'ttl')
     else:
         graph_to_validate = Graph().parse(data_graph_file_path, format=data_graph_file_format)
 
