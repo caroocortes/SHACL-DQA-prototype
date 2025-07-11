@@ -66,7 +66,7 @@ class SHACLShapeBuilder:
 
         metadata_file_path = self.config['settings']['metadata_file']
         metadata_file_format = self.config['settings']['metadata_file_format']
-        if "URISpacePressence" in results and results["URIRegexPressence"]['measure'] == 1:
+        if "URIRegexPressence" in results and results["URIRegexPressence"]['measure'] == 1:
             # If the metric is 1, we need to check the regex pattern against the URIs
             self.regex_pattern = get_uri_regex_pattern(metadata_file_path, metadata_file_format)
             shacl_shapes += self.template.module.understandability_uri_regex_compliance_entities(self.type_property, escape_dots_for_turtle_regex(self.regex_pattern))
@@ -135,14 +135,9 @@ class SHACLShapeBuilder:
         metric_name = f'{metric_name}_{self.counter["class_counter"]}'
         self.dq_results_intrinsic[metric_name] = metric_info
 
-        if metric_name.startswith('EntitiesDisjointClasses'):
-            self.counter["class_counter_map"][self.counter["class_counter"]] = {
-                'first_class': str(classes[0]),
-                'second_class': str(classes[1])
-            }
-        else:
+        if not metric_name.startswith('EntitiesDisjointClasses'):
             self.counter["class_counter_map"][self.counter["class_counter"]] = str(class_uri)
-        self.counter["class_counter"] += 1
+            self.counter["class_counter"] += 1
 
 
     def create_metric_info_prop(self, metric_name, prop):
@@ -223,8 +218,8 @@ class SHACLShapeBuilder:
         return shape
 
 
-    def member_incompatible_datatype(self, prop, range_value):
-        shape = self.template.module.syntactic_validity_incompatible_datatype(self.counter["property_counter"], prop, range_value) + '\n'
+    def member_malformed_literal(self, prop, range_value):
+        shape = self.template.module.syntactic_validity_malformed_literal(self.counter["property_counter"], prop, range_value) + '\n'
                             
         metric_name = "MalformedLiteral"
         self.create_metric_info_prop(metric_name, prop)
@@ -296,6 +291,23 @@ class SHACLShapeBuilder:
                         metric_name = "EntitiesDisjointClasses"
                         self.create_metric_info_class(metric_name, class_uri=None, classes=classes)
 
+                        self.counter["class_counter_map"][self.counter["class_counter"]] = {
+                            'first_class': str(classes[0]),
+                            'second_class': str(classes[1])
+                        }
+
+                        self.counter["class_counter"] += 1
+
+                    if classes[1] in classes_in_dataset:
+                        shacl_shapes += self.template.module.consistency_entities_disjoint_classes(self.counter["class_counter"], classes[1], classes[0]) + '\n'
+                        metric_name = "EntitiesDisjointClasses"
+                        self.create_metric_info_class(metric_name, class_uri=None, classes=classes)
+                        self.counter["class_counter_map"][self.counter["class_counter"]] = {
+                            'first_class': str(classes[1]),
+                            'second_class': str(classes[0])
+                        }
+                        self.counter["class_counter"] += 1
+
             if len(vocab_profile['object_properties']) > 0:
                 for prop, info in vocab_profile['object_properties'].items():
                     
@@ -347,7 +359,7 @@ class SHACLShapeBuilder:
                             self.counter["count_datatype_range_props"] += 1
 
                             shacl_shapes += self.correct_range_datatype_shape(prop, info['range'])
-                            shacl_shapes += self.member_incompatible_datatype(prop, info['range'])
+                            shacl_shapes += self.member_malformed_literal(prop, info['range'])
 
                             # datatype = info['range']
                             # regex_pattern = REGEX_PATTERNS_DICT[datatype] if datatype in REGEX_PATTERNS_DICT else None
@@ -431,7 +443,7 @@ class SHACLShapeBuilder:
                                 if info['range']['value'] != 'http://www.w3.org/2000/01/rdf-schema#Literal':
                                     self.counter["count_datatype_range_props"] += 1
                                     shacl_shapes += self.correct_range_datatype_shape(prop, info['range']['value'])
-                                    shacl_shapes += self.member_incompatible_datatype(prop, info['range']['value'])
+                                    shacl_shapes += self.member_malformed_literal(prop, info['range']['value'])
 
                                     # datatype = info['range']['value']
                                     # regex_pattern = REGEX_PATTERNS_DICT[datatype] if datatype in REGEX_PATTERNS_DICT else None

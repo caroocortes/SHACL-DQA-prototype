@@ -163,5 +163,6 @@
     "num_classes": 3,
     "num_properties": 34,
     "num_all_classes": 3,
-    "num_all_properties": 34
+    "num_all_properties": 34,
+    "num_entities": 0
 }

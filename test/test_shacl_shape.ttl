@@ -12,52 +12,23 @@
 @prefix ex_pizza: <http://example.org/pizza#> .
 @prefix pizza: <http://www.co-ode.org/ontologies/pizza/pizza.owl#> .
 
-ex:DatasetMetadataShape
-    a sh:NodeShape ;
-    sh:targetClass void:Dataset ;
+@prefix dcat: <http://www.w3.org/ns/dcat#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix ex: <https://www.example.org/> .
+@prefix foaf: <http://xmlns.com/foaf/0.1/> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+@prefix void: <http://rdfs.org/ns/void#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+ex:CorrectRangeShape_35 a sh:NodeShape ;
+    sh:targetSubjectsOf <http://www.co-ode.org/ontologies/pizza/pizza.owl#cookedDate> ;
     sh:property [ 
-        sh:path dcterms:title ;
-        sh:minCount 1 ;
-        sh:or (
-            [
-                sh:datatype xsd:string;
-            ]
-            [
-                sh:datatype rdf:langString;
-            ]
-        );
-        sh:message "PresenceMetadata - The dataset should specify a title, description and web page";
-    ];
-    sh:property [
-        sh:path dcterms:description ;
-        sh:minCount 1 ;
-        sh:or (
-            [
-                sh:datatype xsd:string;
-            ]
-            [
-                sh:datatype rdf:langString;
-            ]
-        );
-        sh:message "PresenceMetadata - The dataset should specify a title, description and web page";
-    ];
-    sh:property [
-        sh:path foaf:homepage ;
-        sh:minCount 1 ;
-        sh:nodeKind sh:IRI;
-        sh:message "PresenceMetadata - The dataset should specify a title, description and web page";
-    ];
-    sh:or (
-        [
-            sh:path void:dataDump ;
-            sh:nodeKind sh:IRI ;
-            sh:minCount 1 ;
-            sh:message "AvailabilityDump - The dataset must provide an accessible RDF dump that can be downloaded.";
-        ] 
-        [
-            sh:path ( dcat:distribution dcat:downloadURL );
-            sh:minCount 1 ;
-            sh:nodeKind sh:IRI ;
-            sh:message "AvailabilityDump - The dataset must provide an accessible RDF dump that can be downloaded";
-        ]
-    )    .
+        sh:datatype xsd:date ;
+        sh:message "CorrectRange_35 - The property http://www.co-ode.org/ontologies/pizza/pizza.owl#cookedDate is used with an incorrect range" ;
+        sh:path <http://www.co-ode.org/ontologies/pizza/pizza.owl#cookedDate> ] ;
+    sh:property [ 
+        sh:maxCount 1 ;
+        sh:message "FunctionalProperty_84 - The property http://www.co-ode.org/ontologies/pizza/pizza.owl#cookedDate is used with more than one value for the same node" ;
+        sh:path <http://www.co-ode.org/ontologies/pizza/pizza.owl#cookedDate> ] 
+    .

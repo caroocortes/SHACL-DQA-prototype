@@ -1,0 +1,98 @@
+{
+    "classes": [
+        "http://purl.org/NET/c4dm/event.owl#Event",
+        "http://purl.org/NET/c4dm/event.owl#Factor",
+        "http://purl.org/NET/c4dm/event.owl#Product"
+    ],
+    "object_properties": {
+        "http://purl.org/NET/c4dm/event.owl#agent": {
+            "domain": "http://purl.org/NET/c4dm/event.owl#Event",
+            "range": "http://xmlns.com/foaf/0.1/Agent"
+        },
+        "http://purl.org/NET/c4dm/event.owl#producedIn": {
+            "domain": null,
+            "range": null
+        },
+        "http://purl.org/NET/c4dm/event.owl#factor": {
+            "domain": "http://purl.org/NET/c4dm/event.owl#Event",
+            "range": null
+        },
+        "http://purl.org/NET/c4dm/event.owl#product": {
+            "domain": "http://purl.org/NET/c4dm/event.owl#Event",
+            "range": null
+        },
+        "http://purl.org/NET/c4dm/event.owl#factor_of": {
+            "domain": null,
+            "range": null
+        },
+        "http://purl.org/NET/c4dm/event.owl#isFactorOf": {
+            "domain": null,
+            "range": null
+        },
+        "http://purl.org/NET/c4dm/event.owl#produced_in": {
+            "domain": null,
+            "range": null
+        },
+        "http://purl.org/NET/c4dm/event.owl#hasProduct": {
+            "domain": null,
+            "range": null
+        },
+        "http://purl.org/NET/c4dm/event.owl#hasSubEvent": {
+            "domain": null,
+            "range": null
+        },
+        "http://purl.org/NET/c4dm/event.owl#sub_event": {
+            "domain": "http://purl.org/NET/c4dm/event.owl#Event",
+            "range": "http://purl.org/NET/c4dm/event.owl#Event"
+        },
+        "http://purl.org/NET/c4dm/event.owl#time": {
+            "domain": "http://purl.org/NET/c4dm/event.owl#Event",
+            "range": "http://www.w3.org/2006/time#TemporalEntity"
+        },
+        "http://purl.org/NET/c4dm/event.owl#hasFactor": {
+            "domain": null,
+            "range": null
+        },
+        "http://purl.org/NET/c4dm/event.owl#agent_in": {
+            "domain": null,
+            "range": null
+        },
+        "http://purl.org/NET/c4dm/event.owl#hasAgent": {
+            "domain": null,
+            "range": null
+        },
+        "http://purl.org/NET/c4dm/event.owl#place": {
+            "domain": "http://purl.org/NET/c4dm/event.owl#Event",
+            "range": "http://www.w3.org/2003/01/geo/wgs84_pos#SpatialThing"
+        },
+        "http://purl.org/NET/c4dm/event.owl#isAgentIn": {
+            "domain": null,
+            "range": null
+        }
+    },
+    "datatype_properties": {
+        "http://purl.org/NET/c4dm/event.owl#literal_factor": {
+            "domain": "http://purl.org/NET/c4dm/event.owl#Event",
+            "range": null
+        },
+        "http://purl.org/NET/c4dm/event.owl#hasLiteralFactor": {
+            "domain": null,
+            "range": null
+        }
+    },
+    "deprecated_classes": [],
+    "deprecated_properties": [],
+    "inverse_functional": [],
+    "functional": [],
+    "reflexive": [],
+    "irreflexive": [],
+    "transitive": [],
+    "asymmetric": [],
+    "symmetric": [],
+    "disjoint_classes": [],
+    "rdf_properties": {},
+    "num_classes": 3,
+    "num_properties": 18,
+    "num_all_classes": 3,
+    "num_all_properties": 18
+}

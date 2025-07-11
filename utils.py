@@ -5,6 +5,7 @@ import re
 from const import *
 from collections import Counter
 import os
+from urllib.parse import quote
 
 composite_components = { 
     SH.OrConstraintComponent,
@@ -180,7 +181,8 @@ def profile_vocab(dq_assessment, vocab):
         "num_classes": 0,
         "num_properties": 0,
         "num_all_classes": 0,
-        "num_all_properties": 0
+        "num_all_properties": 0,
+        "num_entities": 0,
     }
 
     # Classes
@@ -568,6 +570,15 @@ def profile_vocab(dq_assessment, vocab):
         if vocab_ns and str(s).startswith(vocab_ns) and str(o).startswith(vocab_ns):
             disjoint_pairs.add(frozenset([str(s), str(o)]))
 
+    if (vocab_ns == 'https://www.geonames.org/ontology#'):
+        print('EL VOCAB ES GN')
+    for s, o in g.subject_objects(RDF.type):
+        # Some ontologies define instances
+        if (vocab_ns and str(s).startswith(vocab_ns) and str(o) in ontology_info['classes']):
+            ontology_info['num_entities'] += 1
+
+    ontology_info['num_entities'] += len(set(g.subjects(RDF.type, OWL.NamedIndividual)))
+
     ontology_info['disjoint_classes'] = [sorted(list(pair)) for pair in disjoint_pairs]
 
     # num_classes includes all classes, except deprecated ones
@@ -621,10 +632,18 @@ def validate_shacl_constraints(graph_profile, data_graph_file_path, data_graph_f
     if vocabs:
 
         ont_graphs = []
+
+        num_entities_vocabs = 0
         for vocab in vocabs:
             file_path = config[vocab]['file_path']
             file_format = config[vocab]['file_format']
+            vocab_name = config[vocab]['vocab_name']
             ont_graphs.append(Graph().parse(file_path, format=file_format))
+
+            with open(f'{PROFILE_VOCABULARIES_FOLDER_PATH}/{vocab_name}.json', 'r', encoding='utf-8') as file:
+                data = json.load(file)
+                if 'num_entities' in data and data['num_entities'] != 0:
+                    num_entities_vocabs += data['num_entities']
 
         # Create new merged graph with only class/property definitions
         merged_ont = Graph()
@@ -708,9 +727,11 @@ def validate_shacl_constraints(graph_profile, data_graph_file_path, data_graph_f
 
         # Update for the metric calculation
         if graph_profile and 'num_entities' in graph_profile:
-            graph_profile['num_entities'] += len(set(graph_to_validate.subjects(RDF.type, OWL.NamedIndividual)))
+            graph_profile['num_entities'] += num_entities_vocabs
         
-        graph_to_validate.serialize('aux.ttl', 'ttl')
+        # TODO: borrar esto, es solo prueba
+        # graph_to_validate.add((URIRef('http://www.co-ode.org/ontologies/pizza/pizza.owl#UndefClass'), URIRef('http://www.w3.org/1999/02/22-rdf-syntax-ns#type'), URIRef('owl:Class')))
+        # graph_to_validate.serialize('aux.ttl', 'ttl')
     else:
         graph_to_validate = Graph().parse(data_graph_file_path, format=data_graph_file_format)
 
@@ -782,3 +803,14 @@ def get_denominator(metric, info, dataset_profile):
         if "class" in info:
             return dataset_profile.get("entities_per_class", {}).get(info['class']['first_class'], 1)
 
+
+def safe_uri(uri):
+    """Try to fix a bad URI by encoding the invalid characters."""
+    try:
+        # This will fail if the URI has invalid characters
+        URIRef(uri).n3()
+        return URIRef(uri)
+    except:
+        # Encode unsafe characters
+        safe = quote(str(uri), safe=":/#")
+        return URIRef(safe)

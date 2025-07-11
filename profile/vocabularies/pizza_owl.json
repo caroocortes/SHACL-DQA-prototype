@@ -142,6 +142,18 @@
         "http://www.co-ode.org/ontologies/pizza/pizza.owl#isDifferentFrom": {
             "domain": "http://www.co-ode.org/ontologies/pizza/pizza.owl#Pizza",
             "range": "http://www.co-ode.org/ontologies/pizza/pizza.owl#Pizza"
+        },
+        "http://www.co-ode.org/ontologies/pizza/pizza.owl#thingProperty": {
+            "domain": "http://www.co-ode.org/ontologies/pizza/pizza.owl#Pizza",
+            "range": "http://www.w3.org/2002/07/owl#Thing"
+        },
+        "http://www.co-ode.org/ontologies/pizza/pizza.owl#resourceProperty": {
+            "domain": "http://www.co-ode.org/ontologies/pizza/pizza.owl#Pizza",
+            "range": "http://www.w3.org/2000/01/rdf-schema#Resource"
+        },
+        "http://www.co-ode.org/ontologies/pizza/pizza.owl#thingDomainProperty": {
+            "domain": "http://www.w3.org/2002/07/owl#Thing",
+            "range": "http://www.w3.org/2000/01/rdf-schema#Resource"
         }
     },
     "datatype_properties": {
@@ -180,6 +192,10 @@
         "http://www.co-ode.org/ontologies/pizza/pizza.owl#bakingYear": {
             "domain": "http://www.co-ode.org/ontologies/pizza/pizza.owl#Pizza",
             "range": "http://www.w3.org/2001/XMLSchema#gYear"
+        },
+        "http://www.co-ode.org/ontologies/pizza/pizza.owl#literalProperty": {
+            "domain": "http://www.co-ode.org/ontologies/pizza/pizza.owl#Pizza",
+            "range": "http://www.w3.org/2000/01/rdf-schema#Literal"
         }
     },
     "deprecated_classes": [
@@ -220,16 +236,16 @@
             "http://www.co-ode.org/ontologies/pizza/pizza.owl#ValuePartition"
         ],
         [
+            "http://www.co-ode.org/ontologies/pizza/pizza.owl#NonVegetarianPizza",
+            "http://www.co-ode.org/ontologies/pizza/pizza.owl#VegetarianPizza"
+        ],
+        [
             "http://www.co-ode.org/ontologies/pizza/pizza.owl#CajunSpiceTopping",
             "http://www.co-ode.org/ontologies/pizza/pizza.owl#RosemaryTopping"
         ],
         [
             "http://www.co-ode.org/ontologies/pizza/pizza.owl#SlicedTomatoTopping",
             "http://www.co-ode.org/ontologies/pizza/pizza.owl#SundriedTomatoTopping"
-        ],
-        [
-            "http://www.co-ode.org/ontologies/pizza/pizza.owl#NonVegetarianPizza",
-            "http://www.co-ode.org/ontologies/pizza/pizza.owl#VegetarianPizza"
         ],
         [
             "http://www.co-ode.org/ontologies/pizza/pizza.owl#DeepPanBase",
@@ -246,7 +262,7 @@
         }
     },
     "num_classes": 101,
-    "num_properties": 20,
+    "num_properties": 24,
     "num_all_classes": 103,
-    "num_all_properties": 21
+    "num_all_properties": 25
 }

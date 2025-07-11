@@ -125,5 +125,6 @@
     "num_classes": 28,
     "num_properties": 19,
     "num_all_classes": 28,
-    "num_all_properties": 19
+    "num_all_properties": 19,
+    "num_entities": 26
 }

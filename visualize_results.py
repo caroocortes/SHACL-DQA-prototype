@@ -57,7 +57,10 @@ def show_dq_assessment_results(df):
                     st.markdown(f"**Message:** {row['message']} ")
 
                 elif 'violations' in row and pd.notna(row['violations']) and str(row['violations']).strip():
-                    st.markdown(f"**Violations ({row['num_violations']}):** ")
+                    if 'violation_text' in row and pd.notna(row['violation_text']):
+                        st.markdown(f"**Violations ({row['num_violations']}):** {row['violation_text']}")
+                    else:
+                        st.markdown(f"**Violations ({row['num_violations']}):**")
                 
                     if pd.notna(row['meta_metric_calculation']):
                         st.markdown(f"*Individual score:* {row['metric_calculation']}")
@@ -166,7 +169,7 @@ def show_dq_assessment_statistics(run_info, dataset_name, df):
     st.table(pd.DataFrame([(k, str(v)) for k, v in dq_stats.items()], columns=["Statistic", "Value"]).set_index("Statistic"))
 
 def show_metric_coverage():
-    st.markdown("### Metric coverage")
+    st.markdown("### Metric coverage & DQ measure definition")
     st.markdown("**Total number of metrics:** 69")
     
     # Values for donut chart
@@ -196,12 +199,19 @@ def show_metric_coverage():
     )
     st.plotly_chart(fig)
 
+    st.markdown("### Detailed coverage of DQ metrics using SHACL core")
     df_dq = pd.DataFrame(
         METRIC_COVERAGE,
         columns=["Dimension", "Metric Id", "Metric", "SHACL core"]
     ).set_index('Dimension')
 
     st.dataframe(df_dq, use_container_width=True)
+
+    st.markdown("### DQ measure definition")
+    df_measures = pd.read_csv('dq_assessment/measure_definition.csv').set_index('Group')
+    df_measures['Individual score'] = df_measures['Individual score'].fillna('')
+    df_measures['Aggregation'] = df_measures['Aggregation'].fillna('')
+    st.dataframe(df_measures, use_container_width=True)
 
 
 def create_results_visualization(run_info):
@@ -212,7 +222,7 @@ def create_results_visualization(run_info):
     # --------------------------- 
     st.sidebar.title("")
 
-    view_option = st.sidebar.selectbox("View", ["DQA Results", "Metric Coverage"])
+    view_option = st.sidebar.selectbox("View", ["DQA Results", "Metric Coverage & DQ measure definition"])
 
     if view_option == "DQA Results":
 
@@ -238,6 +248,8 @@ def create_results_visualization(run_info):
         
         df = pd.read_csv(csv_path)
         df['vocab'] = df['vocab'].fillna('')
+        df['violation_text'] = df['violation_text'].fillna('')
+        df['violations'] = df['violations'].fillna('')
     
         show_dq_assessment_results(df)
         show_dq_assessment_statistics(run_info, dataset_name, df)

@@ -1,7 +1,7 @@
-{% macro metadata_shape() -%}
+{% macro metadata_shape(metadata_class) -%}
 ex:MachineReadableLicenseShape
     a sh:NodeShape ;
-    sh:targetClass void:Dataset ;
+    sh:targetClass <{{metadata_class}}> ;
     sh:property [
         sh:message "MachineReadableLicense - The dataset must provide a machine readable indication of a license";
         sh:path dcterms:license ;
@@ -11,7 +11,7 @@ ex:MachineReadableLicenseShape
 
 ex:DatasetMetadataShape
     a sh:NodeShape ;
-    sh:targetClass void:Dataset ;
+    sh:targetClass <{{metadata_class}}> ;
     sh:property [ 
         sh:path dcterms:title ;
         sh:minCount 1 ;
@@ -47,7 +47,7 @@ ex:DatasetMetadataShape
 
 ex:ExemplaryResourceShape
     a sh:NodeShape;
-    sh:targetClass void:Dataset;
+    sh:targetClass <{{metadata_class}}>;
     sh:property [
         sh:path void:exampleResource ;
         sh:minCount 1 ;
@@ -57,7 +57,7 @@ ex:ExemplaryResourceShape
 
 ex:VocabularyExistenceShape
     a sh:NodeShape;
-    sh:targetClass void:Dataset;
+    sh:targetClass <{{metadata_class}}>;
     sh:property[
         sh:path void:vocabulary ;
         sh:nodeKind sh:IRI ;
@@ -67,7 +67,7 @@ ex:VocabularyExistenceShape
 
 ex:SerializationFormatsShape
     a sh:NodeShape;
-    sh:targetClass void:Dataset;
+    sh:targetClass <{{metadata_class}}>;
     sh:property [
         sh:path void:feature;
         sh:minCount 1;
@@ -85,7 +85,7 @@ ex:SerializationFormatsShape
 
 ex:URIRegexPressenceShape
     a sh:NodeShape;
-    sh:targetClass void:Dataset;
+    sh:targetClass <{{metadata_class}}>;
     sh:property [
         sh:path void:uriRegexPattern ;
         sh:minCount 1 ;
@@ -95,7 +95,7 @@ ex:URIRegexPressenceShape
 
 ex:URISpacePressenceShape
     a sh:NodeShape;
-    sh:targetClass void:Dataset;
+    sh:targetClass <{{metadata_class}}>;
     sh:property [
         sh:path void:uriSpace ;
         sh:minCount 1 ;
@@ -105,7 +105,7 @@ ex:URISpacePressenceShape
 
 ex:AvailabilityDumpShape
     a sh:NodeShape;
-    sh:targetClass void:Dataset;
+    sh:targetClass <{{metadata_class}}>;
     sh:or (
         [
             sh:path void:dataDump ;
@@ -123,7 +123,7 @@ ex:AvailabilityDumpShape
 
 ex:AuthenticityOfDatasetSourceShape
     a sh:NodeShape ;
-    sh:targetClass void:Dataset ;
+    sh:targetClass <{{metadata_class}}> ;
     sh:or (
         [
             sh:path dcterms:source ;
@@ -139,7 +139,7 @@ ex:AuthenticityOfDatasetSourceShape
 
 ex:AuthenticityOfDatasetAuthorShape
     a sh:NodeShape ;
-    sh:targetClass void:Dataset ;
+    sh:targetClass <{{metadata_class}}> ;
     sh:or (
         [
             sh:path dcterms:contributor ;

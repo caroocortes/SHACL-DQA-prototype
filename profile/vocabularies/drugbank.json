@@ -1,0 +1,415 @@
+{
+    "classes": [
+        "http://bio2rdf.org/drugbank_vocabulary:Absorption",
+        "http://bio2rdf.org/drugbank_vocabulary:Affected-organism",
+        "http://bio2rdf.org/drugbank_vocabulary:Bioavailability",
+        "http://bio2rdf.org/drugbank_vocabulary:Biotransformation",
+        "http://bio2rdf.org/drugbank_vocabulary:Boiling-Point",
+        "http://bio2rdf.org/drugbank_vocabulary:Brand",
+        "http://bio2rdf.org/drugbank_vocabulary:Caco2-Permeability",
+        "http://bio2rdf.org/drugbank_vocabulary:Carrier",
+        "http://bio2rdf.org/drugbank_vocabulary:Carrier-Relation",
+        "http://bio2rdf.org/drugbank_vocabulary:Category",
+        "http://bio2rdf.org/drugbank_vocabulary:Clearance",
+        "http://bio2rdf.org/drugbank_vocabulary:Drug",
+        "http://bio2rdf.org/drugbank_vocabulary:Drug-Drug-Interaction",
+        "http://bio2rdf.org/drugbank_vocabulary:Enzyme",
+        "http://bio2rdf.org/drugbank_vocabulary:Enzyme-Relation",
+        "http://bio2rdf.org/drugbank_vocabulary:Food-interaction",
+        "http://bio2rdf.org/drugbank_vocabulary:Ghose-Filter",
+        "http://bio2rdf.org/drugbank_vocabulary:Group",
+        "http://bio2rdf.org/drugbank_vocabulary:H-Bond-Acceptor-Count",
+        "http://bio2rdf.org/drugbank_vocabulary:H-Bond-Donor-Count",
+        "http://bio2rdf.org/drugbank_vocabulary:Half-life",
+        "http://bio2rdf.org/drugbank_vocabulary:Hydrophobicity",
+        "http://bio2rdf.org/drugbank_vocabulary:IUPAC-Name",
+        "http://bio2rdf.org/drugbank_vocabulary:InChI",
+        "http://bio2rdf.org/drugbank_vocabulary:InChIKey",
+        "http://bio2rdf.org/drugbank_vocabulary:Indication",
+        "http://bio2rdf.org/drugbank_vocabulary:Isoelectric-Point",
+        "http://bio2rdf.org/drugbank_vocabulary:Kingdom",
+        "http://bio2rdf.org/drugbank_vocabulary:LogP",
+        "http://bio2rdf.org/drugbank_vocabulary:LogS",
+        "http://bio2rdf.org/drugbank_vocabulary:MDDR-Like-Rule",
+        "http://bio2rdf.org/drugbank_vocabulary:Manufacturer",
+        "http://bio2rdf.org/drugbank_vocabulary:Mechanism-of-action",
+        "http://bio2rdf.org/drugbank_vocabulary:Melting-Point",
+        "http://bio2rdf.org/drugbank_vocabulary:Mixture",
+        "http://bio2rdf.org/drugbank_vocabulary:Molecular-Formula",
+        "http://bio2rdf.org/drugbank_vocabulary:Molecular-Weight",
+        "http://bio2rdf.org/drugbank_vocabulary:Monoisotopic-Weight",
+        "http://bio2rdf.org/drugbank_vocabulary:Number-of-Rings",
+        "http://bio2rdf.org/drugbank_vocabulary:PKa",
+        "http://bio2rdf.org/drugbank_vocabulary:PKa-(strongest-acidic)",
+        "http://bio2rdf.org/drugbank_vocabulary:PKa-(strongest-basic)",
+        "http://bio2rdf.org/drugbank_vocabulary:Patent",
+        "http://bio2rdf.org/drugbank_vocabulary:Pharmaceutical",
+        "http://bio2rdf.org/drugbank_vocabulary:Pharmacology",
+        "http://bio2rdf.org/drugbank_vocabulary:Physiological-Charge",
+        "http://bio2rdf.org/drugbank_vocabulary:Polar-Surface-Area-(PSA)",
+        "http://bio2rdf.org/drugbank_vocabulary:Polarizability",
+        "http://bio2rdf.org/drugbank_vocabulary:Protein-binding",
+        "http://bio2rdf.org/drugbank_vocabulary:Refractivity",
+        "http://bio2rdf.org/drugbank_vocabulary:Rotatable-Bond-Count",
+        "http://bio2rdf.org/drugbank_vocabulary:Route-of-elimination",
+        "http://bio2rdf.org/drugbank_vocabulary:Rule-of-Five",
+        "http://bio2rdf.org/drugbank_vocabulary:SMILES",
+        "http://bio2rdf.org/drugbank_vocabulary:Salt",
+        "http://bio2rdf.org/drugbank_vocabulary:Source",
+        "http://bio2rdf.org/drugbank_vocabulary:Substructures",
+        "http://bio2rdf.org/drugbank_vocabulary:Synonym",
+        "http://bio2rdf.org/drugbank_vocabulary:Target",
+        "http://bio2rdf.org/drugbank_vocabulary:Target-Relation",
+        "http://bio2rdf.org/drugbank_vocabulary:Toxicity",
+        "http://bio2rdf.org/drugbank_vocabulary:Traditional-IUPAC-Name",
+        "http://bio2rdf.org/drugbank_vocabulary:Transporter",
+        "http://bio2rdf.org/drugbank_vocabulary:Transporter-Relation",
+        "http://bio2rdf.org/drugbank_vocabulary:Type",
+        "http://bio2rdf.org/drugbank_vocabulary:Unit",
+        "http://bio2rdf.org/drugbank_vocabulary:Volume-of-distribution",
+        "http://bio2rdf.org/drugbank_vocabulary:Water-Solubility",
+        "http://bio2rdf.org/drugbank_vocabulary:Carrier-relation",
+        "http://bio2rdf.org/drugbank_vocabulary:Enzyme-relation",
+        "http://bio2rdf.org/drugbank_vocabulary:Target-relation",
+        "http://bio2rdf.org/drugbank_vocabulary:Transporter-relation"
+    ],
+    "object_properties": {
+        "http://bio2rdf.org/drugbank_vocabulary:absorption": {
+            "domain": null,
+            "range": null
+        },
+        "http://bio2rdf.org/drugbank_vocabulary:action": {
+            "domain": null,
+            "range": null
+        },
+        "http://bio2rdf.org/drugbank_vocabulary:affected-organism": {
+            "domain": null,
+            "range": null
+        },
+        "http://bio2rdf.org/drugbank_vocabulary:biotransformation": {
+            "domain": null,
+            "range": null
+        },
+        "http://bio2rdf.org/drugbank_vocabulary:brand": {
+            "domain": null,
+            "range": null
+        },
+        "http://bio2rdf.org/drugbank_vocabulary:calculated-properties": {
+            "domain": null,
+            "range": null
+        },
+        "http://bio2rdf.org/drugbank_vocabulary:carrier": {
+            "domain": null,
+            "range": null
+        },
+        "http://bio2rdf.org/drugbank_vocabulary:category": {
+            "domain": null,
+            "range": null
+        },
+        "http://bio2rdf.org/drugbank_vocabulary:clearance": {
+            "domain": null,
+            "range": null
+        },
+        "http://bio2rdf.org/drugbank_vocabulary:country": {
+            "domain": null,
+            "range": null
+        },
+        "http://bio2rdf.org/drugbank_vocabulary:ddi-interactor-in": {
+            "domain": null,
+            "range": null
+        },
+        "http://bio2rdf.org/drugbank_vocabulary:dosage": {
+            "domain": null,
+            "range": null
+        },
+        "http://bio2rdf.org/drugbank_vocabulary:drug": {
+            "domain": null,
+            "range": null
+        },
+        "http://bio2rdf.org/drugbank_vocabulary:enzyme": {
+            "domain": null,
+            "range": null
+        },
+        "http://bio2rdf.org/drugbank_vocabulary:experimental-properties": {
+            "domain": null,
+            "range": null
+        },
+        "http://bio2rdf.org/drugbank_vocabulary:food-interaction": {
+            "domain": null,
+            "range": null
+        },
+        "http://bio2rdf.org/drugbank_vocabulary:form": {
+            "domain": null,
+            "range": null
+        },
+        "http://bio2rdf.org/drugbank_vocabulary:group": {
+            "domain": null,
+            "range": null
+        },
+        "http://bio2rdf.org/drugbank_vocabulary:half-life": {
+            "domain": null,
+            "range": null
+        },
+        "http://bio2rdf.org/drugbank_vocabulary:indication": {
+            "domain": null,
+            "range": null
+        },
+        "http://bio2rdf.org/drugbank_vocabulary:ingredient": {
+            "domain": null,
+            "range": null
+        },
+        "http://bio2rdf.org/drugbank_vocabulary:kingdom": {
+            "domain": null,
+            "range": null
+        },
+        "http://bio2rdf.org/drugbank_vocabulary:manufacturer": {
+            "domain": null,
+            "range": null
+        },
+        "http://bio2rdf.org/drugbank_vocabulary:mechanism-of-action": {
+            "domain": null,
+            "range": null
+        },
+        "http://bio2rdf.org/drugbank_vocabulary:mixture": {
+            "domain": null,
+            "range": null
+        },
+        "http://bio2rdf.org/drugbank_vocabulary:packager": {
+            "domain": null,
+            "range": null
+        },
+        "http://bio2rdf.org/drugbank_vocabulary:patent": {
+            "domain": null,
+            "range": null
+        },
+        "http://bio2rdf.org/drugbank_vocabulary:pharmacology": {
+            "domain": null,
+            "range": null
+        },
+        "http://bio2rdf.org/drugbank_vocabulary:product": {
+            "domain": null,
+            "range": null
+        },
+        "http://bio2rdf.org/drugbank_vocabulary:protein-binding": {
+            "domain": null,
+            "range": null
+        },
+        "http://bio2rdf.org/drugbank_vocabulary:reference": {
+            "domain": null,
+            "range": null
+        },
+        "http://bio2rdf.org/drugbank_vocabulary:route": {
+            "domain": null,
+            "range": null
+        },
+        "http://bio2rdf.org/drugbank_vocabulary:route-of-elimination": {
+            "domain": null,
+            "range": null
+        },
+        "http://bio2rdf.org/drugbank_vocabulary:salt": {
+            "domain": null,
+            "range": null
+        },
+        "http://bio2rdf.org/drugbank_vocabulary:source": {
+            "domain": null,
+            "range": null
+        },
+        "http://bio2rdf.org/drugbank_vocabulary:substructure": {
+            "domain": null,
+            "range": null
+        },
+        "http://bio2rdf.org/drugbank_vocabulary:synonym": {
+            "domain": null,
+            "range": null
+        },
+        "http://bio2rdf.org/drugbank_vocabulary:target": {
+            "domain": null,
+            "range": null
+        },
+        "http://bio2rdf.org/drugbank_vocabulary:toxicity": {
+            "domain": null,
+            "range": null
+        },
+        "http://bio2rdf.org/drugbank_vocabulary:transporter": {
+            "domain": null,
+            "range": null
+        },
+        "http://bio2rdf.org/drugbank_vocabulary:type": {
+            "domain": null,
+            "range": null
+        },
+        "http://bio2rdf.org/drugbank_vocabulary:volume-of-distribution": {
+            "domain": null,
+            "range": null
+        },
+        "http://bio2rdf.org/drugbank_vocabulary:x-ahfs": {
+            "domain": null,
+            "range": null
+        },
+        "http://bio2rdf.org/drugbank_vocabulary:x-atc": {
+            "domain": null,
+            "range": null
+        },
+        "http://bio2rdf.org/drugbank_vocabulary:x-bindingdb": {
+            "domain": null,
+            "range": null
+        },
+        "http://bio2rdf.org/drugbank_vocabulary:x-chebi": {
+            "domain": null,
+            "range": null
+        },
+        "http://bio2rdf.org/drugbank_vocabulary:x-chemspider": {
+            "domain": null,
+            "range": null
+        },
+        "http://bio2rdf.org/drugbank_vocabulary:x-dpd": {
+            "domain": null,
+            "range": null
+        },
+        "http://bio2rdf.org/drugbank_vocabulary:x-genatlas": {
+            "domain": null,
+            "range": null
+        },
+        "http://bio2rdf.org/drugbank_vocabulary:x-genbank": {
+            "domain": null,
+            "range": null
+        },
+        "http://bio2rdf.org/drugbank_vocabulary:x-genecards": {
+            "domain": null,
+            "range": null
+        },
+        "http://bio2rdf.org/drugbank_vocabulary:x-gi": {
+            "domain": null,
+            "range": null
+        },
+        "http://bio2rdf.org/drugbank_vocabulary:x-gtp": {
+            "domain": null,
+            "range": null
+        },
+        "http://bio2rdf.org/drugbank_vocabulary:x-hgnc": {
+            "domain": null,
+            "range": null
+        },
+        "http://bio2rdf.org/drugbank_vocabulary:x-iuphar": {
+            "domain": null,
+            "range": null
+        },
+        "http://bio2rdf.org/drugbank_vocabulary:x-kegg": {
+            "domain": null,
+            "range": null
+        },
+        "http://bio2rdf.org/drugbank_vocabulary:x-ndc": {
+            "domain": null,
+            "range": null
+        },
+        "http://bio2rdf.org/drugbank_vocabulary:x-pdb": {
+            "domain": null,
+            "range": null
+        },
+        "http://bio2rdf.org/drugbank_vocabulary:x-pharmgkb": {
+            "domain": null,
+            "range": null
+        },
+        "http://bio2rdf.org/drugbank_vocabulary:x-pubchemcompound": {
+            "domain": null,
+            "range": null
+        },
+        "http://bio2rdf.org/drugbank_vocabulary:x-pubchemsubstance": {
+            "domain": null,
+            "range": null
+        },
+        "http://bio2rdf.org/drugbank_vocabulary:x-uniprot": {
+            "domain": null,
+            "range": null
+        },
+        "http://bio2rdf.org/drugbank_vocabulary:x-wikipedia": {
+            "domain": null,
+            "range": null
+        }
+    },
+    "datatype_properties": {
+        "http://bio2rdf.org/drugbank_vocabulary:approved": {
+            "domain": null,
+            "range": null
+        },
+        "http://bio2rdf.org/drugbank_vocabulary:cellular-location": {
+            "domain": null,
+            "range": null
+        },
+        "http://bio2rdf.org/drugbank_vocabulary:expires": {
+            "domain": null,
+            "range": null
+        },
+        "http://bio2rdf.org/drugbank_vocabulary:gene-name": {
+            "domain": null,
+            "range": null
+        },
+        "http://bio2rdf.org/drugbank_vocabulary:general-function": {
+            "domain": null,
+            "range": null
+        },
+        "http://bio2rdf.org/drugbank_vocabulary:id": {
+            "domain": null,
+            "range": null
+        },
+        "http://bio2rdf.org/drugbank_vocabulary:ingredients": {
+            "domain": null,
+            "range": null
+        },
+        "http://bio2rdf.org/drugbank_vocabulary:known-action": {
+            "domain": null,
+            "range": null
+        },
+        "http://bio2rdf.org/drugbank_vocabulary:locus": {
+            "domain": null,
+            "range": null
+        },
+        "http://bio2rdf.org/drugbank_vocabulary:molecular-weight": {
+            "domain": null,
+            "range": null
+        },
+        "http://bio2rdf.org/drugbank_vocabulary:name": {
+            "domain": null,
+            "range": null
+        },
+        "http://bio2rdf.org/drugbank_vocabulary:organism": {
+            "domain": null,
+            "range": null
+        },
+        "http://bio2rdf.org/drugbank_vocabulary:price": {
+            "domain": null,
+            "range": null
+        },
+        "http://bio2rdf.org/drugbank_vocabulary:specific-function": {
+            "domain": null,
+            "range": null
+        },
+        "http://bio2rdf.org/drugbank_vocabulary:theoretical-pi": {
+            "domain": null,
+            "range": null
+        },
+        "http://bio2rdf.org/drugbank_vocabulary:transmembrane-regions": {
+            "domain": null,
+            "range": null
+        },
+        "http://bio2rdf.org/drugbank_vocabulary:value": {
+            "domain": null,
+            "range": null
+        }
+    },
+    "deprecated_classes": [],
+    "deprecated_properties": [],
+    "inverse_functional": [],
+    "functional": [],
+    "reflexive": [],
+    "irreflexive": [],
+    "transitive": [],
+    "asymmetric": [],
+    "symmetric": [],
+    "disjoint_classes": [],
+    "rdf_properties": {},
+    "num_classes": 72,
+    "num_properties": 80,
+    "num_all_classes": 72,
+    "num_all_properties": 80
+}

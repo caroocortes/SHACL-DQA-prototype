@@ -69,7 +69,7 @@ COUNT_METRICS = {"UsageExternalURIEntities",
                 "IrreflexiveProperty",
                 "EntitiesDisjointClasses",
                 "FunctionalProperty",
-                "MalformedDatatype",
+                # "MalformedDatatype",
                 "MalformedLiteral", 
                 "DeprecatedProperties",
                 "URISpaceComplianceEntities",
@@ -99,7 +99,7 @@ NUM_SUBJECTS_PER_PROPERTY = {"FunctionalProperty",
                             "CorrectDomain", 
                             "MisuseOwlObjectProperties", 
                             "MisuseOwlDatatypeProperties", 
-                            "MalformedDatatype",
+                            # "MalformedDatatype",
                             "MalformedLiteral",
                             "UsageExternalURIEntities"}
 
@@ -305,14 +305,14 @@ DQ_MEASURES_DATA_SPECIFIC = {
         "shape": "",
         "message": ""
     },
-    "MalformedDatatype": {
-        "dimension": "Syntactic Validity",
-        "metric_id": "SV3",
-        "metric": "No malformed datatype literals",
-        "measure": 1,
-        "shape": "",
-        "message": ""
-    },
+    # "MalformedDatatype": {
+    #     "dimension": "Syntactic Validity",
+    #     "metric_id": "SV3",
+    #     "metric": "No malformed datatype literals",
+    #     "measure": 1,
+    #     "shape": "",
+    #     "message": ""
+    # },
     "SelfDescriptiveFormatProperties": {
         "dimension": "Interpretability",
         "metric_id": "ITP1",

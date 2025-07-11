@@ -1,0 +1,64 @@
+Group,Dimension,Metric,Shape,Type,Individual score,Aggregation
+Accessibility,Availability,Accessibility of the rdf dump,AvailabilityDumpShape,Binary,"1 if there's an indication of a data dump, 0 otherwise",
+Accessibility,Licensing,Machine readable license,MachineReadableShape,Binary,"1 if there's an indication of a machine-readable license, 0 otherwise",
+Accessibility,Interlinking,Detection of good quality interlinks,OpenSameAsChainsShapes,Need assumption,,
+Accessibility,Interlinking,Existence of links to external data providers,UsageExternalURIShape,Ratio,# violations / # entities  with interlinking property,
+Accessibility,Security ,Digital signatures,DigitalSignatureShape,Need domain knowledge,,
+Accessibility,Security ,Digital signatures,DigitalSignaturePropertiesShape,Need domain knowledge,,
+Accessibility,Security ,Authenticity of dataset,AuthenticityOfDatasetShape,Binary,"1 if the dataset specifies someone responsible and the origin of the data, 0 otherwise",
+Accessibility,Performance,Usage of slash-URIs,UsageHashURIsEntities,Ratio,# violations  / # entities,
+Intrinsic,Syntactic Validity,Allowed values,RangeAllowedValuesShape,Need domain knowledge,,
+Intrinsic,Syntactic Validity,Allowed values,AllowedValuesShape,Need domain knowledge,,
+Intrinsic,Syntactic Validity,Allowed values,AllowedValuesAtLeastOneShape,Need domain knowledge,,
+Intrinsic,Syntactic Validity,Syntactic rules,SyntacticRulesShape,Need domain knowledge,,
+Intrinsic,Syntactic Validity,RDF pattern and types,TypeDefinitionClass,Binary,,
+Intrinsic,Syntactic Validity,RDF pattern and types,TypeDefinitionProperties,Binary,,
+Intrinsic,Syntactic Validity,Malformed literals,MalformedDatatypeLiteralesShape,Composite,# violations / # subjects that use the property,# properties correctly used / # properties with a datatype range
+Intrinsic,Semantic accuracy,Inaccurate values,InaccurateValuesShape,Need domain knowledge,,
+Intrinsic,Semantic accuracy,Inaccurate annotations & classifications,InaccurateAnnotations,Need domain knowledge,,
+Intrinsic,Semantic accuracy,Inaccurate annotations & classifications,InaccurateClassifications,Need domain knowledge,,
+Intrinsic,Consistency,Entities in disjoint classes,EntitiesDisjointClassesShape,Ratio,number of violations / number of entities of the target class,# disjoint classes correctly used / # disjoint classes
+Intrinsic,Consistency,No misplaced classes & properties,MisplacedPropertiesShape,Composite,"1 if the property isn't used as a class, otherwise 0",# properties correctly used / # properties defined in ontology
+Intrinsic,Consistency,No misplaced classes & properties,MisplacedClassesShape,Composite,"1 if the class isn't used as a property, otherwise 0",# classes correctly used / # classes defined in ontology
+Intrinsic,Consistency,No misuse of owl datatype and object property,MisuseObjectPropertiesShape,Composite,# violations / # subjects that use the owl:ObjectProperty,# owl:ObjectProperty correctly used / # owl:ObjectProperty defined in ontology
+Intrinsic,Consistency,No misuse of owl datatype and object property,MisuseDatatypePropertiesShape,Composite,# violations / # subjects that use the owl:DatatypeProperty,# owl:DatatypeProperty correctly used / # owl:DatatypeProperty defined in ontology
+Intrinsic,Consistency,Usage of deprecated classes and properties,DeprecatedPropertiesUsageShape,Composite,#  violations /# entities that use the deprecated properties,# deprecated properties unused / # deprecated properties
+Intrinsic,Consistency,Usage of deprecated classes and properties,DeprecatedClassesUsageShape,Binary,"1 if none of the deprecated classes are used, otherwise 0",
+Intrinsic,Consistency,Uniqueness of inverse functional properties,InverseFunctionalPropertyUniquenessShape,Composite,"1 if the inverse functional property is used correctly, otherwise 0",# owl:InverseFunctionalProperty correctly used / # owl:InverseFunctionalProperty defined in ontology
+Intrinsic,Consistency,Negative dependencies,NoNegativeDependenciesShape,Need domain knowledge,,
+Intrinsic,Consistency,Correct domain & range,CorrectDomainShape,Composite,# violations / # subjects that use the property,# properties with a defined domain correctly used /# properties with a defined domain
+Intrinsic,Consistency,Correct domain & range,CorrectRangeShape,Composite,# violations / # subjects that use the property,# properties with a defined range correctly used /# properties with a defined range
+Intrinsic,Consistency,No inconsistent values,IrreflexivePropertyShape,Composite,# violations / # subjects that use the property,# owl:IrreflexiveProperty correctly used /# owl:IrreflexiveProperty defined in ontology
+Intrinsic,Consistency,No inconsistent values,FunctionalPropertyShape,Ratio,# violations / # subjects that use the property,# owl:FunctionalProperty correctly used /# owl:FunctionalProperty defined in ontology
+Intrinsic,Consiceseness,uniqueness rule,UniquenessRuleShape,Need domain knowledge,,
+Intrinsic,Completeness,schema completeness,SchemaCompletenessClassUsageShape,Composite,"1 if the class is used, 0 otherwise",# used classes / # classes defined in the ontology
+Intrinsic,Completeness,property completeness,PropertyCompletenessGeneralShape,Need domain knowledge,,
+Intrinsic,Completeness,interlinking completeness,InterlinkingCompletenessShape,Ratio,# violations / # entities,
+Contextual,Relevancy,Coverage,CoverageOfEntitiesShape,Need domain knowledge,,
+Contextual,Understandability,"Human readable labels in entities, classes and properties, as well as presence of metadata",LabelForEntitiesShape,Ratio,#  violations / # entities,
+Contextual,Understandability,"Human readable labels in entities, classes and properties, as well as presence of metadata",LabelForClassesShape,Ratio,# violations / # classes in ontology,
+Contextual,Understandability,"Human readable labels in entities, classes and properties, as well as presence of metadata",LabelForPropertiesShape,Ratio,# violations / # properties  in ontology,
+Contextual,Understandability,"Human readable labels in entities, classes and properties, as well as presence of metadata",DatasetMetadataShape,Binary,"1 if there's an indication of the title, description and homepage of the dataset, 0 otherwise",
+Contextual,Understandability,Exemplary URI,DatasetMetadataShape,Binary,"1 if there's an indication of exemplary resources, 0 otherwise",
+Contextual,Understandability,URI regex,DatasetMetadataShape,Binary,"1 if there's an indication of a regex pattern or namespace for the entites, 0 otherwise",
+Contextual,Understandability,URI regex compliance,URIRegexNamespaceComplianceShape,Ratio,# violations / # entities,
+Contextual,Understandability,Vocabulary existence,DatasetMetadataShape,Binary,"1 if there's an indication of the vocabularies used in the dataset, 0 otherwise",
+Contextual,Trustworthiness,"Trustworthiness of statements, datasets and rules",TrustValuesEntitiesShape,Need domain knowledge,,
+Contextual,Trustworthiness,Trustworthiness of the information provider,TrustedContributorShape,Need domain knowledge,,
+Contextual,Trustworthiness,Trustworthiness of the information provider,LevelOfTrustPublisher,Need domain knowledge,,
+Contextual,Trustworthiness,Trustworthiness of information provided (content trust),TrustThroughAssociationShape,Need domain knowledge,,
+Contextual,Timeliness,Freshness of datasets based on currency and volatility ,TimelinessEntitiesShape,Need domain knowledge,,
+Contextual,Timeliness,Freshness of datasets based on their data source,TimelinessDatasetShape,Need domain knowledge,,
+Representational,Representational conciseness,Short URIs and parameters,URIsLengthShape,Ratio,# violations / # entities,
+Representational,Representational conciseness,,URIsParametersShape,Ratio,# violations / # entities,
+Representational,Representational conciseness,Use of prolix RDF features,ProlixFeaturesShape,Ratio,#  violations / # entities,
+Representational,Interoperability,Re-use of existing terms,ReUseExistingVocabularyTerms,Need domain knowledge,,
+Representational,Interoperability,Re-use of relevant vocabularies,ReUseRelevantVocabularies,Need domain knowledge,,
+Representational,Versatility,Serialization formats,SerializationFormatsShape,Binary,"1 if there's an indication of the serialization formats for the dataset, 0 otherwise",
+Representational,Versatility,Language in labels and descriptions,DifferentLanguagesLabelsEntitiesShape,Ratio,# violations / # entities with labels,
+Representational,Versatility,Language in labels and descriptions,DifferentLanguagesDescriptionsEntitiesShape,Ratio,#  violations / # entities with descriptions,
+Representational,Interpretability,SelfDescriptiveFormatsShape,SelfDescriptiveFormatShape,Ratio,# violations / # entities,
+Representational,Interpretability,SelfDescriptiveFormatsPropertiesShape,SelfDescriptiveFormatPropertiesShape,Composite,"1 if the property is used with an IRI, 0 otherwise",# properties correctly used / # properties used in the dataset
+Representational,Interpretability,Use of undefined classes & properties,UndefinedClassesShape,Composite,"1 if the class is defined, 0 otherwise",# classes defined / # classes used in the dataset
+Representational,Interpretability,Use of undefined classes & properties,UndefinedPropertiesShape,Composite,"1 if the property is defined, 0 otherwise",# properties defined / # properties used in the dataset
+Representational,Interpretability,Usage of blank nodes,BlankNodesUsageEntitiesShape,Ratio,# violations / # entities,

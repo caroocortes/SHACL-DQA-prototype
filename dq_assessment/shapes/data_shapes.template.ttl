@@ -422,7 +422,7 @@ ex:CorrectDomainShape_{{shape_index}}
 ex:CorrectDomainShape_{{shape_index}}
     a sh:NodeShape ;
     sh:targetSubjectsOf <{{property_uri}}> ;
-    sh:nodeKind sh:BlankNodeOrIri ;
+    sh:nodeKind sh:BlankNodeOrIRI ;
     sh:message "CorrectDomain_{{shape_index}} - The property {{property_uri}} is used with an incorrect domain" .
 {%- endmacro %}
 
@@ -465,7 +465,7 @@ ex:CorrectRangeShape_{{shape_index}}
     sh:targetSubjectsOf <{{property_uri}}>;
     sh:property [
         sh:path <{{property_uri}}> ;
-        sh:nodeKind sh:BlankNodeOrIri ;
+        sh:nodeKind sh:BlankNodeOrIRI ;
         sh:message "CorrectRange_{{shape_index}} - The property {{property_uri}} is used with an incorrect range"
     ] .
 {%- endmacro %}
@@ -478,7 +478,7 @@ ex:CorrectRangeShape_{{shape_index}}
     sh:path <{{property_uri}}> ;
         sh:or (
             [
-                sh:nodeKind sh:BlankNodeOrIri ;
+                sh:nodeKind sh:BlankNodeOrIRI ;
                 sh:message "CorrectRange_{{shape_index}} - The property {{property_uri}} is used with an incorrect range"]
             [
                 sh:nodeKind sh:Literal ;
@@ -496,7 +496,7 @@ ex:IrreflexivePropertyShape_{{shape_index}}
     sh:disjoint <{{property_uri}}> .
 {%- endmacro %}
 
-{% macro syntactic_validity_incompatible_datatype(shape_index, property_uri, datatype_uri) -%}
+{% macro syntactic_validity_malformed_literal(shape_index, property_uri, datatype_uri) -%}
 ex:MalformedLiteralShape_{{shape_index}}
     a sh:NodeShape ;
     sh:targetSubjectsOf <{{property_uri}}> ;
