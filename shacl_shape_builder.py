@@ -226,13 +226,6 @@ class SHACLShapeBuilder:
 
         return shape
     
-    # def malformed_datatype(self, prop, regex_pattern):
-    #     shape = self.template.module.syntactic_validity_malformed_datatype(self.counter["property_counter"], prop, python_regex_to_shacl_regex(regex_pattern)) + '\n'
-    #     metric_name = "MalformedDatatype"
-    #     self.create_metric_info_prop(metric_name, prop)
-
-    #     return shape
-    
     def irreflexive_properties(self, prop):
         shape = self.template.module.consistency_irreflexive_property(self.counter["property_counter"], prop) + '\n'
         metric_name = "IrreflexiveProperty"

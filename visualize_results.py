@@ -148,9 +148,9 @@ def show_dq_assessment_statistics(run_info, dataset_name, df):
     
     def format_elapsed_time(seconds):
         if seconds < 60:
-            return f"{round(seconds, 2)}", "(s)"
+            return f"{round(seconds, 3)}", "(s)"
         else:
-            return f"{round(seconds / 60, 2)}", "(m)"
+            return f"{round(seconds / 60, 3)}", "(m)"
 
     total_time_text, total_time_unit = format_elapsed_time(run_info[dataset_name]['total_elapsed_time'])
     vocab_time_text, vocab_time_unit = format_elapsed_time(run_info[dataset_name]['vocab_shapes_elapsed_time'])

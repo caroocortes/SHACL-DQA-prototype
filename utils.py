@@ -6,6 +6,7 @@ from const import *
 from collections import Counter
 import os
 from urllib.parse import quote
+import time
 
 composite_components = { 
     SH.OrConstraintComponent,
@@ -570,8 +571,6 @@ def profile_vocab(dq_assessment, vocab):
         if vocab_ns and str(s).startswith(vocab_ns) and str(o).startswith(vocab_ns):
             disjoint_pairs.add(frozenset([str(s), str(o)]))
 
-    if (vocab_ns == 'https://www.geonames.org/ontology#'):
-        print('EL VOCAB ES GN')
     for s, o in g.subject_objects(RDF.type):
         # Some ontologies define instances
         if (vocab_ns and str(s).startswith(vocab_ns) and str(o) in ontology_info['classes']):
@@ -630,20 +629,20 @@ def validate_shacl_constraints(graph_profile, data_graph_file_path, data_graph_f
     """
 
     if vocabs:
+        initial_time = time.time()
+        ont_graphs = [] # merge vocabs
 
-        ont_graphs = []
-
-        num_entities_vocabs = 0
+        vocab_classes = []
         for vocab in vocabs:
             file_path = config[vocab]['file_path']
             file_format = config[vocab]['file_format']
             vocab_name = config[vocab]['vocab_name']
             ont_graphs.append(Graph().parse(file_path, format=file_format))
-
+            
             with open(f'{PROFILE_VOCABULARIES_FOLDER_PATH}/{vocab_name}.json', 'r', encoding='utf-8') as file:
                 data = json.load(file)
-                if 'num_entities' in data and data['num_entities'] != 0:
-                    num_entities_vocabs += data['num_entities']
+                if 'classes' in data and len(data['classes']) != 0:
+                    vocab_classes += data['classes']
 
         # Create new merged graph with only class/property definitions
         merged_ont = Graph()
@@ -693,15 +692,16 @@ def validate_shacl_constraints(graph_profile, data_graph_file_path, data_graph_f
                 for s, p, o in g:
                     if s not in excluded_subjects:
                         merged_ont.add((s, p, o))
-                        
                         if p == RDF.type:
                             if o in owl_properties:
                                 merged_ont.add((s, RDF.type, RDF.Property))
-                            elif o in owl_classes:
+                            if o in owl_classes:
                                 merged_ont.add((s, RDF.type, RDFS.Class))
-                        
-                        if p == RDFS.subClassOf:
-                            merged_ont.add((s, RDF.type, o))
+                            # if the vocabulary defines instances we type them as NamedIndividual
+                            if str(o) in vocab_classes:
+                                merged_ont.add((s, RDF.type, OWL.NamedIndividual))
+                        if str(p) == RDFS.subClassOf:
+                            merged_ont.add((s, RDF.type, RDFS.Class))
         
         else: # vocabularies
             owl_classes = {
@@ -724,24 +724,26 @@ def validate_shacl_constraints(graph_profile, data_graph_file_path, data_graph_f
         # Merge Abox (data) + Tbox (filtered ontology)
         graph_to_validate = data_graph + merged_ont
         graph_to_validate.serialize(format="turtle", destination='aux.ttl')
-
-        # Update for the metric calculation
-        if graph_profile and 'num_entities' in graph_profile:
-            graph_profile['num_entities'] += num_entities_vocabs
         
-        # TODO: borrar esto, es solo prueba
-        # graph_to_validate.add((URIRef('http://www.co-ode.org/ontologies/pizza/pizza.owl#UndefClass'), URIRef('http://www.w3.org/1999/02/22-rdf-syntax-ns#type'), URIRef('owl:Class')))
-        # graph_to_validate.serialize('aux.ttl', 'ttl')
+        final_time = time.time()
+        print(f'Time it took to merge vocabs to data graph: {final_time - initial_time}')
     else:
         graph_to_validate = Graph().parse(data_graph_file_path, format=data_graph_file_format)
 
+    initial_time = time.time()
     conforms, report_graph, validation_report = validate(
-        graph_to_validate,
+        data_graph=graph_to_validate,
         shacl_graph=shapes_graph,
-        debug=False
+        debug=False,
+        inference=None,
+        ont_graph=None
     )
+    final_time = time.time()
+    print(f'Time of validation: {final_time - initial_time}')
 
-    return conforms, report_graph, validation_report, graph_profile
+    validation_time = final_time - initial_time
+
+    return conforms, report_graph, validation_report, graph_profile, validation_time
 
 def get_metric_message(results_graph, result):
     

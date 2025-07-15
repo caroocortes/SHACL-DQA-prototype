@@ -23,6 +23,10 @@ ex:UsageHashURIsEntitiesShape
             sh:hasValue rdf:Property ;
         ]
         [
+            sh:path rdf:type ;
+            sh:hasValue owl:NamedIndividual ;
+        ]
+        [
             sh:pattern "^[^#]*$" ;
             sh:message "UsageHashURIsEntities - It's is recommended the usage of slash URIs";
         ]
@@ -41,6 +45,10 @@ ex:LabelForEntitiesShape
         [
             sh:path rdf:type ;
             sh:hasValue rdf:Property ;
+        ]
+        [
+            sh:path rdf:type ;
+            sh:hasValue owl:NamedIndividual ;
         ]
         [
             sh:path <{{ labeling_property }}> ;
@@ -64,6 +72,10 @@ ex:URIRegexComplianceEntitiesShape
             sh:hasValue rdf:Property ;
         ]
         [
+            sh:path rdf:type ;
+            sh:hasValue owl:NamedIndividual ;
+        ]
+        [
             sh:pattern "{{ uri_regex_pattern }}" ; 
             sh:message "URIRegexComplianceEntities - URIs should match the regex pattern provided in void:uriRegexPattern" ;
         ]
@@ -82,6 +94,10 @@ ex:URISpaceComplianceEntitiesShape
         [
             sh:path rdf:type ;
             sh:hasValue rdf:Property ;
+        ]
+        [
+            sh:path rdf:type ;
+            sh:hasValue owl:NamedIndividual ;
         ]
         [
             sh:pattern "^{{ uri_space }}" ; 
@@ -104,6 +120,10 @@ ex:InterlinkingCompletenessShape
             sh:hasValue rdf:Property ;
         ]
         [
+            sh:path rdf:type ;
+            sh:hasValue owl:NamedIndividual ;
+        ]
+        [
             sh:path <{{interlinking_property}}> ;
             sh:minCount 1;
             sh:message "InterlinkingCompleteness - Entities should be interlinked." ;
@@ -111,14 +131,25 @@ ex:InterlinkingCompletenessShape
     ).
 {%- endmacro %}
 
-{% macro completeness_schema_completeness_class_usage(class_name, class_uri, type_property) -%}
-ex:SchemaCompletenessClassUsageShape_{{class_name}}
+{% macro completeness_schema_completeness_class_usage(shape_index, class_uri, type_property) -%}
+ex:NotNamedIndividualShape
+    a sh:NodeShape;
+    sh:property [
+            sh:path <{{type_property}}> ;
+            sh:not [ sh:hasValue owl:NamedIndividual ] ;
+    ].
+
+ex:SchemaCompletenessClassUsageShape_{{shape_index}}
     a sh:NodeShape ;
     sh:targetNode <{{class_uri}}> ;
     sh:property [
-        sh:path [ sh:inversePath <{{type_property}}> ];
-        sh:minCount 1;
-        sh:message "SchemaCompletenessClassUsage_{{class_name}} - The class {{class_name}} is defined in the vocabulary but isn't used in the dataset";
+        sh:path [ sh:inversePath <{{type_property}}> ] ;   
+        sh:minCount 1 ;   
+        sh:qualifiedValueShape [
+            sh:node ex:NotNamedIndividualShape ;
+        ];                     
+        sh:qualifiedMinCount 1 ;
+        sh:message "SchemaCompletenessClassUsage_{{shape_index}} - The target class is defined in the vocabulary but isn't used in the dataset";
     ].
 {%- endmacro %}
 
@@ -134,6 +165,10 @@ ex:URIsLengthEntitiesShape
         [
             sh:path rdf:type ;
             sh:hasValue rdf:Property ;
+        ]
+        [
+            sh:path rdf:type ;
+            sh:hasValue owl:NamedIndividual ;
         ]
         [
             sh:maxLength {{ max_length_value }} ;
@@ -156,6 +191,10 @@ ex:URIsParametersEntitiesShape
             sh:hasValue rdf:Property ;
         ]
         [
+            sh:path rdf:type ;
+            sh:hasValue owl:NamedIndividual ;
+        ]
+        [
             sh:not[ sh:pattern "\\?.+=.*" ; ] ;
             sh:message "URIsParametersEntities - URIs shouldn't use parameters";
         ]
@@ -174,6 +213,10 @@ ex:ProlixFeaturesShape
         [
             sh:path rdf:type ;
             sh:hasValue rdf:Property ;
+        ]
+        [
+            sh:path rdf:type ;
+            sh:hasValue owl:NamedIndividual ;
         ]
         [
             sh:not[
@@ -204,6 +247,10 @@ ex:DifferentLanguagesLabelsEntitiesShape
             sh:hasValue rdf:Property;
         ]
         [
+            sh:path rdf:type ;
+            sh:hasValue owl:NamedIndividual ;
+        ]
+        [
             sh:path <{{labeling_property}}> ;
             sh:datatype rdf:langString;
             sh:message "DifferentLanguagesLabelsEntities - Entities should provide labels with language tags";
@@ -225,6 +272,10 @@ ex:DifferentLanguagesDescriptionsEntitiesShape
             sh:hasValue rdf:Property;
         ]
         [
+            sh:path rdf:type ;
+            sh:hasValue owl:NamedIndividual ;
+        ]
+        [
             sh:path <{{description_property}}> ;
             sh:datatype rdf:langString ;
             sh:message "DifferentLanguagesDescriptionsEntities - Entities should provide descriptions with language tags";
@@ -244,6 +295,10 @@ ex:SelfDescriptiveFormatShape
         [
             sh:path rdf:type ;
             sh:hasValue rdf:Property ;
+        ]
+        [
+            sh:path rdf:type ;
+            sh:hasValue owl:NamedIndividual ;
         ]
         [
             sh:nodeKind sh:IRI ;
@@ -272,6 +327,10 @@ ex:BlankNodesUsageEntitiesShape
         [
             sh:path rdf:type ;
             sh:hasValue rdf:Property ;
+        ]
+        [
+            sh:path rdf:type ;
+            sh:hasValue owl:NamedIndividual ;
         ]
         [
             sh:not [ sh:nodeKind sh:BlankNode] ;
@@ -313,6 +372,10 @@ ex:MisplacedClassesShape_{{shape_index}}
         [
             sh:path rdf:type ;
             sh:hasValue rdf:Property ;
+        ]
+        [
+            sh:path rdf:type ;
+            sh:hasValue owl:NamedIndividual ;
         ]
         [
             sh:path  <{{class_uri}}> ;
@@ -358,6 +421,10 @@ ex:DeprecatedClassesShape
             sh:hasValue rdf:Property ;
         ]
         [
+            sh:path rdf:type ;
+            sh:hasValue owl:NamedIndividual ;
+        ]
+        [
             sh:path <{{type_property}}> ;
             sh:not [ 
                 sh:in ( {{classes_list}} );
@@ -379,6 +446,10 @@ ex:DeprecatedPropertiesShape_{{shape_index}}
         [
             sh:path rdf:type ;
             sh:hasValue rdf:Property ;
+        ]
+        [
+            sh:path rdf:type ;
+            sh:hasValue owl:NamedIndividual ;
         ]
         [
             sh:path <{{property_uri}}> ;
