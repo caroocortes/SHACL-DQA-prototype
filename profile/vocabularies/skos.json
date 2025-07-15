@@ -44,7 +44,7 @@
         },
         "http://www.w3.org/2004/02/skos/core#member": {
             "domain": "http://www.w3.org/2004/02/skos/core#Collection",
-            "range": "Nbc4946d337004cc4921e4e966b6b3719"
+            "range": "Nf440230ae94d4d0a9ccc2f23591390a4"
         },
         "http://www.w3.org/2004/02/skos/core#memberList": {
             "domain": "http://www.w3.org/2004/02/skos/core#OrderedCollection",
@@ -104,14 +104,14 @@
     "disjoint_classes": [
         [
             "http://www.w3.org/2004/02/skos/core#Collection",
-            "http://www.w3.org/2004/02/skos/core#Concept"
-        ],
-        [
-            "http://www.w3.org/2004/02/skos/core#Concept",
             "http://www.w3.org/2004/02/skos/core#ConceptScheme"
         ],
         [
             "http://www.w3.org/2004/02/skos/core#Collection",
+            "http://www.w3.org/2004/02/skos/core#Concept"
+        ],
+        [
+            "http://www.w3.org/2004/02/skos/core#Concept",
             "http://www.w3.org/2004/02/skos/core#ConceptScheme"
         ]
     ],

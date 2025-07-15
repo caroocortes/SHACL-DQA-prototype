@@ -85,30 +85,21 @@ class DQAssessment:
     
         # ---- Validate metadata shapes ----
         if self.metadata_shapes and self.metadata_file:
-            start_time = time.time()
-            self.validate_metadata_shapes()
-            end_time = time.time()
-            elapsed_time = end_time - start_time
-            self.metadata_shapes_elapsed_time = elapsed_time
-            logging.info(f"Finished validating metadata shapes. \n Saved DQA results in '{DQ_ASSESSMENT_RESULTS_FOLDER_PATH.format(dataset_name=self.dataset_name)}dq_assessment_{self.dataset_name}_metadata.json'. \n Elapsed time: {elapsed_time}")
+            validation_time = self.validate_metadata_shapes()
+            self.metadata_shapes_elapsed_time = validation_time
+            logging.info(f"Finished validating metadata shapes. \n Saved DQA results in '{DQ_ASSESSMENT_RESULTS_FOLDER_PATH.format(dataset_name=self.dataset_name)}dq_assessment_{self.dataset_name}_metadata.json'. \n Validation time: {validation_time}")
 
         # ---- Validate data shapes ----
         if self.data_shapes:
-            start_time = time.time()
-            self.validate_data_shapes()
-            end_time = time.time()
-            elapsed_time = end_time - start_time
-            self.data_shapes_elapsed_time = elapsed_time
-            logging.info(f"Finished validating data shapes. Saved DQA results in '{DQ_ASSESSMENT_RESULTS_FOLDER_PATH.format(dataset_name=self.dataset_name)}/dq_assessment_{self.dataset_name}_data.json'. \n Elapsed time: {elapsed_time}")
+            validation_time = self.validate_data_shapes()
+            self.data_shapes_elapsed_time = validation_time
+            logging.info(f"Finished validating data shapes. Saved DQA results in '{DQ_ASSESSMENT_RESULTS_FOLDER_PATH.format(dataset_name=self.dataset_name)}/dq_assessment_{self.dataset_name}_data.json'. \n Validation time: {validation_time}")
 
         # ---- Validate shapes against vocabularies ----
         if self.vocab_shapes:
-            start_time = time.time()
-            self.validate_vocabulary_shapes()
-            end_time = time.time()
-            elapsed_time = end_time - start_time
-            self.vocab_shapes_elapsed_time = elapsed_time
-            logging.info(f"Finished validating shapes against vocabularies. Saved DQA results in '{DQ_ASSESSMENT_RESULTS_FOLDER_PATH.format(dataset_name=self.dataset_name)}dq_assessment_[vocab_name].json'. \n Elapsed time: {elapsed_time}")
+            validation_time = self.validate_vocabulary_shapes()
+            self.vocab_shapes_elapsed_time = validation_time
+            logging.info(f"Finished validating shapes against vocabularies. Saved DQA results in '{DQ_ASSESSMENT_RESULTS_FOLDER_PATH.format(dataset_name=self.dataset_name)}dq_assessment_[vocab_name].json'. \n Validation time: {validation_time}")
 
         final_time = time.time() # end of validation
         self.total_elapsed_time = final_time - initial_time
@@ -125,25 +116,28 @@ class DQAssessment:
 
 
     def profile_data(self):
-        graph_profile_output_path = f'{PROFILE_DATASETS_FOLDER_PATH}/{self.dataset_name}.json'
-        self.graph_profile = profile_graph(self, graph_profile_output_path)
-        logging.info(f"Graph profile saved in {graph_profile_output_path}.")
+        if self.data_shapes:
+            graph_profile_output_path = f'{PROFILE_DATASETS_FOLDER_PATH}/{self.dataset_name}.json'
+            self.graph_profile = profile_graph(self, graph_profile_output_path)
+            logging.info(f"Graph profile saved in {graph_profile_output_path}.")
 
-        # Maps a vocabulary with its namespace
-        dict_vocab_file = {}
-
-        for vocab in self.vocab_names:
-            
-            vocab_ns = profile_vocab(self, vocab)
-            vocab_name = self.config[vocab]["vocab_name"]
-            dict_vocab_file[vocab_name] = vocab_ns
-            
-        self.dict_vocab_ns_file = dict_vocab_file
+        if self.vocab_shapes:
+            # Maps a vocabulary with its namespace
+            dict_vocab_file = {}
+            for vocab in self.vocab_names:
+                
+                vocab_ns = profile_vocab(self, vocab)
+                vocab_name = self.config[vocab]["vocab_name"]
+                dict_vocab_file[vocab_name] = vocab_ns
+                
+            self.dict_vocab_ns_file = dict_vocab_file
 
     def validate_metadata_shapes(self):
         """ 
             Validates shapes against the metadata file 
         """
+
+        validation_time = 0
 
         # Generate metadata shapes
         shape_graph = create_shape_graph(self.metadata_template.module.metadata_shape(self.metadata_class))
@@ -156,15 +150,17 @@ class DQAssessment:
         logging.info(f'Metadata shapes for dataset {self.dataset_name} saved in {file_path}')
         
         # Run validation 
-        _, val_graph, _ , _ = validate_shacl_constraints(None, self.metadata_file, self.metadata_file_format, shape_graph, vocabs=None, config=None)
+        _, val_graph, _ , _, validation_time = validate_shacl_constraints(None, self.metadata_file, self.metadata_file_format, shape_graph, vocabs=None, config=None)
         # Process & store validation results
         self.process_validation_result_metadata(val_graph)
         
         logging.info(f"Finished DQA for metadata file. Results saved in '{DQ_ASSESSMENT_RESULTS_FOLDER_PATH.format(dataset_name=self.dataset_name)}/dq_assessment_{self.dataset_name}_metadata.json'. \n")
 
+        return validation_time
 
     def validate_vocabulary_shapes(self):
 
+        validation_time = 0
         # Stores for each vocabulary the classes used in the dataset
         class_vocab_map = {}
         for class_ in self.graph_profile['classes']:
@@ -212,7 +208,7 @@ class DQAssessment:
             # Validate shapes
             file_path = self.config[vocab]["file_path"]
             file_format = self.config[vocab]["file_format"]
-            _, val_graph, _, _ = validate_shacl_constraints(None, file_path, file_format, shape_graph, vocabs=[vocab], config=self.config)
+            _, val_graph, _, _, validation_time = validate_shacl_constraints(None, file_path, file_format, shape_graph, vocabs=[vocab], config=self.config)
 
             with open(f'{PROFILE_VOCABULARIES_FOLDER_PATH}/{vocab_name}.json', 'r', encoding='utf-8') as f:
                 vocab_profile = json.load(f)
@@ -220,11 +216,13 @@ class DQAssessment:
             # Process validation results
             self.process_validation_result_vocabularies(val_graph, vocab_name, vocab_profile, property_vocab_map, class_vocab_map)
 
+        return validation_time
 
     def validate_data_shapes(self):
         """
             Validates data shapes
         """
+        validation_time = 0
 
         # Instantiate shapes
         accessibility_shapes = self.shape_builder.accessibility_data_shapes()
@@ -250,8 +248,8 @@ class DQAssessment:
         shape_graph.serialize(destination=file_path, format='turtle')
         logging.info(f'Data shapes for dataset {self.dataset_name} saved in {file_path}')
 
-        _, val_graph, _, self.graph_profile = validate_shacl_constraints(self.graph_profile, self.graph_file_path, self.graph_file_format, shape_graph, self.vocab_names, self.config)
-        
+        _, val_graph, _, self.graph_profile, validation_time = validate_shacl_constraints(self.graph_profile, self.graph_file_path, self.graph_file_format, shape_graph, self.vocab_names, self.config)
+
         # Process validation results
         results = self.process_validation_result_data(val_graph)
         
@@ -261,6 +259,8 @@ class DQAssessment:
         file_path = f'{folder_path}/dq_assessment_{self.dataset_name}_data.json'
         with open(file_path, 'w', encoding='utf-8') as f:
             json.dump(results, f, indent=4)
+
+        return validation_time
 
     def process_validation_result_metadata(self, results_graph):
         """
@@ -436,7 +436,7 @@ class DQAssessment:
                 if metric.startswith("SelfDescriptiveFormatProperties"):
                     results[metric]["property"] = self.shape_property_map_representational[int(counter)]
               
-                if metric.startswith("SchemaCompletenessClassUsage") or metric.startswith("MisplacedClasses"):
+                if metric.startswith("SchemaCompleteness") or metric.startswith("MisplacedClasses"):
                     results[metric]["class"] = self.shape_class_map[int(counter)]
                 
                 # For deprecated classes violations are the entities that use the class
@@ -453,6 +453,7 @@ class DQAssessment:
                         
                     elif results[metric]['violations'] != '':
                         results[metric]['violations'] += ';' + str(focus_node.toPython())
+
                 results[metric]["measure"] = 0 
             
             elif metric in COUNT_METRICS:
@@ -518,7 +519,7 @@ class DQAssessment:
                     # shapes have ranges to check for the effective usage of properties
                     # hence, the property can be present but is not being used properly
                     message += ' (the values for the property are not correct)'
-        
+
         for metric, info in violating_entities_per_shape.items():
             
             count = len(info["entities"])
@@ -731,7 +732,7 @@ class DQAssessment:
                     "metric_calculation": "1 if the class is used, 0 otherwise",
                     "meta_metric_calculation": "Number of classes used from the vocabularies / Number of classes defined in vocabularies",
                     'shape_name': 'SchemaCompletenessClassUsageShape',
-                    "shape_template": "ex:SchemaCompletenessClassUsageShape\\n\\ta sh:NodeShape ;\\nsh:targetNode CLASS_URI ;\\nsh:property [\\n\\tsh:path [ sh:inversePath rdf:type ] ;\\n\\tsh:minCount 1 ;\\n] .",
+                    "shape_template": "ex:NotNamedIndividualShape\\n\\ta sh:NodeShape;\\n\\tsh:property [\\n\\t\\tsh:path TYPE_PROPERTY ;\\n\\t\\tsh:not [ sh:hasValue owl:NamedIndividual ] ;\\n\\t].\\n\\nex:SchemaCompletenessClassUsageShape\\ta sh:NodeShape ;\\n\\tsh:targetNode CLASS_URI;\\n\\tsh:property [\\n\\t\\tsh:path [ sh:inversePath TYPE_PROPERTY ] ;\\n\\t\\tsh:minCount 1 ;\\n\\t\\tsh:qualifiedValueShape [\\n\\t\\t\\tsh:node ex:NotNamedIndividualShape ;\\n\\t\\t];\\n\\t\\tsh:qualifiedMinCount 1 ;\\n\\t].",
                     'violations': '',
                     "violation_text": "classes defined in the vocabulary that are not used in the dataset",
                     'num_violations': 0,
@@ -917,11 +918,6 @@ class DQAssessment:
                     "count_malformed_literal_shapes": 0,
                     "malformed_literal_properties": []
                 },
-                # "incompatible_datatype": {
-                #     "incompatible_datatype_ones": 0,
-                #     "count_incompatible_datatype_shapes": 0,
-                #     "incompatible_datatype_properties": []
-                # },
                 "undefined_classes": {
                     "undefined_classes_ones": {},
                     "count_undefined_classes_shapes": {},
@@ -972,7 +968,7 @@ class DQAssessment:
                     # this counts the number of classes, since I create 1 shape 
                     # per class and in the results I have a result per shape
                     self.create_aggregate_metric("misplaced_classes", score, class_uri, type_='classes', tuple_=False)
-                # TODO: cambiar
+                
                 elif shape_name.startswith("CorrectRange_"):
                     self.create_aggregate_metric("correct_range", score, property_uri, type_="properties", tuple_=True)
 
@@ -1005,16 +1001,13 @@ class DQAssessment:
                 elif shape_name.startswith("FunctionalProperty"):
                     self.create_aggregate_metric("functional_property", score, property_uri, type_="properties", tuple_=True)
 
-                elif shape_name.startswith("SchemaCompletenessClassUsage_"):
+                elif shape_name.startswith("SchemaCompletenessClassUsage"):
                     self.create_aggregate_metric("schema_completeness_class_usage", score, class_uri, type_='classes', tuple_=False)
 
                 elif shape_name.startswith("MalformedLiteral"):
                     # 1 shape per property, so this counts the number of properties
                     self.create_aggregate_metric("malformed_literal", score, property_uri, type_="properties", tuple_=True)
-
-                # elif shape_name.startswith("IncompatibleDatatype"):
-                #     self.create_aggregate_metric("incompatible_datatype", score, property_uri, type_="properties", tuple_=True)
-
+                
                 elif shape_name.startswith("DeprecatedProperties"):
                     # 1 shape per property, so this counts the number of properties
                     self.create_aggregate_metric("deprecated_property", score, property_uri, type_="properties", tuple_=True)

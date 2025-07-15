@@ -1,6 +1,6 @@
 from pyshacl import validate
 from owlrl import DeductiveClosure, RDFS_Semantics
-from rdflib import RDF, RDFS, OWL, Graph, URIRef
+from rdflib import RDF, RDFS, OWL, Graph, URIRef, SH
 import time
 
 def validate_shacl_constraints(data_graph, shape_graph, ont_files):
@@ -79,121 +79,17 @@ def validate_shacl_constraints(data_graph, shape_graph, ont_files):
 
 
     conforms, report_graph, report_text = results
-    print(report_text)
 
+
+    composite_components = { 
+        SH.OrConstraintComponent,
+        SH.AndConstraintComponent,
+        SH.XoneConstraintComponent,
+        SH.NotConstraintComponent
+    }
+
+    print(report_text)
     return conforms, report_graph
 
 if "__main__":
     conforms, report_graph = validate_shacl_constraints('test/test_graph.ttl', 'test/test_shacl_shape.ttl', [])
-
-
-# sh:or (
-#         [
-#             sh:path rdf:type ;
-#             sh:hasValue rdfs:Class
-#         ]
-#         [
-#             sh:path rdf:type ;
-#             sh:hasValue rdf:Property
-#         ]
-#         [
-#             sh:path rdf:type ;
-#             sh:hasValue rdfs:Datatype
-#         ]
-#         [
-#             sh:path rdf:type ;
-#             sh:hasValue owl:ObjectProperty
-#         ]
-#         [
-#             sh:path rdf:type ;
-#             sh:hasValue owl:DatatypeProperty
-#         ]
-#         [
-#             sh:path rdf:type ;
-#             sh:hasValue owl:Class
-#         ]
-#         [
-#             sh:path rdf:type ;
-#             sh:hasValue owl:OntologyProperty
-#         ]
-#         [
-#             sh:path rdf:type ;
-#             sh:hasValue owl:Ontology
-#         ]
-#         [
-#             sh:path rdf:type ;
-#             sh:hasValue owl:NamedIndividual
-#         ]
-#         [
-#             sh:path rdf:type ;
-#             sh:hasValue owl:FunctionalProperty
-#         ]
-#         [
-#             sh:path rdf:type ;
-#             sh:hasValue owl:InverseFunctionalProperty
-#         ]
-#         [
-#             sh:path rdf:type ;
-#             sh:hasValue owl:IrreflexiveProperty
-#         ]
-#         [
-#             sh:path rdf:type ;
-#             sh:hasValue owl:ReflexiveProperty
-#         ]
-#         [
-#             sh:path rdf:type ;
-#             sh:hasValue owl:TransitiveProperty
-#         ]
-#         [
-#             sh:path rdf:type ;
-#             sh:hasValue owl:AnnotationProperty
-#         ]
-#         [
-#             sh:path rdf:type ;
-#             sh:hasValue owl:someValuesFrom
-#         ]
-#         [
-#             sh:path rdf:type ;
-#             sh:hasValue owl:oneOf
-#         ]
-#         [
-#             sh:path rdf:type ;
-#             sh:hasValue owl:allValuesFrom
-#         ]
-#         [
-#             sh:path rdf:type ;
-#             sh:hasValue owl:hasValue
-#         ]
-#         [
-#             sh:path rdf:type ;
-#             sh:hasValue owl:distinctMembers
-#         ]
-#         [
-#             sh:path rdf:type ;
-#             sh:hasValue owl:AllDifferent
-#         ]
-#         [
-#             sh:path rdf:type ;
-#             sh:hasValue owl:intersectionOf
-#         ]
-#         [
-#             sh:path rdf:type ;
-#             sh:hasValue owl:unionOf
-#         ]
-#         [
-#             sh:path rdf:type ;
-#             sh:hasValue owl:complementOf
-#         ]
-#         [
-#             sh:path rdf:type ;
-#             sh:hasValue owl:onProperty
-#         ]
-#         [
-#             sh:path rdf:type ;
-#             sh:hasValue owl:Restriction
-#         ]
-#         [
-#             sh:path rdf:type ;
-#             sh:hasValue owl:AllDisjointClasses
-#         ]
-# )
