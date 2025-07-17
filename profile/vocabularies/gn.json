@@ -8,6 +8,11 @@
         "https://www.geonames.org/ontology#RDFData",
         "https://www.geonames.org/ontology#WikipediaArticle"
     ],
+    "other_classes": [],
+    "other_properties": [
+        "http://www.w3.org/2004/02/skos/core#notation",
+        "http://xmlns.com/foaf/0.1/name"
+    ],
     "object_properties": {
         "https://www.geonames.org/ontology#childrenFeatures": {
             "domain": "https://www.geonames.org/ontology#Feature",
@@ -47,23 +52,23 @@
         },
         "https://www.geonames.org/ontology#parentADM1": {
             "domain": "https://www.geonames.org/ontology#Feature",
-            "range": "N935401a194a74b0d9b572dd7841e7cae"
+            "range": "N6ca1ea02347c47fe9a15627d0d7de76f"
         },
         "https://www.geonames.org/ontology#parentADM2": {
             "domain": "https://www.geonames.org/ontology#Feature",
-            "range": "N36e795cd4cf2481892b16fae1df10df7"
+            "range": "Nbe99782e07fc4ebe83c2547b4c4075ff"
         },
         "https://www.geonames.org/ontology#parentADM3": {
             "domain": "https://www.geonames.org/ontology#Feature",
-            "range": "N916e3d77ebce4fe89fddb9b92c439bac"
+            "range": "Nd1dd53b8ffab47c98f8b01bc9aeb5845"
         },
         "https://www.geonames.org/ontology#parentADM4": {
             "domain": "https://www.geonames.org/ontology#Feature",
-            "range": "N5dde4a4bbecf4fb9b13c10abf0e01198"
+            "range": "Nc7032bb8a1c445129df78a11ff787adc"
         },
         "https://www.geonames.org/ontology#parentCountry": {
             "domain": "https://www.geonames.org/ontology#Feature",
-            "range": "N44e4b99beaf04c38bc879aabf3fdb1c7"
+            "range": "Ndd382fee3a044c97b026c5f45c5e6943"
         },
         "https://www.geonames.org/ontology#parentFeature": {
             "domain": "https://www.geonames.org/ontology#Feature",
@@ -140,7 +145,9 @@
     "disjoint_classes": [],
     "rdf_properties": {},
     "num_classes": 7,
+    "num_other_classes": 0,
     "num_properties": 28,
+    "num_other_properties": 2,
     "num_all_classes": 7,
     "num_all_properties": 28,
     "num_entities": 699

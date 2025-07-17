@@ -153,6 +153,6 @@
         "description": "Verifies that entities in the dataset are interlinked.",
         "metric_type": "count",
         "metric_calculation": "1 - (Number of violations / Number of entities)",
-        "shape_template": "ex:InterlinkingCompletenessShape\\n\\ta sh:NodeShape ;\\n\\tsh:targetSubjectsOf rdf:type ;\\n\\tsh:or (\\n\\t\\t[\\n\\t\\t\\tsh:path rdf:type ;\\n\\t\\t\\tsh:hasValue rdfs:Class ;\\n\\t\\t]\\n\\t\\t[\\n\\t\\t\\tsh:path rdf:type ;\\n\\t\\t\\tsh:hasValue rdf:Property ;\\n\\t\\t]\\n\\t\\t[\\n\\t\\t\\tsh:path owl:sameAs ;\\n\\t\\t\\tsh:minCount 1 ;\\n\\t\\t]\\n\\t) ."
+        "shape_template": "ex:InterlinkingCompletenessShape\\n\\ta sh:NodeShape ;\\n\\tsh:targetSubjectsOf rdf:type; \\n\\tsh:or (\\n\\t\\t[ sh:path rdf:type; sh:hasValue rdfs:Class; ]\\n\\t\\t[ sh:path rdf:type; sh:hasValue rdf:Property; ]\\n\\t\\t[ sh:path rdf:type; sh:hasValue owl:NamedIndividual; ]\\n\\t\\t[\\n\\t\\t\\tsh:path owl:sameAs;\\n\\t\\t\\tsh:minCount 1;\\n\\t\\t]\\n\\t)."
     }
 }

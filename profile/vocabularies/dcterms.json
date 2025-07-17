@@ -23,6 +23,8 @@
         "http://purl.org/dc/terms/SizeOrDuration",
         "http://purl.org/dc/terms/Standard"
     ],
+    "other_classes": [],
+    "other_properties": [],
     "object_properties": {},
     "datatype_properties": {},
     "deprecated_classes": [],
@@ -423,7 +425,9 @@
         }
     },
     "num_classes": 22,
+    "num_other_classes": 0,
     "num_properties": 55,
+    "num_other_properties": 0,
     "num_all_classes": 22,
     "num_all_properties": 55,
     "num_entities": 1

@@ -29,6 +29,11 @@
         "http://lawd.info/ontology/Translation",
         "http://lawd.info/ontology/WrittenWork"
     ],
+    "other_classes": [
+        "http://geovocab.org/spatial#Feature",
+        "http://purl.org/vocommons/voaf#Vocabulary"
+    ],
+    "other_properties": [],
     "object_properties": {
         "http://lawd.info/ontology/conjunctOf": {
             "domain": "http://lawd.info/ontology/EvidentiaryItem",
@@ -123,7 +128,9 @@
     "disjoint_classes": [],
     "rdf_properties": {},
     "num_classes": 28,
+    "num_other_classes": 2,
     "num_properties": 19,
+    "num_other_properties": 0,
     "num_all_classes": 28,
     "num_all_properties": 19,
     "num_entities": 26

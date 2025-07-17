@@ -3,6 +3,8 @@
         "http://www.w3.org/2003/01/geo/wgs84_pos#SpatialThing",
         "http://www.w3.org/2003/01/geo/wgs84_pos#Point"
     ],
+    "other_classes": [],
+    "other_properties": [],
     "object_properties": {},
     "datatype_properties": {},
     "deprecated_classes": [],
@@ -53,7 +55,9 @@
         }
     },
     "num_classes": 2,
+    "num_other_classes": 0,
     "num_properties": 5,
+    "num_other_properties": 0,
     "num_all_classes": 2,
     "num_all_properties": 5,
     "num_entities": 0

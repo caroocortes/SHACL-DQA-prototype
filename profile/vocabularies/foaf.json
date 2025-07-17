@@ -14,6 +14,11 @@
         "http://xmlns.com/foaf/0.1/OnlineEcommerceAccount",
         "http://xmlns.com/foaf/0.1/OnlineChatAccount"
     ],
+    "other_classes": [
+        "http://www.w3.org/2000/01/rdf-schema#Class",
+        "http://www.w3.org/2003/01/geo/wgs84_pos#SpatialThing"
+    ],
+    "other_properties": [],
     "object_properties": {
         "http://xmlns.com/foaf/0.1/mbox": {
             "domain": "http://xmlns.com/foaf/0.1/Agent",
@@ -287,16 +292,16 @@
     "symmetric": [],
     "disjoint_classes": [
         [
-            "http://xmlns.com/foaf/0.1/Document",
-            "http://xmlns.com/foaf/0.1/Project"
-        ],
-        [
             "http://xmlns.com/foaf/0.1/Person",
             "http://xmlns.com/foaf/0.1/Project"
         ],
         [
             "http://xmlns.com/foaf/0.1/Document",
             "http://xmlns.com/foaf/0.1/Organization"
+        ],
+        [
+            "http://xmlns.com/foaf/0.1/Document",
+            "http://xmlns.com/foaf/0.1/Project"
         ],
         [
             "http://xmlns.com/foaf/0.1/Organization",
@@ -320,7 +325,9 @@
         }
     },
     "num_classes": 13,
+    "num_other_classes": 2,
     "num_properties": 62,
+    "num_other_properties": 0,
     "num_all_classes": 13,
     "num_all_properties": 62,
     "num_entities": 0

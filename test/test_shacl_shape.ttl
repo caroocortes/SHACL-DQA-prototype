@@ -9,23 +9,10 @@
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix sh: <http://www.w3.org/ns/shacl#> .
 
-ex:NotAuxShape
-        a sh:NodeShape;
-        sh:property [
-                sh:path rdf:type ;
-                sh:not [sh:hasValue owl:NamedIndividual] ;
-        ] .
-
-ex:SchemaCompletenessClassUsageShape
+ex:OpenSameAsChainsShapes
     a sh:NodeShape ;
-    sh:targetNode ex:SomeClass ;
-    sh:property
-        [
-                sh:path [ sh:inversePath rdf:type ] ;   
-                sh:minCount 1 ;   
-                sh:qualifiedValueShape [
-                        sh:node ex:NotAuxShape ;
-                ];                     
-                sh:qualifiedMinCount 1 ;
-        ]
-    .
+    sh:targetSubjectsOf owl:sameAs; 
+    sh:property [
+        sh:path [ sh:inversePath owl:sameAs ];
+        sh:disjoint owl:sameAs;
+    ].

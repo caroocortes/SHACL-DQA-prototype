@@ -366,9 +366,9 @@ class DQAssessment:
         for metric, nodes in violating_entities_per_shape.items():
             count = len(nodes)
             if metric == 'LabelForClasses':
-                denominator = vocab_profile.get("num_all_classes", 1)
+                denominator = vocab_profile.get("num_all_classes", 1) + vocab_profile.get("num_other_classes", 1)
             elif metric == 'LabelForProperties':
-                denominator = vocab_profile.get("num_all_properties", 1)
+                denominator = vocab_profile.get("num_all_properties", 1)+ vocab_profile.get("num_other_properties", 1)
             
             ratio = 1 - (count / denominator)
             results[metric]["measure"] = ratio
@@ -812,7 +812,9 @@ class DQAssessment:
         metric_dict[metric_name]["score"] = ratio
         
         if ratio < 1 and not vocab:
-            metric_dict[metric_name]["message"] = f'{self.aggregate_dict_counter[metric_name][f'count_{metric_name}_shapes'] - self.aggregate_dict_counter[metric_name][f'{metric_name}_ones']} ' + metric_dict[metric_name]["message"]
+            param_shapes = f'count_{metric_name}_shapes'
+            param_ones = f'{metric_name}_ones'
+            metric_dict[metric_name]["message"] = f'{self.aggregate_dict_counter[metric_name][param_shapes] - self.aggregate_dict_counter[metric_name][param_ones]} ' + metric_dict[metric_name]["message"]
         else:
             metric_dict[metric_name]["message"] = ''
 

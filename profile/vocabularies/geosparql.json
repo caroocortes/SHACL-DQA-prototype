@@ -4,6 +4,8 @@
         "http://www.opengis.net/ont/geosparql#Feature",
         "http://www.opengis.net/ont/geosparql#SpatialObject"
     ],
+    "other_classes": [],
+    "other_properties": [],
     "object_properties": {
         "http://www.opengis.net/ont/geosparql#rcc8ntppi": {
             "domain": "http://www.opengis.net/ont/geosparql#SpatialObject",
@@ -161,7 +163,9 @@
     ],
     "rdf_properties": {},
     "num_classes": 3,
+    "num_other_classes": 0,
     "num_properties": 34,
+    "num_other_properties": 0,
     "num_all_classes": 3,
     "num_all_properties": 34,
     "num_entities": 0

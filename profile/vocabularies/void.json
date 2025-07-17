@@ -5,6 +5,17 @@
         "http://rdfs.org/ns/void#Linkset",
         "http://rdfs.org/ns/void#TechnicalFeature"
     ],
+    "other_classes": [
+        "http://purl.org/dc/terms/Agent",
+        "http://www.w3.org/1999/02/22-rdf-syntax-ns#Property",
+        "http://www.w3.org/2000/01/rdf-schema#Class",
+        "http://www.w3.org/2000/01/rdf-schema#Resource",
+        "http://www.w3.org/ns/adms#SemanticAsset",
+        "http://www.w3.org/ns/adms#SemanticDistribution",
+        "http://xmlns.com/foaf/0.1/Document",
+        "http://xmlns.com/foaf/0.1/Person"
+    ],
+    "other_properties": [],
     "object_properties": {
         "http://rdfs.org/ns/void#class": {
             "domain": "http://rdfs.org/ns/void#Dataset",
@@ -114,7 +125,9 @@
     "disjoint_classes": [],
     "rdf_properties": {},
     "num_classes": 4,
+    "num_other_classes": 8,
     "num_properties": 22,
+    "num_other_properties": 0,
     "num_all_classes": 4,
     "num_all_properties": 22,
     "num_entities": 11

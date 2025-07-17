@@ -166,6 +166,8 @@ def profile_vocab(dq_assessment, vocab):
 
     ontology_info = {
         "classes": [],
+        "other_classes": [], # some vocabularies define classes that aren't from the vocabulary
+        "other_properties": [],
         "object_properties": {},
         "datatype_properties": {},
         "deprecated_classes": [],
@@ -180,7 +182,9 @@ def profile_vocab(dq_assessment, vocab):
         "disjoint_classes": set(), 
         "rdf_properties": {},
         "num_classes": 0,
+        "num_other_classes": 0,
         "num_properties": 0,
+        "num_other_properties": 0,
         "num_all_classes": 0,
         "num_all_properties": 0,
         "num_entities": 0,
@@ -190,6 +194,8 @@ def profile_vocab(dq_assessment, vocab):
     for s, p, o in g.triples((None, RDF.type, OWL.Class)):
         if vocab_ns and str(s).startswith(vocab_ns) and not s in g.subjects(OWL.deprecated, Literal(True)) and not s in g.subjects(RDF.type, OWL.DeprecatedClass):
             ontology_info["classes"].append(str(s))
+        if vocab_ns and not str(s).startswith(vocab_ns):
+            ontology_info['other_classes'].append(str(s))
     for s, p, o in g.triples((None, RDF.type, RDFS.Class)):
         if str(s) not in ontology_info["classes"] and vocab_ns and str(s).startswith(vocab_ns) and not s in g.subjects(RDF.type, OWL.DeprecatedClass):
             ontology_info["classes"].append(str(s))
@@ -210,6 +216,8 @@ def profile_vocab(dq_assessment, vocab):
                 "domain": domain,
                 "range": range_
             }
+        if vocab_ns and not str(s).startswith(vocab_ns):
+            ontology_info["other_properties"].append(s)
     
     # Number of properties
     ontology_info['num_properties'] += len(ontology_info['object_properties'].keys())
@@ -223,6 +231,8 @@ def profile_vocab(dq_assessment, vocab):
                 "domain": domain,
                 "range": range_
             }
+        if vocab_ns and not str(s).startswith(vocab_ns):
+            ontology_info["other_properties"].append(s)
 
     # Number of properties      
     ontology_info['num_properties'] += len(ontology_info['datatype_properties'].keys())
@@ -235,20 +245,28 @@ def profile_vocab(dq_assessment, vocab):
         if (s, RDF.type, OWL.ObjectProperty) in g or (s, RDF.type, OWL.DatatypeProperty) in g:
             if vocab_ns and str(s).startswith(vocab_ns):
                 ontology_info["deprecated_properties"].append(s)
+            else:
+                ontology_info["other_properties"].append(s)
     
     for s in g.subjects(RDF.type, OWL.DeprecatedProperty):
         if vocab_ns and str(s).startswith(vocab_ns):
             ontology_info["deprecated_properties"].append(s)
+        else:
+            ontology_info["other_properties"].append(s)
 
     # Deprecated classes
     for s in g.subjects(OWL.deprecated, Literal(True)):
         if (s, RDF.type, OWL.Class) in g or (s, RDF.type, RDFS.Class) in g:
             if vocab_ns and str(s).startswith(vocab_ns):
                 ontology_info["deprecated_classes"].append(s)
+            else:
+                ontology_info["other_classes"].append(s)
 
     for s in g.subjects(RDF.type, OWL.DeprecatedClass):
         if vocab_ns and str(s).startswith(vocab_ns):
             ontology_info["deprecated_classes"].append(s)
+        else:
+            ontology_info["other_classes"].append(s)
 
     # Inverse functional
     for s in g.subjects(RDF.type, OWL.InverseFunctionalProperty):
@@ -285,6 +303,9 @@ def profile_vocab(dq_assessment, vocab):
                         }
                     }
 
+        if vocab_ns and not str(s).startswith(vocab_ns):
+            ontology_info["other_properties"].append(s)
+
     # Functional
     for s in g.subjects(RDF.type, OWL.FunctionalProperty):
         if (vocab_ns and str(s).startswith(vocab_ns) and 
@@ -319,6 +340,9 @@ def profile_vocab(dq_assessment, vocab):
                             "value": None
                         }
                     }
+        
+        if vocab_ns and not str(s).startswith(vocab_ns):
+            ontology_info["other_properties"].append(s)
 
     # Irreflexive
     for s in g.subjects(RDF.type, OWL.IrreflexiveProperty):
@@ -354,6 +378,9 @@ def profile_vocab(dq_assessment, vocab):
                             "value": None
                         }
                     }
+        
+        if vocab_ns and not str(s).startswith(vocab_ns):
+            ontology_info["other_properties"].append(s)
 
    # Reflexive 
     for s in g.subjects(RDF.type, OWL.IrreflexiveProperty):
@@ -389,6 +416,9 @@ def profile_vocab(dq_assessment, vocab):
                             "value": None
                         }
                     }
+            
+        if vocab_ns and not str(s).startswith(vocab_ns):
+            ontology_info["other_properties"].append(s)
 
     # Symmetric
     for s in g.subjects(RDF.type, OWL.SymmetricProperty):
@@ -425,6 +455,9 @@ def profile_vocab(dq_assessment, vocab):
                         }
                     }
 
+        if vocab_ns and not str(s).startswith(vocab_ns):
+            ontology_info["other_properties"].append(s)
+
     # Asymmetric
     for s in g.subjects(RDF.type, OWL.AsymmetricProperty):
         if (vocab_ns and str(s).startswith(vocab_ns) and 
@@ -459,6 +492,8 @@ def profile_vocab(dq_assessment, vocab):
                             "value": None
                         }
                     }
+        if vocab_ns and not str(s).startswith(vocab_ns):
+            ontology_info["other_properties"].append(s)
 
     # Transitive
     for s in g.subjects(RDF.type, OWL.TransitiveProperty):
@@ -494,6 +529,9 @@ def profile_vocab(dq_assessment, vocab):
                             "value": None
                         }
                     }
+        
+        if vocab_ns and not str(s).startswith(vocab_ns):
+            ontology_info["other_properties"].append(s)
 
     # RDF properties
     for s in g.subjects(RDF.type, RDF.Property):
@@ -530,6 +568,9 @@ def profile_vocab(dq_assessment, vocab):
                         }
                     }
 
+            if vocab_ns and not str(s).startswith(vocab_ns):
+                ontology_info["other_properties"].append(s)
+
     for s in g.subjects(RDF.type, OWL.OntologyProperty):
 
         if (s not in dt_props and s not in obj_props and s not in ontology_info["rdf_properties"].keys()):
@@ -563,13 +604,18 @@ def profile_vocab(dq_assessment, vocab):
                             "value": None
                         }
                     }
-    
+
+            if vocab_ns and not str(s).startswith(vocab_ns):
+                ontology_info["other_properties"].append(s)
 
     # Disjoint via owl:disjointWith
     disjoint_pairs = set()
     for s, o in g.subject_objects(OWL.disjointWith):
         if vocab_ns and str(s).startswith(vocab_ns) and str(o).startswith(vocab_ns):
             disjoint_pairs.add(frozenset([str(s), str(o)]))
+
+        if vocab_ns and not str(s).startswith(vocab_ns):
+            ontology_info["other_classes"].append(s)
 
     for s, o in g.subject_objects(RDF.type):
         # Some ontologies define instances
@@ -580,12 +626,16 @@ def profile_vocab(dq_assessment, vocab):
 
     ontology_info['disjoint_classes'] = [sorted(list(pair)) for pair in disjoint_pairs]
 
-    # num_classes includes all classes, except deprecated ones
+    # num_classes includes all classes, except deprecated ones that are from the vocabulary
     ontology_info['num_all_classes'] = ontology_info["num_classes"] + len(ontology_info['deprecated_classes'])
+
+    ontology_info['num_other_classes'] = len(ontology_info['other_classes'])
 
     # num_properties includes all properties, except deprecated ones
     ontology_info['num_all_properties'] = ( ontology_info['num_properties'] + 
                                             len(ontology_info['deprecated_properties']))
+
+    ontology_info['num_other_properties'] = len(ontology_info['other_properties'])
 
     os.makedirs(PROFILE_VOCABULARIES_FOLDER_PATH, exist_ok=True)
     with open(f'{PROFILE_VOCABULARIES_FOLDER_PATH}/{vocab_name}.json', "w", encoding="utf-8") as f:
@@ -681,6 +731,14 @@ def validate_shacl_constraints(graph_profile, data_graph_file_path, data_graph_f
                 OWL.Ontology,
             }
 
+            rdf_rdfs_properties = {
+                RDFS.range,
+                RDFS.domain,
+                RDF.type,
+                RDFS.subClassOf,
+                RDFS.subPropertyOf,
+            }
+
             # Collect all subjects to exclude (those typed as a 'not_allowed' property)
             excluded_subjects = set()
             for g in ont_graphs:
@@ -691,17 +749,21 @@ def validate_shacl_constraints(graph_profile, data_graph_file_path, data_graph_f
             for g in ont_graphs:
                 for s, p, o in g:
                     if s not in excluded_subjects:
-                        merged_ont.add((s, p, o))
-                        if p == RDF.type:
-                            if o in owl_properties:
-                                merged_ont.add((s, RDF.type, RDF.Property))
-                            if o in owl_classes:
+                        # I just want triples related to the defintion of properties, classes
+                        # any extra information (e.g. labels, descriptions, etc) I don't need it for 
+                        # the data validation
+                        if p in rdf_rdfs_properties or p in owl_properties:
+                            merged_ont.add((s, p, o))
+                            if p == RDF.type:
+                                if o in owl_properties:
+                                    merged_ont.add((s, RDF.type, RDF.Property))
+                                if o in owl_classes or o == RDFS.Datatype:
+                                    merged_ont.add((s, RDF.type, RDFS.Class))
+                                # if the vocabulary defines instances we type them as NamedIndividual
+                                if str(o) in vocab_classes:
+                                    merged_ont.add((s, RDF.type, OWL.NamedIndividual))
+                            if str(p) == RDFS.subClassOf:
                                 merged_ont.add((s, RDF.type, RDFS.Class))
-                            # if the vocabulary defines instances we type them as NamedIndividual
-                            if str(o) in vocab_classes:
-                                merged_ont.add((s, RDF.type, OWL.NamedIndividual))
-                        if str(p) == RDFS.subClassOf:
-                            merged_ont.add((s, RDF.type, RDFS.Class))
         
         else: # vocabularies
             owl_classes = {
@@ -795,9 +857,15 @@ def get_denominator(metric, info, dataset_profile):
         else:
             return dataset_profile.get("num_entities", 1)
     elif metric_prefix in NUM_CLASSES:
-        return dataset_profile.get("num_classes", 1)
+        if metric.startswith('LabelForClasses'):
+            return dataset_profile.get('num_classes') + dataset_profile.get('num_other_classes')
+        else:
+            return dataset_profile.get("num_classes", 1)
     elif metric_prefix in NUM_PROPERTIES:
-        return dataset_profile.get("num_properties", 1)    
+        if metric.startswith('LabelForProperties'):
+            return dataset_profile.get('num_properties') + dataset_profile.get('num_other_properties')
+        else:
+            return dataset_profile.get("num_properties", 1)    
     elif metric_prefix in NUM_SUBJECTS_PER_PROPERTY:
         if "property" in info:
             return dataset_profile.get("subjects_per_property", {}).get(info['property'], 1)

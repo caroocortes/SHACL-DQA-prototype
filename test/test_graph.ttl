@@ -8,8 +8,11 @@
 @prefix dcterms: <http://purl.org/dc/terms/> .
 @prefix dbpedia: <http://dbpedia.org/resource/>.
 
-owl:NamedIndividual a rdfs:Class.
-ex:MyClass a rdfs:Class .
-ex:SomeClass a rdfs:Class .
+ex:Germany owl:sameAs ex:OtherCountry.
+ex:OtherCountry owl:sameAs ex:Germany.
 
-ex:instance2 a owl:NamedIndividual . 
+ex:Germany owl:sameAs ex:OtherCountryB.
+
+ex:OtherCountryA owl:sameAs ex:Germany.
+
+
