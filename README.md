@@ -7,9 +7,11 @@ This project provides a SHACL-based prototype to assess and visualize data quali
 ## Setup Instructions
 
 ### 1. Create and activate a virtual environment 
-``python -m venv venv``
-``source venv/bin/activate``
-``pip install -r requirements.txt``
+```
+python -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+```
 
 ### 2. Download the datasets 
 Download the datasets & metadata files (VoID descriptions) from []
@@ -24,6 +26,7 @@ Inside each dataset folder, the ``results/`` subfolder contains the DQA results,
 In root of the project run: ``streamlit run visualize_results.py``
 
 ## Project structure
+```
 .
 ├── config/                   # Dataset's config files - see config_template.ini for the config template
 ├── datasets/
@@ -47,3 +50,4 @@ In root of the project run: ``streamlit run visualize_results.py``
 ├── shacl_shape_builder.py    # Class in charge of instantiating the shapes templates
 ├── requirements.txt   
 └── README.md             
+```
