@@ -236,51 +236,23 @@ ex:ProlixFeaturesShape
 {% macro versatility_languages_labels_entities(type_property, labeling_property) -%}
 ex:DifferentLanguagesLabelsEntitiesShape
     a sh:NodeShape ;
-    sh:targetSubjectsOf <{{type_property}}> ;
-    sh:or (
-        [
-            sh:path rdf:type;
-            sh:hasValue rdfs:Class;
-        ]
-        [
-            sh:path rdf:type;
-            sh:hasValue rdf:Property;
-        ]
-        [
-            sh:path rdf:type ;
-            sh:hasValue owl:NamedIndividual ;
-        ]
-        [
-            sh:path <{{labeling_property}}> ;
-            sh:datatype rdf:langString;
-            sh:message "DifferentLanguagesLabelsEntities - Entities should provide labels with language tags";
-        ]
-    ).
+    sh:targetSubjectsOf <{{labeling_property}}> ;
+    sh:property [
+        sh:path <{{labeling_property}}> ;
+        sh:datatype rdf:langString;
+        sh:message "DifferentLanguagesLabelsEntities - Entities should provide labels with language tags";
+    ].
 {%- endmacro %}
 
 {% macro versatility_languages_descriptions_entities(type_property, description_property) -%}
 ex:DifferentLanguagesDescriptionsEntitiesShape
     a sh:NodeShape ;
-    sh:targetSubjectsOf <{{type_property}}> ;
-    sh:or (
-        [
-            sh:path rdf:type;
-            sh:hasValue rdfs:Class;
-        ]
-        [
-            sh:path rdf:type;
-            sh:hasValue rdf:Property;
-        ]
-        [
-            sh:path rdf:type ;
-            sh:hasValue owl:NamedIndividual ;
-        ]
-        [
-            sh:path <{{description_property}}> ;
-            sh:datatype rdf:langString ;
-            sh:message "DifferentLanguagesDescriptionsEntities - Entities should provide descriptions with language tags";
-        ]
-    ).
+    sh:targetSubjectsOf <{{description_property}}> ;
+    sh:property [
+        sh:path <{{description_property}}> ;
+        sh:datatype rdf:langString ;
+        sh:message "DifferentLanguagesDescriptionsEntities - Entities should provide descriptions with language tags";
+    ].
 {%- endmacro %}
 
 {% macro interpretability_self_descriptive_formats(type_property) -%}
@@ -391,7 +363,7 @@ ex:MisuseOwlObjectPropertiesShape_{{shape_index}}
     sh:targetSubjectsOf <{{property_uri}}> ;
     sh:property [
         sh:path <{{property_uri}}>;
-        sh:nodeKind sh:IRI;
+        sh:nodeKind sh:BlankNodeOrIRI;
         sh:message "MisuseOwlObjectProperties_{{shape_index}} - The object property {{property_uri}} is being used with Literals"
     ].
 {%- endmacro %}

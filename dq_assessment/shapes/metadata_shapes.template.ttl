@@ -15,27 +15,13 @@ ex:DatasetMetadataShape
     sh:property [ 
         sh:path dcterms:title ;
         sh:minCount 1 ;
-        sh:or (
-            [
-                sh:datatype xsd:string;
-            ]
-            [
-                sh:datatype rdf:langString;
-            ]
-        );
+        sh:nodeKind sh:Literal;
         sh:message "PresenceMetadata - The dataset should specify a title, description and web page";
     ];
     sh:property [
         sh:path dcterms:description ;
         sh:minCount 1 ;
-        sh:or (
-            [
-                sh:datatype xsd:string;
-            ]
-            [
-                sh:datatype rdf:langString;
-            ]
-        );
+        sh:nodeKind sh:Literal;
         sh:message "PresenceMetadata - The dataset should specify a title, description and web page";
     ];
     sh:property [
@@ -51,7 +37,6 @@ ex:ExemplaryResourceShape
     sh:property [
         sh:path void:exampleResource ;
         sh:minCount 1 ;
-        sh:nodeKind sh:IRI ;
         sh:message "ExemplaryResources - The dataset should specify an example of an exemplary resource";
     ].
 
@@ -60,7 +45,6 @@ ex:VocabularyExistenceShape
     sh:targetClass <{{metadata_class}}>;
     sh:property[
         sh:path void:vocabulary ;
-        sh:nodeKind sh:IRI ;
         sh:minCount 1 ;
         sh:message "VocabularyExistence - The dataset should specify a list of the vocabularies used";
     ].
@@ -72,7 +56,6 @@ ex:SerializationFormatsShape
         sh:path void:feature;
         sh:minCount 1;
         sh:maxCount 5;
-        sh:nodeKind sh:IRI;
         sh:message "SerializationFormats - The dataset's metadata should specify the serialization formats in which the data is available";
         sh:in (
             <http://www.w3.org/ns/formats/N3>
@@ -89,7 +72,6 @@ ex:URIRegexPressenceShape
     sh:property [
         sh:path void:uriRegexPattern ;
         sh:minCount 1 ;
-        sh:datatype xsd:string ;
         sh:message "URIRegexPressence - The dataset should specify a regex that matches the URIs of the entities";
     ].
 
@@ -98,8 +80,8 @@ ex:URISpacePressenceShape
     sh:targetClass <{{metadata_class}}>;
     sh:property [
         sh:path void:uriSpace ;
+        sh:nodeKind sh:Literal;
         sh:minCount 1 ;
-        sh:datatype xsd:string ;
         sh:message "URISpacePressence - The dataset should specify a URI namespace used for the entities";
     ].
 
@@ -109,14 +91,12 @@ ex:AvailabilityDumpShape
     sh:or (
         [
             sh:path void:dataDump ;
-            sh:nodeKind sh:IRI ;
             sh:minCount 1 ;
             sh:message "AvailabilityDump - The dataset must provide an accessible RDF dump that can be downloaded.";
         ] 
         [
             sh:path ( dcat:distribution dcat:downloadURL );
             sh:minCount 1 ;
-            sh:nodeKind sh:IRI ;
             sh:message "AvailabilityDump - The dataset must provide an accessible RDF dump that can be downloaded";
         ]
     ).

@@ -475,6 +475,16 @@ class DQAssessment:
                                 "entities": set(),
                                 "property": self.interlinking_property
                             }
+                        elif metric == 'DifferentLanguagesLabelsEntities':
+                            violating_entities_per_shape[metric] = {
+                                "entities": set(),
+                                "property": self.labeling_property
+                            }
+                        elif metric == 'DifferentLanguagesDescriptionsEntities':
+                            violating_entities_per_shape[metric] = {
+                                "entities": set(),
+                                "property": self.description_property
+                            }
                         else:
                             violating_entities_per_shape[metric] = {
                                 "entities": set(),

@@ -68,15 +68,17 @@ def validate_shacl_constraints(data_graph, shape_graph, ont_files):
 
 
     full_graph = data_graph + merged_ont 
-
+    start_time = time.time()
     results = validate(
         full_graph,
         shacl_graph=shapes_graph,
         ont_graph=None,
         # inference='rdfs',
+        sparql_mode=True,
         debug=False
     )
-
+    final_time = time.time()
+    print('Total time: ', final_time - start_time)
 
     conforms, report_graph, report_text = results
 
@@ -92,4 +94,5 @@ def validate_shacl_constraints(data_graph, shape_graph, ont_files):
     return conforms, report_graph
 
 if "__main__":
+    # 84 segundos solo 1 shape que hace target en las entities
     conforms, report_graph = validate_shacl_constraints('test/test_graph.ttl', 'test/test_shacl_shape.ttl', [])

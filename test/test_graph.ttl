@@ -8,11 +8,11 @@
 @prefix dcterms: <http://purl.org/dc/terms/> .
 @prefix dbpedia: <http://dbpedia.org/resource/>.
 
-ex:Germany owl:sameAs ex:OtherCountry.
-ex:OtherCountry owl:sameAs ex:Germany.
+ex:person1 a ex:Person ;
+    ex:email "a@example.com" ;
+    ex:name "Alice" .
 
-ex:Germany owl:sameAs ex:OtherCountryB.
-
-ex:OtherCountryA owl:sameAs ex:Germany.
-
+ex:person2 a ex:Person ;
+    ex:email "a@example.com" ;
+    ex:name "Alicia" .
 

@@ -9,10 +9,23 @@
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix sh: <http://www.w3.org/ns/shacl#> .
 
-ex:OpenSameAsChainsShapes
-    a sh:NodeShape ;
-    sh:targetSubjectsOf owl:sameAs; 
-    sh:property [
-        sh:path [ sh:inversePath owl:sameAs ];
-        sh:disjoint owl:sameAs;
-    ].
+ex:EmailNameFDShape
+  a sh:NodeShape ;
+  sh:targetSubjectsOf ex:email ;
+  sh:sparql [
+    a sh:SPARQLConstraint ;
+    sh:message "Each email should map to exactly one name." ;
+    sh:select """
+    SELECT $this
+    WHERE {
+        $this ex:email ?email ;
+                ex:name ?name .
+
+        ?other ex:email ?email ;
+                ex:name ?otherName .
+
+        FILTER(?other != $this)
+        FILTER(?name != ?otherName)
+    }
+    """ ;
+  ] .
