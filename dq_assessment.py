@@ -5,6 +5,8 @@ from jinja2 import Environment, FileSystemLoader
 import time
 import glob
 from collections import defaultdict
+from rdflib.namespace import DCTERMS, VOID, SH, FOAF
+
 from shacl_shape_builder import SHACLShapeBuilder
 from utils import *
 
@@ -36,9 +38,17 @@ class DQAssessment:
         self.graph_profile = None
 
     def _load_config(self, path):
-        config = configparser.ConfigParser()
-        config.read(path)
-        return config
+        try:
+            config = configparser.ConfigParser()
+            read_files = config.read(path)
+
+            if not read_files:
+                raise FileNotFoundError(f"Config file not found at path: {path}")
+
+            return config
+
+        except configparser.ParsingError as e:
+            raise ValueError(f"Failed to parse config file '{path}': {e}")
 
     def _init_paths_and_params(self):
         settings = self.config['settings']
@@ -87,19 +97,19 @@ class DQAssessment:
         if self.metadata_shapes and self.metadata_file:
             validation_time = self.validate_metadata_shapes()
             self.metadata_shapes_elapsed_time = validation_time
-            logging.info(f"Finished validating metadata shapes. \n Saved DQA results in '{DQ_ASSESSMENT_RESULTS_FOLDER_PATH.format(dataset_name=self.dataset_name)}dq_assessment_{self.dataset_name}_metadata.json'. \n Validation time: {validation_time}")
+            logging.info(f"Finished validating metadata shapes. \n Saved DQA results in '{DQ_ASSESSMENT_RESULTS_FOLDER_PATH.format(dataset_name=self.dataset_name)}dq_assessment_{self.dataset_name}_metadata.json'. Validation time: {validation_time}")
 
         # ---- Validate data shapes ----
         if self.data_shapes:
             validation_time = self.validate_data_shapes()
             self.data_shapes_elapsed_time = validation_time
-            logging.info(f"Finished validating data shapes. Saved DQA results in '{DQ_ASSESSMENT_RESULTS_FOLDER_PATH.format(dataset_name=self.dataset_name)}/dq_assessment_{self.dataset_name}_data.json'. \n Validation time: {validation_time}")
+            logging.info(f"Finished validating data shapes. Saved DQA results in '{DQ_ASSESSMENT_RESULTS_FOLDER_PATH.format(dataset_name=self.dataset_name)}/dq_assessment_{self.dataset_name}_data.json'. Validation time: {validation_time}")
 
         # ---- Validate shapes against vocabularies ----
         if self.vocab_shapes:
             validation_time = self.validate_vocabulary_shapes()
             self.vocab_shapes_elapsed_time = validation_time
-            logging.info(f"Finished validating shapes against vocabularies. Saved DQA results in '{DQ_ASSESSMENT_RESULTS_FOLDER_PATH.format(dataset_name=self.dataset_name)}dq_assessment_[vocab_name].json'. \n Validation time: {validation_time}")
+            logging.info(f"Finished validating shapes against vocabularies. Saved DQA results in '{DQ_ASSESSMENT_RESULTS_FOLDER_PATH.format(dataset_name=self.dataset_name)}dq_assessment_[vocab_name].json'. Validation time: {validation_time}")
 
         final_time = time.time() # end of validation
         self.total_elapsed_time = final_time - initial_time
@@ -290,9 +300,26 @@ class DQAssessment:
             if metric == 'AuthenticityOfDatasetAuthor' or metric == 'AuthenticityOfDatasetSource':
                 metric = 'AuthenticityOfDataset'
 
-            constraint_type = results_graph.value(result, SH.sourceConstraintComponent)
+            if metric == "DatasetMetadata": # contains multiple constraints
+                result_path = results_graph.value(result, SH.resultPath)
+                if result_path == DCTERMS.title or result_path == DCTERMS.description or result_path == FOAF.homepage:
+                    metric = 'PresenceMetadata'
+                if result_path == VOID.exampleResource:
+                    metric = 'ExemplaryResources'
+                if result_path == VOID.vocabulary:
+                    metric = 'VocabularyExistence'
+                if result_path == VOID.feature:
+                    metric = 'SerializationFormats'
+                if result_path == VOID.uriRegexPattern:
+                    metric = 'URIRegexPressence'
+                if result_path == VOID.uriSpace:
+                    metric = 'URISpacePressence'
+                if result_path == DCTERMS.license:
+                    metric = 'MachineReadableLicense'
+
             results[metric]["measure"] = 0
-            
+
+            constraint_type = results_graph.value(result, SH.sourceConstraintComponent)
             if constraint_type != SH.MinCountConstraintComponent and constraint_type != SH.OrConstraintComponent:
                 # Metadata shapes have constraints to check for the correctness of the values of properties
                 new_message = 'The property is present but the value is incorrect.'
@@ -395,6 +422,7 @@ class DQAssessment:
         with open(DQ_MEASURES_DATA_GENERIC_TEMPLATE_FILE_PATH, 'r', encoding='utf-8') as f:
             metrics_generic = json.load(f)
         
+        metrics_specific = {}
         if os.path.exists(DQ_MEASURES_DATA_SPECIFIC_TEMPLATE_FILE_PATH):
             with open(DQ_MEASURES_DATA_SPECIFIC_TEMPLATE_FILE_PATH, 'r', encoding='utf-8') as f:
                 metrics_specific = json.load(f)
@@ -572,7 +600,7 @@ class DQAssessment:
                 'metric_calculation': "0 if property is used as a class, 1 otherwise.",
                 "meta_metric_calculation": "Number of correctly used properties / Number of properties defined in vocabularies",
                 'shape_name': 'MisplacedPropertiesShape',
-                "shape_template": "ex:MisplacedPropertiesShape\\n\\t a sh:NodeShape ;\\n\\t sh:targetNode PROPERTY_URI ;\\n\\t sh:property [\\n\\t\\t sh:path [ sh:inversePath rdf:type ] ;\\n\\t\\t sh:maxCount 0 ;\\n\\t ] .",
+                "shape_template": "ex:MisplacedPropertiesShape\\n\\ta sh:NodeShape ;\\n\\tsh:targetNode PROPERTY_URI;\\n\\tsh:property [\\n\\tsh:path [sh:inversePath rdf:type];\\n\\tsh:maxCount 0;\\n\\t].",
                 'violations': '',
                 "violation_text": "properties used as a classes",
                 'num_violations': 0,
@@ -589,7 +617,7 @@ class DQAssessment:
                 'metric_calculation': "0 if property is used as a class, 1 otherwise.",
                 "meta_metric_calculation": "Number of correctly used classes / Number of classes defined in vocabularies",
                 'shape_name': 'MisplacedClassesShape',
-                "shape_template": "ex:MisplacedClassesShape\\n\\ta sh:NodeShape ;\\n\\tsh:targetSubjectsOf rdf:type ;\\n\\tsh:or (\\n\\t\\t[\\n\\t\\t\\tsh:path rdf:type ;\\n\\t\\t\\tsh:hasValue rdfs:Class ;\\n\\t\\t]\\n\\t\\t[\\n\\t\\t\\tsh:path rdf:type ;\\n\\t\\t\\tsh:hasValue rdf:Property ;\\n\\t\\t]\\n\\t\\t[\\n\\t\\t\\tsh:path CLASS_URI ;\\n\\t\\t\\tsh:maxCount 0 ;\\n\\t\\t]\\n\\t) .",
+                "shape_template": "ex:MisplacedClassesShape\\n\\ta sh:NodeShape ;\\n\\tsh:targetSubjectsOf rdf:type;\\n\\tsh:or (\\n\\t[sh:path rdf:type; sh:hasValue rdfs:Class;]\\n\\t[sh:path rdf:type; sh:hasValue rdf:Property;]\\n\\t[sh:path rdf:type; sh:hasValue owl:NamedIndividual;]\\n\\t[\\n\\tsh:path CLASS_URI;\\n\\tsh:maxCount 0;\\n\\t]\\n\\t).",
                 'violations': '',
                 "violation_text": "classes used as a property",
                 'num_violations': 0,
@@ -606,7 +634,7 @@ class DQAssessment:
                 'metric_calculation': '1 - (Number of violations / Number of entities that use the property)',
                 'meta_metric_calculation': 'Number of properties used with a correct range / Number of properties with a defined range',
                 'shape_name': 'CorrectRangeShape',
-                "shape_template": "ex:CorrectRangeShape\\n\\ta sh:NodeShape ;\\n\\tsh:targetObjectsOf PROPERTY_URI ;\\n\\tsh:datatype DATATYPE .\\n\\t# Instead of sh:datatype, you may use sh:class CLASS, sh:nodeKind sh:Literal, \\n # or sh:nodeKind sh:BlankNodeOrIRI depending on the property's range.",
+                "shape_template": "ex:CorrectRangeShape\\na sh:NodeShape ;\\nsh:targetSubjectsOf PROPERTY_URI;\\nsh:property [\\nsh:path PROPERTY_URI;\\nsh:datatype DATATYPE; % or sh:class CLASS\\n].\\n\\nex:CorrectRangeShape\\na sh:NodeShape ;\\nsh:targetSubjectsOf PROPERTY_URI;\\nsh:property [\\nsh:path PROPERTY_URI;\\nsh:nodeKind sh:BlankNodeOrIRI;\\n].\\n\\nex:CorrectRangeShape\\na sh:NodeShape ;\\nsh:targetSubjectsOf PROPERTY_URI;\\nsh:property [\\nsh:path PROPERTY_URI;\\nsh:nodeKind sh:Literal;\\n].\\n\\nex:CorrectRangeShape\\na sh:NodeShape ;\\nsh:targetSubjectsOf PROPERTY_URI;\\nsh:property [\\nsh:path PROPERTY_URI;\\nsh:or (\\n[ sh:nodeKind sh:BlankNodeOrIri; ]\\n[ sh:nodeKind sh:Literal; ]\\n);\\n].",
                 'violations': '',
                 "violation_text": "(property, individual score)",
                 'num_violations': 0,
@@ -623,7 +651,7 @@ class DQAssessment:
                 'metric_calculation': '1 - (Number of violations / Number of entities that use the property)',
                 "meta_metric_calculation": "Number of properties used with their correct domain / Number of properties with a defined domain",
                 'shape_name': 'CorrectDomainShape',
-                "shape_template": "ex:CorrectDomainShape\\n\\ta sh:NodeShape ;\\n\\tsh:targetSubjectsOf PROPERTY_URI ;\\n\\tsh:class CLASS .\\n\\t# If CLASS is owl:Thing, consider using sh:nodeKind sh:BlankNodeOrIRI instead.",
+                "shape_template": "ex:CorrectDomainShape\\na sh:NodeShape ;\\nsh:targetSubjectsOf PROPERTY_URI;\\nsh:class CLASS.\\n\\nex:CorrectDomainShape\\na sh:NodeShape ;\\nsh:targetSubjectsOf PROPERTY_URI;\\nsh:nodeKind sh:BlankNodeOrIRI.",
                 'violations': '',
                 "violation_text": "(property, individual score)",
                 'num_violations': 0,
@@ -640,7 +668,7 @@ class DQAssessment:
                 'metric_calculation': '1 - (Number of violations / Number of entities of the target class)',
                 "meta_metric_calculation": "Number of classes with no member as instance of a disjoint class / Number of disjoint classes",
                 'shape_name': 'EntitiesDisjointClassesShape',
-                "shape_template": "ex:EntitiesDisjointClassesShape\\n\\ta sh:NodeShape ;\\n\\tsh:targetClass CLASS_URI ;\\n\\tsh:not [\\n\\t\\tsh:class ex:DisjointClass\\n\\t] .",
+                "shape_template": "ex:EntitiesDisjointClassesShape\\n\\ta sh:NodeShape ;\\n\\tsh:targetClass CLASS_URI;\\n\\tsh:not [ sh:class DISJOINT_CLASS_URI].",
                 'violations': '',
                 "violation_text": "(disjoint class, individual score)",
                 'num_violations': 0,
@@ -657,7 +685,7 @@ class DQAssessment:
                 'metric_calculation': '1 - (Number of violations / Number of subjects that use the property)',
                 "meta_metric_calculation": "Number of irreflexive properties correctly used / Number of irreflexive properties",
                 'shape_name': 'IrreflexivePropertyShape',
-                "shape_template": "ex:IrreflexivePropertyShape\\n\\ta sh:NodeShape ;\\n\\tsh:targetSubjectsOf PROPERTY_URI ;\\n\\tsh:disjoint PROPERTY_URI .",
+                "shape_template": "ex:IrreflexivePropertyShape\\n\\ta sh:NodeShape ;\\n\\tsh:targetSubjectsOf PROPERTY_URI;\\n\\tsh:disjoint PROPERTY_URI.",
                 'violations': '',
                 "violation_text": "(irreflexive property, individual score)",
                 'num_violations': 0,
@@ -674,7 +702,7 @@ class DQAssessment:
                 'metric_calculation': '1 if the property uses IRIs as values, 0 otherwise.',
                 "meta_metric_calculation": "Number of properties that have IRIs as values / Number of properties used in the dataset",
                 'shape_name': 'SelfDescriptiveFormatPropertiesShape',
-                "shape_template": "ex:SelfDescriptiveFormatPropertiesShape\\n\\ta sh:NodeShape ;\\n\\tsh:targetObjectsOf PROPERTY_URI ;\\n\\tsh:nodeKind sh:IRI .",
+                "shape_template": "ex:SelfDescriptiveFormatPropertiesShape\\na sh:NodeShape ;\\nsh:targetObjectsOf PROPERTY_URI;\\nsh:nodeKind sh:IRI.",
                 'violations': '',
                 "violation_text": "properties used with blank nodes or literals",
                 'num_violations': 0,
@@ -691,7 +719,7 @@ class DQAssessment:
                 'metric_calculation': '1 - (Number of violations / Number of entities that use the property)',
                 "meta_metric_calculation": "Number of owl:ObjectProperty correctly used / Number of owl:ObjectProperty used in the dataset",
                 'shape_name': 'MisuseOwlObjectPropertiesShape',
-                "shape_template": "ex:MisuseOwlObjectPropertiesShape\\n\\ta sh:NodeShape ;\\n\\tsh:targetObjectsOf ex:SomeObjectProperty ;\\n\\tsh:nodeKind sh:IRI .",
+                "shape_template": "ex:MisuseObjectPropertiesShape\\n\\ta sh:NodeShape ;\\n\\tsh:targetSubjectsOf PROPERTY_URI;\\n\\tsh:property [\\n\\t\\tsh:path PROPERTY_URI;\\n\\t\\tsh:nodeKind sh:BlankNodeOrIRI;\\n\\t].",
                 'violations': '',
                 "violation_text": "(object property, individual score)",
                 'num_violations': 0,
@@ -708,7 +736,7 @@ class DQAssessment:
                 'metric_calculation': '1 - (Number of violations / Number of entities that use the property)',
                 "meta_metric_calculation": "Number of owl:DatatypeProperty correctly used / Number of owl:DatatypeProperty used in the",
                 'shape_name': 'MisuseOwlDatatypePropertiesShape',
-                "shape_template": "ex:MisuseOwlDatatypePropertiesShape\\n\\ta sh:NodeShape ;\\n\\tsh:targetObjectsOf ex:SomeDatatypeProperty ;\\n\\tsh:nodeKind sh:Literal .",
+                "shape_template": "ex:MisuseDatatypePropertiesShape\\n\\ta sh:NodeShape ;\\n\\tsh:targetSubjectsOf PROPERTY_URI;\\n\\tsh:property [\\n\\tsh:path PROPERTY_URI;\\n\\tsh:nodeKind sh:Literal;\\n\\t].",
                 'violations': ' ',
                 "violation_text": "(datatype property, individual score)",
                 'num_violations': 0,
@@ -725,7 +753,7 @@ class DQAssessment:
                 'metric_calculation': '1 - (Number of violations / Number of entities that use the property)',
                 "meta_metric_calculation": "Number of functional properties correctly used / Number of functional properties",
                 'shape_name': 'FunctionalPropertyShape',
-                "shape_template": "ex:FunctionalPropertyShape\\n\\ta sh:NodeShape ;\\n\\tsh:targetSubjectsOf PROPERTY_URI ;\\n\\tsh:property [\\n\\t\\tsh:path PROPERTY_URI ;\\n\\t\\tsh:maxCount 1 ;\\n\\t] .",
+                "shape_template": "ex:FunctionalPropertyShape\\n\\ta sh:NodeShape ;\\n\\tsh:targetSubjectsOf PROPERTY_URI;\\n\\tsh:property [\\n\\t\\tsh:path PROPERTY_URI;\\n\\t\\tsh:maxCount 1;\\n\\t].",
                 'violations': '',
                 "violation_text": "(functional property, individual score)",
                 'num_violations': 0,
@@ -742,7 +770,7 @@ class DQAssessment:
                     "metric_calculation": "1 if the class is used, 0 otherwise",
                     "meta_metric_calculation": "Number of classes used from the vocabularies / Number of classes defined in vocabularies",
                     'shape_name': 'SchemaCompletenessClassUsageShape',
-                    "shape_template": "ex:NotNamedIndividualShape\\n\\ta sh:NodeShape;\\n\\tsh:property [\\n\\t\\tsh:path TYPE_PROPERTY ;\\n\\t\\tsh:not [ sh:hasValue owl:NamedIndividual ] ;\\n\\t].\\n\\nex:SchemaCompletenessClassUsageShape\\ta sh:NodeShape ;\\n\\tsh:targetNode CLASS_URI;\\n\\tsh:property [\\n\\t\\tsh:path [ sh:inversePath TYPE_PROPERTY ] ;\\n\\t\\tsh:minCount 1 ;\\n\\t\\tsh:qualifiedValueShape [\\n\\t\\t\\tsh:node ex:NotNamedIndividualShape ;\\n\\t\\t];\\n\\t\\tsh:qualifiedMinCount 1 ;\\n\\t].",
+                    "shape_template": "ex:NotNamedIndividualShape\\n\\ta sh:NodeShape;\\n\\tsh:property [\\n\\t\\tsh:path rdf:type ;\\n\\t\\tsh:not [ sh:hasValue owl:NamedIndividual ] ;\\n\\t].\\nex:SchemaCompletenessClassUsageShape\\n\\ta sh:NodeShape ;\\n\\tsh:targetNode CLASS_URI ;\\n\\tsh:property [\\n\\t\\tsh:path [ sh:inversePath rdf:type ] ;\\n\\t\\tsh:minCount 1 ;\\n\\t\\tsh:qualifiedValueShape [\\n\\t\\t\\tsh:node ex:NotNamedIndividualShape ;\\n\\t\\t];\\n\\t\\tsh:qualifiedMinCount 1 ;\\n\\t].",
                     'violations': '',
                     "violation_text": "classes defined in the vocabulary that are not used in the dataset",
                     'num_violations': 0,
@@ -759,7 +787,7 @@ class DQAssessment:
                 "metric_calculation": "1 - (Number of violations / Number of entities that use the property)",
                 "meta_metric_calculation": "Number of correctly used properties / Number of properties with a datatype range",
                 'shape_name': 'MalformedDatatypeShape',
-                "shape_template": "ex:MalformedDatatypeShape \\na sh:NodeShape ;\\nsh:targetSubjectsOf PROPERTY_URI ;\\nsh:property [\\n\\tsh:path PROPERTY_URI ;\\n\\tsh:pattern DATATYPE_PATTERN ;\\n] .",
+                "shape_template": "ex:MalformedLiteralShape\\n\\ta sh:NodeShape ;\\n\\tsh:targetSubjectsOf PROPERTY_URI;\\n\\tsh:property [\\n\\tsh:path PROPERTY_URI ;\\n\\tsh:datatype DATATYPE_URI;\\n\\t].",
                 "violations": "",
                 "violation_text": "(property used with a malformed literal, individual score)",
                 "num_violations": 0,
@@ -776,7 +804,7 @@ class DQAssessment:
                 'metric_calculation': '1 - (Number of violations / Number of entities)',
                 'meta_metric_calculation': 'Number of unused deprecated properties / Number of deprecated properties',
                 'shape_name': 'DeprecatedPropertiesShape',
-                "shape_template": "ex:DeprecatedPropertiesUsageShape\\na sh:NodeShape ;\\nsh:targetSubjectsOf TYPE_PROPERTY ;\\nsh:or (\\n[\\n\\tsh:path rdf:type ;\\n\\tsh:hasValue rdfs:Class ;\\n]\\n[\\n\\tsh:path rdf:type ;\\n\\tsh:hasValue rdf:Property ;\\n]\\n[\\n\\tsh:path PROPERTY_URI ;\\n\\tsh:maxCount 0 ;\\n]\\n) .",
+                "shape_template": "ex:DeprecatedPropertiesUsageShape\\n\\ta sh:NodeShape ;\\n\\tsh:targetSubjectsOf rdf:type;\\n\\tsh:or (\\n\\t\\t[sh:path rdf:type; sh:hasValue rdfs:Class;]\\n\\t\\t[sh:path rdf:type; sh:hasValue rdf:Property;]\\n\\t\\t[sh:path rdf:type; sh:hasValue owl:\\n\\t\\tNamedIndividual;]\\n\\t\\t[ sh:path PROPERTY_URI; sh:maxCount 0; ]\\n\\t).",
                 'violations': '',
                 "violation_text": "(deprecated property, individual score)",
                 'num_violations': 0,
@@ -793,7 +821,7 @@ class DQAssessment:
                 "metric_calculation": "1 if the class is defined, 0 otherwise",
                 "meta_metric_calculation": "Number of defined classes (from the vocabulary) used / Number of classes (from the vocabulary) used in the dataset",
                 'shape_name': 'UndefinedClassShape',
-                "shape_template": "ex:UndefinedClassShape \\na sh:NodeShape ;\\nsh:targetNode CLASS_URI ;\\nsh:property [\\n\\tsh:path TYPE_PROPERTY ;\\n\\tsh:class rdfs:Class ;\\n\\tsh:minCount 1 ;\\n\\tsh:maxCount 1 ;\\n] .",
+                "shape_template": "ex:UndefinedClassShape\\n\\ta sh:NodeShape ;\\n\\tsh:targetNode CLASS_URI;\\n\\tsh:property [\\n\\t\\tsh:path rdf:type;\\n\\t\\tsh:hasValue rdfs:Class;\\n\\t\\tsh:minCount 1;\\n\\t].",
                 "violations": "",
                 "violation_text": "undefined classes",
                 "num_violations": 0,
@@ -810,7 +838,7 @@ class DQAssessment:
                 "metric_calculation": "1 if the property is defined, 0 otherwise",
                 "meta_metric_calculation": "Number of defined properties (from the vocabulary) used / Number of properties (from the vocabulary) used in the dataset",
                 'shape_name': 'UndefinedPropertyShape',
-                "shape_template": "ex:UndefinedPropertyShape \\na sh:NodeShape ;\\nsh:targetNode PROPERTY_URI ;\\nsh:property [\\n\\tsh:path TYPE_PROPERTY ;\\n\\tsh:class rdf:Property ;\\n\\tsh:minCount 1 ;\\n\\tsh:maxCount 1 \\n] .",
+                "shape_template": "ex:UndefinedPropertyShape\\n\\ta sh:NodeShape ;\\n\\tsh:targetNode PROPERTY_URI;\\n\\tsh:property [\\n\\t\\tsh:path rdf:type;\\n\\t\\tsh:hasValue rdf:Property;\\n\\t\\tsh:minCount 1;\\n\\t].",
                 "violations": "",
                 "violation_text": "undefined properties",
                 "num_violations": 0,
@@ -990,8 +1018,6 @@ class DQAssessment:
                 elif shape_name.startswith("EntitiesDisjointClasses_"):
                     self.aggregate_dict_counter['entities_disjoint_classes']['count_entities_disjoint_classes_shapes'] += 2
                     if str(score) == "1":
-                        # I only instantiate with 1 of the classes, not with both
-                        # is this correct????
                         self.aggregate_dict_counter['entities_disjoint_classes']['entities_disjoint_classes_ones'] += 2 # is this ok?????
                     else:
                         self.aggregate_dict_counter['entities_disjoint_classes']['entities_disjoint_classes_classes'].append((class_uri['first_class'], class_uri['second_class'], score))
@@ -1174,13 +1200,6 @@ class DQAssessment:
                 num_violations = len(self.aggregate_dict_counter[metric_name][f'{metric_name}_classes'])
                 rows.append(self.create_metric_info(metric_name, ratio, violations, num_violations))
                 
-            # metric_name = "incompatible_datatype"
-            # if self.aggregate_dict_counter[metric_name][f'count_{metric_name}_shapes'] > 0:
-            #     ratio = (self.aggregate_dict_counter[metric_name][f'{metric_name}_ones']/self.aggregate_dict_counter[metric_name][f'count_{metric_name}_shapes'])
-            #     violations = '; '.join([f'({p},{s})' for p, s in self.aggregate_dict_counter[metric_name][f'{metric_name}_properties']])
-            #     num_violations = len(self.aggregate_dict_counter[metric_name][f'{metric_name}_properties'])
-            #     rows.append(self.create_metric_info(metric_name, ratio, violations, num_violations))
-
             metric_name = "malformed_literal"
             if self.aggregate_dict_counter[metric_name][f'count_{metric_name}_shapes'] > 0:
                 ratio = (self.aggregate_dict_counter[metric_name][f'{metric_name}_ones']/self.aggregate_dict_counter[metric_name][f'count_{metric_name}_shapes'])

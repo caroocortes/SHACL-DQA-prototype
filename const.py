@@ -1,6 +1,3 @@
-# Path to the configuration file of the dataset
-CONFIG_FILE_PATH = 'config/temples.ini'
-
 # FOLDERS PATHS
 # Stores templates for the dq assessment results
 METRICS_TEMPLATE_FOLDER_PATH = 'dq_assessment/metrics_templates'
@@ -97,7 +94,6 @@ NUM_SUBJECTS_PER_PROPERTY = {"FunctionalProperty",
                             "CorrectDomain", 
                             "MisuseOwlObjectProperties", 
                             "MisuseOwlDatatypeProperties", 
-                            # "MalformedDatatype",
                             "DifferentLanguagesLabelsEntities", 
                             "DifferentLanguagesDescriptionsEntities",
                             "MalformedLiteral",
@@ -159,7 +155,7 @@ DQ_MEASURES_DATA_SPECIFIC = {
         "metric_type": "count",
         "meta_metric_calculation": "Number of properties used with a wellformed datatype / Number of properties whose range is a datatype",
         "metric_calculation": "1 - (Number of violations / Number of triples that use the property)",
-        "shape_template": "ex:MalformedDatatypeLiteralsShape\na sh:NodeShape ;\nsh:targetClass ex:Class ;\nsh:property [\n\tsh:path ex:SomeProperty ;\n\tsh:datatype DATATYPE ;\n\tsh:pattern \"DATATYPE_PATTERN\" ;\n]."
+        "shape_template": "ex:MalformedLiteralShape\\n\\ta sh:NodeShape ;\\n\\tsh:targetSubjectsOf PROPERTY_URI;\\n\\tsh:property [\\n\\tsh:path PROPERTY_URI ;\\n\\tsh:datatype DATATYPE_URI;\\n\\t]."
     },
     "MisplacedProperties": {
         "dimension": "Consistency",
@@ -172,7 +168,7 @@ DQ_MEASURES_DATA_SPECIFIC = {
         "metric_type": "binary",
         "metric_calculation": "0 if property is used as a class, 1 otherwise.",
         "meta_metric_calculation": "Number of correctly used properties / Number of properties defined in vocabularies",
-        "shape_template": "ex:MisplacedPropertiesShape\na sh:NodeShape ;\nsh:targetNode ex:someProperty ;\nsh:property [\n\tsh:path [ sh:inversePath rdf:type ] ;\n\tsh:maxCount 0 ;\n]."
+        "shape_template": "ex:MisplacedPropertiesShape\\n\\ta sh:NodeShape ;\\n\\tsh:targetNode PROPERTY_URI;\\n\\tsh:property [\\n\\tsh:path [sh:inversePath rdf:type];\\n\\tsh:maxCount 0;\\n\\t]."
     },
     "MisplacedClasses": {
         "dimension": "Consistency",
@@ -185,7 +181,7 @@ DQ_MEASURES_DATA_SPECIFIC = {
         "metric_type": "binary",
         "metric_calculation": "0 if class is used as property, 1 otherwise.",
         "meta_metric_calculation": "Number of correctly used classes / Number of classes defined in vocabularies",
-        "shape_template": "ex:MisplacedClassesShape\na sh:NodeShape ;\nsh:targetSubjectsOf TYPE_PROPERTY ;\nsh:or (\n[\n\tsh:path rdf:type ;\n\tsh:hasValue rdfs:Class ;\n]\n[\n\tsh:path rdf:type ;\n\tsh:hasValue rdf:Property ;\n]\n[\n\tsh:path CLASS_URI ;\n\tsh:maxCount 0 ;\n]\n) ."
+        "shape_template": "ex:MisplacedClassesShape\\n\\ta sh:NodeShape ;\\n\\tsh:targetSubjectsOf rdf:type;\\n\\tsh:or (\\n\\t[sh:path rdf:type; sh:hasValue rdfs:Class;]\\n\\t[sh:path rdf:type; sh:hasValue rdf:Property;]\\n\\t[sh:path rdf:type; sh:hasValue owl:NamedIndividual;]\\n\\t[\\n\\tsh:path CLASS_URI;\\n\\tsh:maxCount 0;\\n\\t]\\n\\t)."
     },
     "EntitiesDisjointClasses": {
         "dimension": "Consistency",
@@ -198,7 +194,7 @@ DQ_MEASURES_DATA_SPECIFIC = {
         "metric_type": "count",
         "metric_calculation": "1 - (Number of violations / Number of entities of the target class)",
         "meta_metric_calculation": "Number of classes with no member as instance of a disjoint class / Number of classes",
-        "shape_template": "ex:EntitiesDisjointClassesShape\na sh:NodeShape ;\nsh:targetClass ex:SomeClass ;\nsh:not [\n\tsh:class ex:DisjointClass\n]."
+        "shape_template": "ex:EntitiesDisjointClassesShape\\n\\ta sh:NodeShape ;\\n\\tsh:targetClass CLASS_URI;\\n\\tsh:not [ sh:class DISJOINT_CLASS_URI]."
     },
     "MisuseOwlObjectProperties": {
         "dimension": "Consistency",
@@ -236,7 +232,7 @@ DQ_MEASURES_DATA_SPECIFIC = {
         'metric_calculation': '1 if no deprecated classes are used, 0 otherwise',
         'meta_metric_calculation': '',
         'shape_name': 'DeprecatedClassesShape',
-        'shape_template': "ex:DeprecatedClassesShape\na sh:NodeShape ;\nsh:targetSubjectsOf TYPE_PROPERTY ;\nsh:or (\n[\n\tsh:path rdf:type ;\n\tsh:hasValue rdfs:Class ;\n]\n[\n\tsh:path rdf:type ;\n\tsh:hasValue rdf:Property ;\n]\n[\n\tsh:path rdf:type ;\n\tsh:not [\n\t\tsh:in ( CLASSES_LIST );\n\t] ;\n]\n) .",
+        "shape_template": "ex:DeprecatedClassesShape\\n\\ta sh:NodeShape ;\\n\\tsh:targetSubjectsOf rdf:type;\\n\\tsh:or (\\n\\t\\t[sh:path rdf:type; sh:hasValue rdfs:Class;]\\n\\t\\t[sh:path rdf:type; sh:hasValue rdf:Property;]\\n\\t\\t[sh:path rdf:type; sh:hasValue owl:\\n\\t\\tNamedIndividual;]\\n\\t\\t[\\n\\t\\tsh:path rdf:type;\\n\\t\\tsh:not [ sh:in (CLASSES_LIST); ];\\n\\t\\t]\\n\\t).",
         'violations': '',
         'num_violations': '',
         'vocab': ''
@@ -276,7 +272,7 @@ DQ_MEASURES_DATA_SPECIFIC = {
         'metric_calculation': '1 if the inverse functional property is correctly used, 0 otherwise',
         "meta_metric_calculation": "Number of inverse-functional properties correctly used / Number of inverse-functional properties",
         'shape_name': 'InverseFunctionalPropertyUniquenessShape',
-        'shape_template': 'ex:InverseFunctionalPropertyUniquenessShape\na sh:NodeShape ;\nsh:targetObjectsOf PROPERTY_URI ;\nsh:property [\n\tsh:path [ sh:inversePath PROPERTY_URI ];\n\tsh:maxCount 1 ;\n].',
+        "shape_template": "ex:InverseFunctionalPropertyShape\\n\\ta sh:NodeShape ;\\n\\tsh:targetObjectsOf PROPERTY_URI;\\n\\tsh:property [\\n\\t\\tsh:path [ sh:inversePath PROPERTY_URI ]; sh:maxCount 1;\\n\\t].",
         'violations': '',
         'num_violations': '',
         'vocab': ''
@@ -305,14 +301,6 @@ DQ_MEASURES_DATA_SPECIFIC = {
         "shape": "",
         "message": ""
     },
-    # "MalformedDatatype": {
-    #     "dimension": "Syntactic Validity",
-    #     "metric_id": "SV3",
-    #     "metric": "No malformed datatype literals",
-    #     "measure": 1,
-    #     "shape": "",
-    #     "message": ""
-    # },
     "SelfDescriptiveFormatProperties": {
         "dimension": "Interpretability",
         "metric_id": "ITP1",
@@ -382,7 +370,7 @@ METRIC_COVERAGE = [
     ["Interoperability", "IO1", "Re-use of existing terms", "Yes"],
     ["Interoperability", "IO2", "Re-use of existing vocabularies", "Partial"],
     ["Versatility", "V1", "Provision of the data in different serialization formats", "Yes"],
-    ["Versatility", "V2", "checking whether data is available in different languages", "Yes"],
+    ["Versatility", "V2", "checking whether data is available in different languages", "Partial"],
     ["Interpretability", "IP1", "use of self-descriptive formats", "Yes"],
     ["Interpretability", "IP2", "detecting the interpretability of data", "Partial"],
     ["Interpretability", "IP3", "invalid usage of undefined classes and properties", "Yes"],

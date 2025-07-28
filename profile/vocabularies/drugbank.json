@@ -73,6 +73,8 @@
         "http://bio2rdf.org/drugbank_vocabulary:Target-relation",
         "http://bio2rdf.org/drugbank_vocabulary:Transporter-relation"
     ],
+    "other_classes": [],
+    "other_properties": [],
     "object_properties": {
         "http://bio2rdf.org/drugbank_vocabulary:absorption": {
             "domain": null,
@@ -409,7 +411,10 @@
     "disjoint_classes": [],
     "rdf_properties": {},
     "num_classes": 72,
+    "num_other_classes": 0,
     "num_properties": 80,
+    "num_other_properties": 0,
     "num_all_classes": 72,
-    "num_all_properties": 80
+    "num_all_properties": 80,
+    "num_entities": 0
 }

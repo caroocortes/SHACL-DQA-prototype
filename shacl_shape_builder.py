@@ -354,12 +354,6 @@ class SHACLShapeBuilder:
                             shacl_shapes += self.correct_range_datatype_shape(prop, info['range'])
                             shacl_shapes += self.member_malformed_literal(prop, info['range'])
 
-                            # datatype = info['range']
-                            # regex_pattern = REGEX_PATTERNS_DICT[datatype] if datatype in REGEX_PATTERNS_DICT else None
-                            
-                            # if regex_pattern:
-                            #     shacl_shapes += self.malformed_datatype(prop, regex_pattern)
-
             if len(vocab_profile['irreflexive']) > 0:
                 for prop in vocab_profile['irreflexive']:
                     if prop not in properties_misplaced:
@@ -429,7 +423,7 @@ class SHACLShapeBuilder:
                             else:
                                 shacl_shapes += self.correct_domain_node_kind_shape(prop)
 
-                        if info['range']:
+                        if info['range'] != None and info['range']['value'] != None:
                             self.counter["count_range_props"] += 1
                             if info['range']['type'] == 'literal':
                                 

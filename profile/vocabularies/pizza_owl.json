@@ -102,6 +102,53 @@
         "http://www.co-ode.org/ontologies/pizza/pizza.owl#AuxClassNoLabel",
         "http://www.co-ode.org/ontologies/pizza/pizza.owl#Store"
     ],
+    "other_classes": [
+        "N6a0dca8e313f4378b587cb4e7b25a0d6",
+        "N7d2350c9dc9c4744b508ac35de7ff467",
+        "Nf848b063b7744e4497f5c263c688ae2e",
+        "N2ddbea74abea4140a9e462a97a497f4a",
+        "Ne8ea6e362528486abbe757272fb198b5",
+        "N9352c8178af340318b635e3942725fce",
+        "Nafd336d9da134e8fa3953f0a922d41fe",
+        "Nf488272c939147ab932c76a6c0691185",
+        "N80b5d02b7e6b40ffa337d86e345fbc2f",
+        "N68cc777e523e4fbb881d0d16358cbd62",
+        "N0c199d6ed3fd416aafa76fc14ca38bce",
+        "N460165bc47d04d75a50ea84ae3eb27e2",
+        "N3b9580103cc14c2ab46147c1eafd4921",
+        "N9f55cadefc7e488b9234eb821786b7a7",
+        "N844ec183ff5c44ad809cbae49ecb46fe",
+        "Nef9acbd145e64941ae994a862b765c89",
+        "N753e5c54bb4843969f1adb6ba1d23fae",
+        "Na4a3584075734e3dbc7ed837c7aa726f",
+        "Nf7e24bfb07474bd8bfac6689d480ca90",
+        "N151b5319d5444783b2cfe46f5b052a9f",
+        "N75a39fa8ac284e36a00abe6a3db881c7",
+        "Ne1728634028b43dc8f0a13e42bb4d562",
+        "N93d5f782badb45f68c5c614edce69712",
+        "Nb203628c2d5e40bfb5d2203143d1ac83",
+        "N319af6ff5ce44ee3a9c3d2393218f070",
+        "N92f37f29cf874bf78c820b364a111c21",
+        "Nfe6d9d592f8c4d28ade379a68e3a6dd4",
+        "N9c3cb9b77b124639a8f4e9e5a5d57e0a",
+        "N108a565686194d93a453d169e7af8c2c",
+        "Nb665b314c4974003beea6be49f16c88b",
+        "N90553b698d05445796b740217f16e8a6",
+        "Nf7bfa372e01b4e3a8a4aceaac9b7db62",
+        "N3fff5bcfb55a4530a06144abef9802a7",
+        "Nb66f9de8c6ed4a5d88710188afec4176",
+        "N63d27c6fc04644c1b474801c7decaa65",
+        "N69be591212e844a3913407cb5ade449f",
+        "N90e003344db146d7846df2f0aa701cb8",
+        "Nbaad4e1c78974364add1d2a0f73d8d23",
+        "Nefe0b91726c94350b41e953f40a942d5",
+        "N3d0769fe74cd46658a089bf41b3cb4da",
+        "Nc994eab160f7449697fe043ffc1048b7",
+        "Nbca8d578ca0542f18bcc288f1324a344",
+        "Nb78e0e28fb63418bbe8e415b6494541e",
+        "N237d0523c5d84d4f97ac3bbf8fbe9155"
+    ],
+    "other_properties": [],
     "object_properties": {
         "http://www.co-ode.org/ontologies/pizza/pizza.owl#hasBase": {
             "domain": "http://www.co-ode.org/ontologies/pizza/pizza.owl#Pizza",
@@ -236,16 +283,16 @@
             "http://www.co-ode.org/ontologies/pizza/pizza.owl#ValuePartition"
         ],
         [
-            "http://www.co-ode.org/ontologies/pizza/pizza.owl#NonVegetarianPizza",
-            "http://www.co-ode.org/ontologies/pizza/pizza.owl#VegetarianPizza"
-        ],
-        [
             "http://www.co-ode.org/ontologies/pizza/pizza.owl#CajunSpiceTopping",
             "http://www.co-ode.org/ontologies/pizza/pizza.owl#RosemaryTopping"
         ],
         [
             "http://www.co-ode.org/ontologies/pizza/pizza.owl#SlicedTomatoTopping",
             "http://www.co-ode.org/ontologies/pizza/pizza.owl#SundriedTomatoTopping"
+        ],
+        [
+            "http://www.co-ode.org/ontologies/pizza/pizza.owl#NonVegetarianPizza",
+            "http://www.co-ode.org/ontologies/pizza/pizza.owl#VegetarianPizza"
         ],
         [
             "http://www.co-ode.org/ontologies/pizza/pizza.owl#DeepPanBase",
@@ -262,7 +309,10 @@
         }
     },
     "num_classes": 101,
+    "num_other_classes": 44,
     "num_properties": 24,
+    "num_other_properties": 0,
     "num_all_classes": 103,
-    "num_all_properties": 25
+    "num_all_properties": 25,
+    "num_entities": 10
 }

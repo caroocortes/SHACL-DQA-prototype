@@ -7,6 +7,9 @@ from collections import Counter
 import os
 from urllib.parse import quote
 import time
+import logging
+
+logging.basicConfig(level=logging.INFO)
 
 composite_components = { 
     SH.OrConstraintComponent,
@@ -785,10 +788,9 @@ def validate_shacl_constraints(graph_profile, data_graph_file_path, data_graph_f
 
         # Merge Abox (data) + Tbox (filtered ontology)
         graph_to_validate = data_graph + merged_ont
-        graph_to_validate.serialize(format="turtle", destination='aux.ttl')
         
         final_time = time.time()
-        print(f'Time it took to merge vocabs to data graph: {final_time - initial_time}')
+        logging.info(f'Time it took to merge vocabs to data graph: {final_time - initial_time}')
     else:
         graph_to_validate = Graph().parse(data_graph_file_path, format=data_graph_file_format)
 
@@ -801,7 +803,7 @@ def validate_shacl_constraints(graph_profile, data_graph_file_path, data_graph_f
         ont_graph=None
     )
     final_time = time.time()
-    print(f'Time of validation: {final_time - initial_time}')
+    logging.info(f'Time of validation: {final_time - initial_time}')
 
     validation_time = final_time - initial_time
 
@@ -850,12 +852,7 @@ def get_denominator(metric, info, dataset_profile):
     """
     metric_prefix = metric.split('_')[0] if '_' in metric else metric
     if metric_prefix in NUM_ENTITIES:
-        if metric == 'DifferentLanguagesLabelsEntities':
-            return dataset_profile.get("num_entities_label_property", 1)
-        elif metric == 'DifferentLanguagesDescriptionsEntities':
-            return dataset_profile.get("num_entities_description_property", 1)
-        else:
-            return dataset_profile.get("num_entities", 1)
+        return dataset_profile.get("num_entities", 1)
     elif metric_prefix in NUM_CLASSES:
         if metric.startswith('LabelForClasses'):
             return dataset_profile.get('num_classes') + dataset_profile.get('num_other_classes')

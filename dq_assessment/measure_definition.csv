@@ -22,7 +22,7 @@ Intrinsic,Consistency,No misplaced classes & properties,MisplacedPropertiesShape
 Intrinsic,Consistency,No misplaced classes & properties,MisplacedClassesShape,Composite,"1 if the class isn't used as a property, otherwise 0",# classes correctly used / # classes defined in ontology
 Intrinsic,Consistency,No misuse of owl datatype and object property,MisuseObjectPropertiesShape,Composite,# violations / # subjects that use the owl:ObjectProperty,# owl:ObjectProperty correctly used / # owl:ObjectProperty defined in ontology
 Intrinsic,Consistency,No misuse of owl datatype and object property,MisuseDatatypePropertiesShape,Composite,# violations / # subjects that use the owl:DatatypeProperty,# owl:DatatypeProperty correctly used / # owl:DatatypeProperty defined in ontology
-Intrinsic,Consistency,Usage of deprecated classes and properties,DeprecatedPropertiesUsageShape,Composite,#  violations /# entities that use the deprecated properties,# deprecated properties unused / # deprecated properties
+Intrinsic,Consistency,Usage of deprecated classes and properties,DeprecatedPropertiesUsageShape,Composite,#  violations /# entities that use the deprecated property,# deprecated properties unused / # deprecated properties
 Intrinsic,Consistency,Usage of deprecated classes and properties,DeprecatedClassesUsageShape,Binary,"1 if none of the deprecated classes are used, otherwise 0",
 Intrinsic,Consistency,Uniqueness of inverse functional properties,InverseFunctionalPropertyUniquenessShape,Composite,"1 if the inverse functional property is used correctly, otherwise 0",# owl:InverseFunctionalProperty correctly used / # owl:InverseFunctionalProperty defined in ontology
 Intrinsic,Consistency,Negative dependencies,NoNegativeDependenciesShape,Need domain knowledge,,

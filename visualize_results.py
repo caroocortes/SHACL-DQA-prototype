@@ -46,7 +46,7 @@ def show_dq_assessment_results(df):
                 st.markdown(f"**Description:** {row['metric_description']}")
                 score = row['score']
                 color = get_score_color(score)
-                st.markdown(f"**Score:** <span style='color:{color}'>{round(score,3)}</span>", unsafe_allow_html=True)
+                st.markdown(f"**Score:** <span style='color:{color}'>{round(score,5)}</span>", unsafe_allow_html=True)
 
                 if 'meta_metric_calculation' in row and pd.notna(row['meta_metric_calculation']):
                     st.markdown(f"**Aggregation:** {row['meta_metric_calculation']}")

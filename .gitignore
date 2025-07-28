@@ -1,10 +1,6 @@
 datasets/*
-!datasets/drugbank/results/
-!datasets/drugbank/shapes/
-!datasets/temples_classical_world/shapes/
-!datasets/temples_classical_world/results/
-!datasets/dbtunes_john_peel_sessions/results/
-!datasets/dbtunes_john_peel_sessions/shapes/
+!datasets/pizza/
+profile/*
 shacl_shapes_test_venv/
 test/*
 .DS_Store

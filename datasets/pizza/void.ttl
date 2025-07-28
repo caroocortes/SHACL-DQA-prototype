@@ -1,0 +1,19 @@
+@prefix pizza: <http://www.co-ode.org/ontologies/pizza/pizza.owl#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix foaf: <http://xmlns.com/foaf/0.1/> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix void: <http://rdfs.org/ns/void#> .
+
+_:dataset1 a void:Dataset ;
+    dcterms:title "Pizza Dataset with Errors" ;
+    dcterms:description "A dataset based on the pizza ontology for testing data quality validation." ;
+    foaf:homepage <http://example.org/pizzas> ;
+    void:vocabulary <http://www.co-ode.org/ontologies/pizza/pizza.owl> ;
+    void:feature "Turtle" ;
+    void:exampleResource _:badPizza1 ;
+    void:uriSpace "http://example.org/pizza#";
+    void:uriRegexPattern "^http://example\\.org/pizza#";
+    dcterms:creator "carolina cortés lasalle".

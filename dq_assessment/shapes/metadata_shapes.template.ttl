@@ -1,14 +1,4 @@
 {% macro metadata_shape(metadata_class) -%}
-ex:MachineReadableLicenseShape
-    a sh:NodeShape ;
-    sh:targetClass <{{metadata_class}}> ;
-    sh:property [
-        sh:message "MachineReadableLicense - The dataset must provide a machine readable indication of a license";
-        sh:path dcterms:license ;
-        sh:class dcterms:LicenseDocument;
-        sh:minCount 1 ;
-    ].
-
 ex:DatasetMetadataShape
     a sh:NodeShape ;
     sh:targetClass <{{metadata_class}}> ;
@@ -16,47 +6,52 @@ ex:DatasetMetadataShape
         sh:path dcterms:title ;
         sh:minCount 1 ;
         sh:nodeKind sh:Literal;
-        sh:message "PresenceMetadata - The dataset should specify a title, description and web page";
+        sh:message "DatasetMetadata - The dataset should specify a title, description and web page";
     ];
     sh:property [
         sh:path dcterms:description ;
         sh:minCount 1 ;
         sh:nodeKind sh:Literal;
-        sh:message "PresenceMetadata - The dataset should specify a title, description and web page";
+        sh:message "DatasetMetadata - The dataset should specify a title, description and web page";
     ];
     sh:property [
         sh:path foaf:homepage ;
         sh:minCount 1 ;
         sh:nodeKind sh:IRI;
-        sh:message "PresenceMetadata - The dataset should specify a title, description and web page";
-    ].
-
-ex:ExemplaryResourceShape
-    a sh:NodeShape;
-    sh:targetClass <{{metadata_class}}>;
+        sh:message "DatasetMetadata - The dataset should specify a title, description and web page";
+    ];
     sh:property [
         sh:path void:exampleResource ;
         sh:minCount 1 ;
-        sh:message "ExemplaryResources - The dataset should specify an example of an exemplary resource";
-    ].
-
-ex:VocabularyExistenceShape
-    a sh:NodeShape;
-    sh:targetClass <{{metadata_class}}>;
+        sh:message "DatasetMetadata - The dataset should specify an example of an exemplary resource";
+    ];
     sh:property[
         sh:path void:vocabulary ;
         sh:minCount 1 ;
-        sh:message "VocabularyExistence - The dataset should specify a list of the vocabularies used";
-    ].
-
-ex:SerializationFormatsShape
-    a sh:NodeShape;
-    sh:targetClass <{{metadata_class}}>;
+        sh:message "DatasetMetadata - The dataset should specify a list of the vocabularies used";
+    ];
+    sh:property [
+        sh:path void:uriRegexPattern ;
+        sh:minCount 1 ;
+        sh:message "DatasetMetadata - The dataset should specify a regex that matches the URIs of the entities";
+    ];
+    sh:property [
+        sh:path void:uriSpace ;
+        sh:nodeKind sh:Literal;
+        sh:minCount 1 ;
+        sh:message "DatasetMetadata - The dataset should specify a URI namespace used for the entities";
+    ];
+    sh:property [
+        sh:message "DatasetMetadata - The dataset must provide a machine readable indication of a license";
+        sh:path dcterms:license ;
+        sh:class dcterms:LicenseDocument;
+        sh:minCount 1 ;
+    ];
     sh:property [
         sh:path void:feature;
         sh:minCount 1;
         sh:maxCount 5;
-        sh:message "SerializationFormats - The dataset's metadata should specify the serialization formats in which the data is available";
+        sh:message "DatasetMetadata - The dataset's metadata should specify the serialization formats in which the data is available";
         sh:in (
             <http://www.w3.org/ns/formats/N3>
             <http://www.w3.org/ns/formats/N-Triples>
@@ -64,25 +59,6 @@ ex:SerializationFormatsShape
             <http://www.w3.org/ns/formats/RDFa>
             <http://www.w3.org/ns/formats/Turtle>
         );
-    ].
-
-ex:URIRegexPressenceShape
-    a sh:NodeShape;
-    sh:targetClass <{{metadata_class}}>;
-    sh:property [
-        sh:path void:uriRegexPattern ;
-        sh:minCount 1 ;
-        sh:message "URIRegexPressence - The dataset should specify a regex that matches the URIs of the entities";
-    ].
-
-ex:URISpacePressenceShape
-    a sh:NodeShape;
-    sh:targetClass <{{metadata_class}}>;
-    sh:property [
-        sh:path void:uriSpace ;
-        sh:nodeKind sh:Literal;
-        sh:minCount 1 ;
-        sh:message "URISpacePressence - The dataset should specify a URI namespace used for the entities";
     ].
 
 ex:AvailabilityDumpShape

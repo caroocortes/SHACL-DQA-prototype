@@ -6,7 +6,7 @@
         "http://www.w3.org/2004/02/skos/core#OrderedCollection"
     ],
     "other_classes": [
-        "Ne17e96d249cd4af49b49cf6446ef1c0d"
+        "Ne3862afbfafe4a54bd2f38984d48756c"
     ],
     "other_properties": [],
     "object_properties": {
@@ -48,7 +48,7 @@
         },
         "http://www.w3.org/2004/02/skos/core#member": {
             "domain": "http://www.w3.org/2004/02/skos/core#Collection",
-            "range": "Ne17e96d249cd4af49b49cf6446ef1c0d"
+            "range": "Ne3862afbfafe4a54bd2f38984d48756c"
         },
         "http://www.w3.org/2004/02/skos/core#memberList": {
             "domain": "http://www.w3.org/2004/02/skos/core#OrderedCollection",
@@ -107,16 +107,16 @@
     ],
     "disjoint_classes": [
         [
-            "http://www.w3.org/2004/02/skos/core#Concept",
-            "http://www.w3.org/2004/02/skos/core#ConceptScheme"
-        ],
-        [
-            "http://www.w3.org/2004/02/skos/core#Collection",
-            "http://www.w3.org/2004/02/skos/core#ConceptScheme"
-        ],
-        [
             "http://www.w3.org/2004/02/skos/core#Collection",
             "http://www.w3.org/2004/02/skos/core#Concept"
+        ],
+        [
+            "http://www.w3.org/2004/02/skos/core#Collection",
+            "http://www.w3.org/2004/02/skos/core#ConceptScheme"
+        ],
+        [
+            "http://www.w3.org/2004/02/skos/core#Concept",
+            "http://www.w3.org/2004/02/skos/core#ConceptScheme"
         ]
     ],
     "rdf_properties": {

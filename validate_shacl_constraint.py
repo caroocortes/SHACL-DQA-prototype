@@ -1,11 +1,11 @@
 from pyshacl import validate
-from owlrl import DeductiveClosure, RDFS_Semantics
 from rdflib import RDF, RDFS, OWL, Graph, URIRef, SH
 import time
+import csv
 
 def validate_shacl_constraints(data_graph, shape_graph, ont_files):
     
-    data_graph = Graph().parse(data_graph, format='ttl')
+    data_graph = Graph().parse(data_graph, format='nt')
     shapes_graph = Graph().parse(shape_graph)
 
     ont_graphs = []
@@ -93,6 +93,18 @@ def validate_shacl_constraints(data_graph, shape_graph, ont_files):
     print(report_text)
     return conforms, report_graph
 
-if "__main__":
-    # 84 segundos solo 1 shape que hace target en las entities
-    conforms, report_graph = validate_shacl_constraints('test/test_graph.ttl', 'test/test_shacl_shape.ttl', [])
+if "__main__": 
+
+    conforms, report_graph = validate_shacl_constraints('datasets/drugbank/drugbank_data.nt', 'test/test_shacl_shape.ttl', [])
+
+    from dq_assessment import DQAssessment
+    import json
+
+    dqa = DQAssessment('config/drugbank.ini', data_shapes=True, metadata_shapes=False, vocab_shapes=False)
+
+    path = f'profile/datasets/drugbank.json'
+    with open(path, 'r', encoding='utf-8') as f:
+        dqa.graph_profile = json.load(f)
+    results = dqa.process_validation_result_data(report_graph)
+
+    print(results['DifferentLanguagesLabelsEntities'])

@@ -237,22 +237,50 @@ ex:ProlixFeaturesShape
 ex:DifferentLanguagesLabelsEntitiesShape
     a sh:NodeShape ;
     sh:targetSubjectsOf <{{labeling_property}}> ;
-    sh:property [
-        sh:path <{{labeling_property}}> ;
-        sh:datatype rdf:langString;
-        sh:message "DifferentLanguagesLabelsEntities - Entities should provide labels with language tags";
-    ].
+    sh:or (
+        [
+            sh:path rdf:type ;
+            sh:hasValue rdfs:Class ;
+        ]
+        [
+            sh:path rdf:type ;
+            sh:hasValue rdf:Property ;
+        ]
+        [
+            sh:path rdf:type ;
+            sh:hasValue owl:NamedIndividual ;
+        ]
+        [
+            sh:path <{{labeling_property}}> ;
+            sh:datatype rdf:langString;
+            sh:message "DifferentLanguagesLabelsEntities - Entities should provide labels with language tags";
+        ]
+    ).
 {%- endmacro %}
 
 {% macro versatility_languages_descriptions_entities(type_property, description_property) -%}
 ex:DifferentLanguagesDescriptionsEntitiesShape
     a sh:NodeShape ;
     sh:targetSubjectsOf <{{description_property}}> ;
-    sh:property [
-        sh:path <{{description_property}}> ;
-        sh:datatype rdf:langString ;
-        sh:message "DifferentLanguagesDescriptionsEntities - Entities should provide descriptions with language tags";
-    ].
+    sh:or (
+        [
+            sh:path rdf:type ;
+            sh:hasValue rdfs:Class ;
+        ]
+        [
+            sh:path rdf:type ;
+            sh:hasValue rdf:Property ;
+        ]
+        [
+            sh:path rdf:type ;
+            sh:hasValue owl:NamedIndividual ;
+        ]
+        [
+            sh:path <{{description_property}}> ;
+            sh:datatype rdf:langString ;
+            sh:message "DifferentLanguagesDescriptionsEntities - Entities should provide descriptions with language tags";
+        ]
+    ).
 {%- endmacro %}
 
 {% macro interpretability_self_descriptive_formats(type_property) -%}

@@ -292,20 +292,20 @@
     "symmetric": [],
     "disjoint_classes": [
         [
+            "http://xmlns.com/foaf/0.1/Person",
+            "http://xmlns.com/foaf/0.1/Project"
+        ],
+        [
             "http://xmlns.com/foaf/0.1/Organization",
             "http://xmlns.com/foaf/0.1/Person"
         ],
         [
             "http://xmlns.com/foaf/0.1/Document",
-            "http://xmlns.com/foaf/0.1/Organization"
+            "http://xmlns.com/foaf/0.1/Project"
         ],
         [
             "http://xmlns.com/foaf/0.1/Document",
-            "http://xmlns.com/foaf/0.1/Project"
-        ],
-        [
-            "http://xmlns.com/foaf/0.1/Person",
-            "http://xmlns.com/foaf/0.1/Project"
+            "http://xmlns.com/foaf/0.1/Organization"
         ]
     ],
     "rdf_properties": {

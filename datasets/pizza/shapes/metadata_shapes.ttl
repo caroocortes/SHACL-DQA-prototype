@@ -1,0 +1,72 @@
+@prefix dcat: <http://www.w3.org/ns/dcat#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix ex: <https://www.example.org/> .
+@prefix foaf: <http://xmlns.com/foaf/0.1/> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+@prefix void: <http://rdfs.org/ns/void#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+ex:AuthenticityOfDatasetAuthorShape a sh:NodeShape ;
+    sh:or ( [ sh:message "AuthenticityOfDatasetAuthor - The dataset should specify a contributor, creator or publisher" ;
+                sh:minCount 1 ;
+                sh:path dcterms:contributor ] [ sh:message "AuthenticityOfDatasetAuthor - The dataset should specify a contributor, creator or publisher" ;
+                sh:minCount 1 ;
+                sh:path dcterms:creator ] [ sh:message "AuthenticityOfDatasetAuthor - The dataset should specify a contributor, creator or publisher" ;
+                sh:minCount 1 ;
+                sh:path dcterms:publisher ] ) ;
+    sh:targetClass void:Dataset .
+
+ex:AuthenticityOfDatasetSourceShape a sh:NodeShape ;
+    sh:or ( [ sh:message "AuthenticityOfDatasetSource - The dataset should specify the origin of the data" ;
+                sh:minCount 1 ;
+                sh:path dcterms:source ] [ sh:message "AuthenticityOfDatasetSource - The dataset should specify the origin of the data" ;
+                sh:minCount 1 ;
+                sh:path dcterms:provenance ] ) ;
+    sh:targetClass void:Dataset .
+
+ex:AvailabilityDumpShape a sh:NodeShape ;
+    sh:or ( [ sh:message "AvailabilityDump - The dataset must provide an accessible RDF dump that can be downloaded." ;
+                sh:minCount 1 ;
+                sh:path void:dataDump ] [ sh:message "AvailabilityDump - The dataset must provide an accessible RDF dump that can be downloaded" ;
+                sh:minCount 1 ;
+                sh:path ( dcat:distribution dcat:downloadURL ) ] ) ;
+    sh:targetClass void:Dataset .
+
+ex:DatasetMetadataShape a sh:NodeShape ;
+    sh:property [ sh:message "DatasetMetadata - The dataset should specify a title, description and web page" ;
+            sh:minCount 1 ;
+            sh:nodeKind sh:Literal ;
+            sh:path dcterms:title ],
+        [ sh:message "DatasetMetadata - The dataset should specify a title, description and web page" ;
+            sh:minCount 1 ;
+            sh:nodeKind sh:Literal ;
+            sh:path dcterms:description ],
+        [ sh:message "DatasetMetadata - The dataset should specify a title, description and web page" ;
+            sh:minCount 1 ;
+            sh:nodeKind sh:IRI ;
+            sh:path foaf:homepage ],
+        [ sh:message "DatasetMetadata - The dataset should specify an example of an exemplary resource" ;
+            sh:minCount 1 ;
+            sh:path void:exampleResource ],
+        [ sh:message "DatasetMetadata - The dataset should specify a list of the vocabularies used" ;
+            sh:minCount 1 ;
+            sh:path void:vocabulary ],
+        [ sh:message "DatasetMetadata - The dataset should specify a regex that matches the URIs of the entities" ;
+            sh:minCount 1 ;
+            sh:path void:uriRegexPattern ],
+        [ sh:message "DatasetMetadata - The dataset should specify a URI namespace used for the entities" ;
+            sh:minCount 1 ;
+            sh:nodeKind sh:Literal ;
+            sh:path void:uriSpace ],
+        [ sh:class dcterms:LicenseDocument ;
+            sh:message "DatasetMetadata - The dataset must provide a machine readable indication of a license" ;
+            sh:minCount 1 ;
+            sh:path dcterms:license ],
+        [ sh:in ( <http://www.w3.org/ns/formats/N3> <http://www.w3.org/ns/formats/N-Triples> <http://www.w3.org/ns/formats/RDF_XML> <http://www.w3.org/ns/formats/RDFa> <http://www.w3.org/ns/formats/Turtle> ) ;
+            sh:maxCount 5 ;
+            sh:message "DatasetMetadata - The dataset's metadata should specify the serialization formats in which the data is available" ;
+            sh:minCount 1 ;
+            sh:path void:feature ] ;
+    sh:targetClass void:Dataset .
+
