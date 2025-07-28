@@ -4,6 +4,11 @@ This project provides a SHACL-based prototype to assess and visualize data quali
 
 ---
 
+## Example
+A toy example based on the *pizza.owl* ontology is included in the repository. Note that the ontology was modify to trigger violations.
+Run the example with ``python3 main.py -d pizza -ra`` or just visualize the results with ``streamlit run visualize_results.py``.
+
+---
 ## Setup Instructions
 
 ### 1. Create and activate a virtual environment 
@@ -61,7 +66,3 @@ In root of the project run: ``streamlit run visualize_results.py``
 ├── requirements.txt   
 └── README.md             
 ```
-
-## Example
-A toy example based on the *pizza.owl* ontology is included in the repository. Note that the ontology was modify to trigger violations.
-Run the example with ``python3 main.py -d pizza -ra``.
