@@ -10,7 +10,7 @@
         "metric_type": "count",
         "metric_calculation": "1 - (Number of violations / Number of triples with INTERLINKING_PROPERTY)",
         "shape_template": "ex:UsageExternalURIShape\\n\\ta sh:NodeShape ;\\n\\tsh:targetSubjectsOf owl:sameAs ;\\n\\tsh:property [\\n\\t\\tsh:path owl:sameAs ;\\n\\t\\tsh:pattern \\\"^(?!DATASET_URI)\\\" ;\\n\\t] .",
-        "violations": "http://example.org/pizza#linkedPizza; http://example.org/pizza#circular1; http://example.org/pizza#circular2",
+        "violations": "http://example.org/pizza#circular2; http://example.org/pizza#circular1; http://example.org/pizza#linkedPizza",
         "num_violations": 3,
         "property": "http://www.w3.org/2002/07/owl#sameAs"
     },
@@ -25,7 +25,7 @@
         "metric_type": "count",
         "metric_calculation": "1 - (Number of violations / Number of entities)",
         "shape_template": "ex:UsageHashURIsShape\\n\\ta sh:NodeShape ;\\n\\tsh:targetSubjectsOf rdf:type ;\\n\\tsh:or (\\n\\t\\t[ sh:path rdf:type ; sh:hasValue rdfs:Class ; ]\\n\\t\\t[ sh:path rdf:type ; sh:hasValue rdf:Property ; ]\\n\\t\\t[ sh:path rdf:type ; sh:hasValue owl:NamedIndividual ; ]\\n\\t\\t[ sh:pattern \\\"^[^#]*$\\\" ; ]\\n\\t) .",
-        "violations": "http://example.org/pizza#unlinkedPizza; http://example.org/pizza#customPizza; http://example.org/pizza#sciencePizza; http://example.org/pizza#customPizza_2; n8fab6a077e7f463f8410f141d9f2f89bb4; http://example.org/pizza#blankNodeInValue; http://example.org/pizza#noslashPizza; http://example.org/pizza#emptyLabelPizza; http://example.org/pizza#noLangLabel; http://example.org/pizza#mySpiceLevel; http://example.org/pizza#badBag; http://example.org/pizza#mozzarellaTopping; n8fab6a077e7f463f8410f141d9f2f89bb1; http://example.org/pizza#orphanPizza; http://example.org/pizza#multiTypePizza; http://example.org/pizza#emptyDescLangPizza; http://example.org/pizza#missingObjectPizza; n8fab6a077e7f463f8410f141d9f2f89bb2; http://example.org/pizza#tomatoTopping; http://example.org/pizza#chefMario; http://example.org/pizza#disjointPizza; http://example.org/pizza#duplicateTypesPizza; http://example.org/pizza#classicPizza; http://example.org/pizza#badPricePizza; http://example.org/pizza#badSeq; http://example.org/pizza#missingRequiredProp; http://example.org/pizza#englishLabelPizza; http://example.org/pizza#wrongBooleanPizza; http://example.org/pizza#circular1; http://example.org/pizza#labelNoLang; http://example.org/pizza#hawaiianPizza; http://example.org/pizza#classicOldPizza2; http://example.org/pizza#spicyPizza; http://example.org/pizza#namelessPizza; http://example.org/pizza#customPizza_3; http://example.org/pizza#veggiePizza; http://example.org/pizza#dateTimeInsteadOfDate; http://example.org/pizza#externalLinkPizza; http://example.org/pizza#confusedPizza; http://example.org/pizza#ingredient; http://example.org/pizza#goodPricePizza; http://example.org/pizza#circular2; http://example.org/pizza#langTagDecimal; http://example.org/pizza#myStore; http://example.org/pizza#weirdLangPizza; http://example.org/pizza#deprecatedPropPizza; http://example.org/pizza#tooSpicyPizza; http://example.org/pizza#labelWhitespacePizza; http://example.org/pizza#slashPizza; http://example.org/pizza#multiLangLabelPizza; http://example.org/pizza#multiLicensePizza; http://example.org/pizza#pizzaReUseTopping; http://example.org/pizza#multiLabelPizza; http://example.org/pizza#classicOldPizza1; http://example.org/pizza#wrongLangOnLiteralPizza; http://example.org/pizza#linkedPizza; http://example.org/pizza#meatLoversPizza; http://example.org/pizza#noTypeEntity; http://example.org/pizza#badLangDescription; http://example.org/pizza#noInterlink; http://example.org/pizza#person_1",
+        "violations": "http://example.org/pizza#classicOldPizza2; http://example.org/pizza#customPizza_3; nfdaa60e4fee24583b1d2e427a84efeb6b1; http://example.org/pizza#badSeq; http://example.org/pizza#person_1; http://example.org/pizza#badBag; http://example.org/pizza#noTypeEntity; http://example.org/pizza#ingredient; http://example.org/pizza#orphanPizza; http://example.org/pizza#missingObjectPizza; http://example.org/pizza#goodPricePizza; http://example.org/pizza#dateTimeInsteadOfDate; http://example.org/pizza#labelNoLang; http://example.org/pizza#noLangLabel; http://example.org/pizza#classicPizza; http://example.org/pizza#noInterlink; http://example.org/pizza#wrongLangOnLiteralPizza; http://example.org/pizza#meatLoversPizza; http://example.org/pizza#namelessPizza; http://example.org/pizza#chefMario; http://example.org/pizza#multiLabelPizza; http://example.org/pizza#labelWhitespacePizza; http://example.org/pizza#mozzarellaTopping; http://example.org/pizza#englishLabelPizza; http://example.org/pizza#noslashPizza; http://example.org/pizza#emptyDescLangPizza; http://example.org/pizza#confusedPizza; http://example.org/pizza#circular1; http://example.org/pizza#veggiePizza; http://example.org/pizza#emptyLabelPizza; http://example.org/pizza#blankNodeInValue; http://example.org/pizza#myStore; http://example.org/pizza#classicOldPizza1; http://example.org/pizza#linkedPizza; http://example.org/pizza#slashPizza; http://example.org/pizza#multiLangLabelPizza; http://example.org/pizza#pizzaReUseTopping; http://example.org/pizza#duplicateTypesPizza; http://example.org/pizza#langTagDecimal; http://example.org/pizza#hawaiianPizza; http://example.org/pizza#mySpiceLevel; http://example.org/pizza#badLangDescription; http://example.org/pizza#weirdLangPizza; http://example.org/pizza#badPricePizza; http://example.org/pizza#multiTypePizza; nfdaa60e4fee24583b1d2e427a84efeb6b2; http://example.org/pizza#externalLinkPizza; nfdaa60e4fee24583b1d2e427a84efeb6b4; http://example.org/pizza#multiLicensePizza; http://example.org/pizza#disjointPizza; http://example.org/pizza#sciencePizza; http://example.org/pizza#missingRequiredProp; http://example.org/pizza#customPizza; http://example.org/pizza#wrongBooleanPizza; http://example.org/pizza#spicyPizza; http://example.org/pizza#customPizza_2; http://example.org/pizza#tooSpicyPizza; http://example.org/pizza#unlinkedPizza; http://example.org/pizza#circular2; http://example.org/pizza#tomatoTopping; http://example.org/pizza#deprecatedPropPizza",
         "num_violations": 61
     },
     "LabelForEntities": {
@@ -39,7 +39,7 @@
         "metric_type": "count",
         "metric_calculation": "1 - (Number of violations / Number of entities)",
         "shape_template": "ex:LabelForEntitiesShape\\n\\ta sh:NodeShape;\\n\\tsh:targetSubjectsOf rdf:type;\\n\\tsh:or (\\n\\t\\t[ sh:path rdf:type; sh:hasValue rdfs:Class; ]\\n\\t\\t[ sh:path rdf:type; sh:hasValue rdf:Property; ]\\n\\t\\t[ sh:path rdf:type; sh:hasValue owl:NamedIndividual; ]\\n\\t\\t[ sh:path rdfs:label; sh:minCount 1; ]\\n\\t) .",
-        "violations": "http://example.org/pizza#unlinkedPizza; http://example.org/pizza#sciencePizza; http://example.org/pizza#customPizza_2; n8fab6a077e7f463f8410f141d9f2f89bb4; http://example.org/pizza#blankNodeInValue; http://example.org/pizza#noslashPizza; http://example.org/pizza#mySpiceLevel; http://example.org/pizza#badBag; http://example.org/pizza/this-uri-is-exactly-eighty-characters-long-for-testing-purposes-1234567; http://example.org/pizza#orphanPizza; http://example.org/pizza#multiTypePizza; http://example.org/pizza#emptyDescLangPizza; http://example.org/pizza#missingObjectPizza; n8fab6a077e7f463f8410f141d9f2f89bb2; http://example.org/pizza#chefMario; http://example.org/pizza#disjointPizza; http://example.org/pizza#duplicateTypesPizza; http://example.org/pizza#badSeq; http://example.org/pizza#badPricePizza; http://example.org/pizza#missingRequiredProp; http://example.org/pizza#wrongBooleanPizza; http://example.org/pizza#circular1; http://example.org/pizza#spicyPizza; http://example.org/pizza#namelessPizza; http://example.org/pizza/this-is-a-very-very-very-very-very-very-very-long-uri-for-pizza; http://example.org/pizza?flavor=cheese&size=large; http://example.org/pizza#dateTimeInsteadOfDate; http://example.org/pizza#externalLinkPizza; http://example.org/pizza#goodPricePizza; http://example.org/pizza#circular2; http://example.org/pizza#langTagDecimal; http://example.org/pizza#myStore; http://example.org/pizza#deprecatedPropPizza; http://example.org/pizza#tooSpicyPizza; http://example.org/pizza/pizza?type=veggie; http://example.org/pizza#slashPizza; http://example.org/pizza/simple-pizza; http://example.org/pizza#multiLicensePizza; http://example.org/pizza#pizzaReUseTopping; http://example.org/pizza#wrongLangOnLiteralPizza; http://example.org/pizza?has=param; http://example.org/pizza#linkedPizza; http://example.org/pizza#badLangDescription; http://example.org/pizza#person_1",
+        "violations": "http://example.org/pizza#badSeq; http://example.org/pizza#person_1; http://example.org/pizza?flavor=cheese&size=large; http://example.org/pizza#badBag; http://example.org/pizza/pizza?type=veggie; http://example.org/pizza#orphanPizza; http://example.org/pizza#missingObjectPizza; http://example.org/pizza#goodPricePizza; http://example.org/pizza#dateTimeInsteadOfDate; http://example.org/pizza#namelessPizza; http://example.org/pizza#wrongLangOnLiteralPizza; http://example.org/pizza#chefMario; http://example.org/pizza/this-uri-is-exactly-eighty-characters-long-for-testing-purposes-1234567; http://example.org/pizza#noslashPizza; http://example.org/pizza#emptyDescLangPizza; http://example.org/pizza#circular1; http://example.org/pizza#blankNodeInValue; http://example.org/pizza#myStore; http://example.org/pizza#linkedPizza; http://example.org/pizza#slashPizza; http://example.org/pizza#pizzaReUseTopping; http://example.org/pizza#duplicateTypesPizza; http://example.org/pizza#langTagDecimal; http://example.org/pizza#badLangDescription; http://example.org/pizza#mySpiceLevel; http://example.org/pizza#badPricePizza; http://example.org/pizza#multiTypePizza; http://example.org/pizza/simple-pizza; nfdaa60e4fee24583b1d2e427a84efeb6b2; http://example.org/pizza#externalLinkPizza; http://example.org/pizza?has=param; nfdaa60e4fee24583b1d2e427a84efeb6b4; http://example.org/pizza#multiLicensePizza; http://example.org/pizza#sciencePizza; http://example.org/pizza#missingRequiredProp; http://example.org/pizza/this-is-a-very-very-very-very-very-very-very-long-uri-for-pizza; http://example.org/pizza#wrongBooleanPizza; http://example.org/pizza#spicyPizza; http://example.org/pizza#customPizza_2; http://example.org/pizza#tooSpicyPizza; http://example.org/pizza#unlinkedPizza; http://example.org/pizza#circular2; http://example.org/pizza#disjointPizza; http://example.org/pizza#deprecatedPropPizza",
         "num_violations": 44
     },
     "URIRegexComplianceEntities": {
@@ -53,7 +53,7 @@
         "metric_type": "count",
         "metric_calculation": "1 - (Number of violations / Number of entities)",
         "shape_template": "ex:URIRegexComplianceShape\\n\\ta sh:NodeShape ;\\n\\tsh:targetSubjectsOf rdf:type;\\n\\tsh:or (\\n\\t[sh:path rdf:type; sh:hasValue rdfs:Class;]\\n\\t[sh:path rdf:type; sh:hasValue rdf:Property;]\\n\\t[sh:path rdf:type; sh:hasValue owl:NamedIndividual;]\\n\\t[sh:pattern \"^URI_REGEX_PATTERN\";]\\n\\t[sh:pattern \"^URI_SPACE\";]\\n\\t).",
-        "violations": "http://example.org/pizza/pizza?type=veggie; http://example.org/pizza/this-is-a-very-very-very-very-very-very-very-long-uri-for-pizza; http://example.org/pizza?flavor=cheese&size=large; n8fab6a077e7f463f8410f141d9f2f89bb4; n8fab6a077e7f463f8410f141d9f2f89bb2; http://example.org/pizza?has=param; http://example.org/pizza/this-uri-is-exactly-eighty-characters-long-for-testing-purposes-1234567; http://dbpedia.org/resource/dbpediaPizza; n8fab6a077e7f463f8410f141d9f2f89bb1; http://dbpedia.org/resource/dbpediaPizza_2; http://example.org/pizza/simple-pizza",
+        "violations": "nfdaa60e4fee24583b1d2e427a84efeb6b1; http://dbpedia.org/resource/dbpediaPizza; http://example.org/pizza/this-is-a-very-very-very-very-very-very-very-long-uri-for-pizza; http://example.org/pizza?has=param; http://example.org/pizza?flavor=cheese&size=large; http://example.org/pizza/this-uri-is-exactly-eighty-characters-long-for-testing-purposes-1234567; http://example.org/pizza/pizza?type=veggie; http://example.org/pizza/simple-pizza; nfdaa60e4fee24583b1d2e427a84efeb6b2; http://dbpedia.org/resource/dbpediaPizza_2; nfdaa60e4fee24583b1d2e427a84efeb6b4",
         "num_violations": 11
     },
     "URISpaceComplianceEntities": {
@@ -67,7 +67,7 @@
         "metric_type": "count",
         "metric_calculation": "1 - (Number of violations / Number of entities)",
         "shape_template": "ex:URIRegexComplianceShape\\n\\ta sh:NodeShape ;\\n\\tsh:targetSubjectsOf rdf:type;\\n\\tsh:or (\\n\\t[sh:path rdf:type; sh:hasValue rdfs:Class;]\\n\\t[sh:path rdf:type; sh:hasValue rdf:Property;]\\n\\t[sh:path rdf:type; sh:hasValue owl:NamedIndividual;]\\n\\t[sh:pattern \"^URI_REGEX_PATTERN\";]\\n\\t[sh:pattern \"^URI_SPACE\";]\\n\\t).",
-        "violations": "http://example.org/pizza/pizza?type=veggie; http://example.org/pizza/this-is-a-very-very-very-very-very-very-very-long-uri-for-pizza; http://example.org/pizza?flavor=cheese&size=large; n8fab6a077e7f463f8410f141d9f2f89bb4; n8fab6a077e7f463f8410f141d9f2f89bb2; http://example.org/pizza?has=param; http://example.org/pizza/this-uri-is-exactly-eighty-characters-long-for-testing-purposes-1234567; http://dbpedia.org/resource/dbpediaPizza; n8fab6a077e7f463f8410f141d9f2f89bb1; http://dbpedia.org/resource/dbpediaPizza_2; http://example.org/pizza/simple-pizza",
+        "violations": "nfdaa60e4fee24583b1d2e427a84efeb6b1; http://dbpedia.org/resource/dbpediaPizza; http://example.org/pizza/this-is-a-very-very-very-very-very-very-very-long-uri-for-pizza; http://example.org/pizza?has=param; http://example.org/pizza?flavor=cheese&size=large; http://example.org/pizza/this-uri-is-exactly-eighty-characters-long-for-testing-purposes-1234567; http://example.org/pizza/pizza?type=veggie; http://example.org/pizza/simple-pizza; nfdaa60e4fee24583b1d2e427a84efeb6b2; http://dbpedia.org/resource/dbpediaPizza_2; nfdaa60e4fee24583b1d2e427a84efeb6b4",
         "num_violations": 11
     },
     "URIsParametersEntities": {
@@ -95,7 +95,7 @@
         "metric_type": "count",
         "metric_calculation": "1 - (Number of violations / Number of entities)",
         "shape_template": "ex:URIsLengthShape\\n\\ta sh:NodeShape ;\\n\\tsh:targetSubjectsOf rdf:type;\\n\\tsh:or (\\n\\t[sh:path rdf:type; sh:hasValue rdfs:Class;]\\n\\t[sh:path rdf:type; sh:hasValue rdf:Property;]\\n\\t[sh:path rdf:type; sh:hasValue owl:NamedIndividual;]\\n\\t[sh:maxLength LENGTH_VALUE;]\\n\\t).",
-        "violations": "http://example.org/pizza/this-is-a-very-very-very-very-very-very-very-long-uri-for-pizza; n8fab6a077e7f463f8410f141d9f2f89bb4; n8fab6a077e7f463f8410f141d9f2f89bb2; http://example.org/pizza/this-uri-is-exactly-eighty-characters-long-for-testing-purposes-1234567; n8fab6a077e7f463f8410f141d9f2f89bb1",
+        "violations": "nfdaa60e4fee24583b1d2e427a84efeb6b1; http://example.org/pizza/this-is-a-very-very-very-very-very-very-very-long-uri-for-pizza; http://example.org/pizza/this-uri-is-exactly-eighty-characters-long-for-testing-purposes-1234567; nfdaa60e4fee24583b1d2e427a84efeb6b2; nfdaa60e4fee24583b1d2e427a84efeb6b4",
         "num_violations": 5
     },
     "ProlixFeatures": {
@@ -123,7 +123,7 @@
         "metric_type": "count",
         "metric_calculation": "1 - (Number of violations / Number of entities with labels)",
         "shape_template": "ex:DifferentLanguagesLabelsShape\\n\\ta sh:NodeShape ;\\n\\tsh:targetSubjectsOf rdfs:label;\\n\\tsh:property [\\n\\tsh:path rdfs:label;\\n\\tsh:datatype rdf:langString;\\n\\t].",
-        "violations": "http://example.org/pizza#customPizza; http://example.org/pizza#multiLangLabelPizza; http://example.org/pizza#ingredient; http://example.org/pizza#noLangLabel; http://example.org/pizza#multiLabelPizza; http://dbpedia.org/resource/dbpediaPizza; http://dbpedia.org/resource/dbpediaPizza_2; http://example.org/pizza#weirdLangPizza; http://example.org/pizza#labelNoLang; http://example.org/pizza#classicOldPizza2",
+        "violations": "http://example.org/pizza#classicOldPizza2; http://example.org/pizza#noLangLabel; http://dbpedia.org/resource/dbpediaPizza; http://example.org/pizza#customPizza; http://example.org/pizza#multiLabelPizza; http://example.org/pizza#multiLangLabelPizza; http://example.org/pizza#ingredient; http://example.org/pizza#weirdLangPizza; http://example.org/pizza#labelNoLang; http://dbpedia.org/resource/dbpediaPizza_2",
         "num_violations": 10,
         "property": "http://www.w3.org/2000/01/rdf-schema#label"
     },
@@ -153,7 +153,7 @@
         "metric_type": "count",
         "metric_calculation": "1 - (Number of violations / Number of entities)",
         "shape_template": "ex:SelfDescriptiveFormatEntitiesShape\\n\\ta sh:NodeShape ;\\n\\tsh:targetSubjectsOf rdf:type;\\n\\tsh:or (\\n\\t[sh:path rdf:type; sh:hasValue rdfs:Class;]\\n\\t[sh:path rdf:type; sh:hasValue rdf:Property;]\\n\\t[sh:path rdf:type; sh:hasValue owl:NamedIndividual\\n;]\\n\\t[ sh:nodeKind sh:IRI; ]\\n\\t).",
-        "violations": "n8fab6a077e7f463f8410f141d9f2f89bb4; n8fab6a077e7f463f8410f141d9f2f89bb1; n8fab6a077e7f463f8410f141d9f2f89bb2",
+        "violations": "nfdaa60e4fee24583b1d2e427a84efeb6b2; nfdaa60e4fee24583b1d2e427a84efeb6b4; nfdaa60e4fee24583b1d2e427a84efeb6b1",
         "num_violations": 3
     },
     "BlankNodesUsageEntities": {
@@ -167,7 +167,7 @@
         "metric_type": "count",
         "metric_calculation": "1 - (Number of violations / Number of entities)",
         "shape_template": "ex:BlankNodesUsageEntitiesShape\\n\\ta sh:NodeShape ;\\n\\tsh:targetSubjectsOf rdf:type;\\n\\tsh:or (\\n\\t[sh:path rdf:type; sh:hasValue rdfs:Class;]\\n\\t[sh:path rdf:type; sh:hasValue rdf:Property;]\\n\\t[sh:path rdf:type; sh:hasValue owl:NamedIndividual;]\\n\\t[ sh:not [ sh:nodeKind sh:BlankNode ]; ]\\n\\t).",
-        "violations": "n8fab6a077e7f463f8410f141d9f2f89bb4; n8fab6a077e7f463f8410f141d9f2f89bb1; n8fab6a077e7f463f8410f141d9f2f89bb2",
+        "violations": "nfdaa60e4fee24583b1d2e427a84efeb6b2; nfdaa60e4fee24583b1d2e427a84efeb6b4; nfdaa60e4fee24583b1d2e427a84efeb6b1",
         "num_violations": 3
     },
     "InterlinkingCompleteness": {
@@ -181,7 +181,7 @@
         "metric_type": "count",
         "metric_calculation": "1 - (Number of violations / Number of entities)",
         "shape_template": "ex:InterlinkingCompletenessShape\\n\\ta sh:NodeShape ;\\n\\tsh:targetSubjectsOf rdf:type;\\n\\tsh:or (\\n\\t[ sh:path rdf:type; sh:hasValue rdfs:Class; ]\\n\\t[ sh:path rdf:type; sh:hasValue rdf:Property; ]\\n\\t[ sh:path rdf:type; sh:hasValue owl:NamedIndividual; ]\\n\\t[ sh:path owl:sameAs; sh:minCount 1; ]\\n\\t).",
-        "violations": "http://example.org/pizza#unlinkedPizza; http://example.org/pizza#customPizza; http://example.org/pizza#sciencePizza; http://example.org/pizza#customPizza_2; n8fab6a077e7f463f8410f141d9f2f89bb4; http://example.org/pizza#blankNodeInValue; http://example.org/pizza#emptyLabelPizza; http://example.org/pizza#noLangLabel; http://example.org/pizza#mySpiceLevel; http://example.org/pizza#badBag; http://example.org/pizza/this-uri-is-exactly-eighty-characters-long-for-testing-purposes-1234567; http://example.org/pizza#mozzarellaTopping; n8fab6a077e7f463f8410f141d9f2f89bb1; http://example.org/pizza#orphanPizza; http://example.org/pizza#multiTypePizza; http://example.org/pizza#emptyDescLangPizza; http://example.org/pizza#missingObjectPizza; n8fab6a077e7f463f8410f141d9f2f89bb2; http://example.org/pizza#tomatoTopping; http://example.org/pizza#chefMario; http://example.org/pizza#disjointPizza; http://example.org/pizza#duplicateTypesPizza; http://example.org/pizza#classicPizza; http://example.org/pizza#badPricePizza; http://example.org/pizza#badSeq; http://example.org/pizza#missingRequiredProp; http://example.org/pizza#englishLabelPizza; http://example.org/pizza#wrongBooleanPizza; http://example.org/pizza#labelNoLang; http://example.org/pizza#hawaiianPizza; http://example.org/pizza#classicOldPizza2; http://example.org/pizza#spicyPizza; http://example.org/pizza#namelessPizza; http://example.org/pizza#customPizza_3; http://example.org/pizza/this-is-a-very-very-very-very-very-very-very-long-uri-for-pizza; http://example.org/pizza?flavor=cheese&size=large; http://example.org/pizza#veggiePizza; http://example.org/pizza#dateTimeInsteadOfDate; http://example.org/pizza#confusedPizza; http://example.org/pizza#ingredient; http://example.org/pizza#goodPricePizza; http://example.org/pizza#langTagDecimal; http://example.org/pizza#myStore; http://dbpedia.org/resource/dbpediaPizza; http://example.org/pizza#weirdLangPizza; http://example.org/pizza#deprecatedPropPizza; http://example.org/pizza#tooSpicyPizza; http://example.org/pizza/pizza?type=veggie; http://example.org/pizza#labelWhitespacePizza; http://example.org/pizza#multiLangLabelPizza; http://example.org/pizza/simple-pizza; http://example.org/pizza#multiLicensePizza; http://example.org/pizza#pizzaReUseTopping; http://example.org/pizza#multiLabelPizza; http://example.org/pizza#classicOldPizza1; http://example.org/pizza#wrongLangOnLiteralPizza; http://example.org/pizza?has=param; http://example.org/pizza#meatLoversPizza; http://dbpedia.org/resource/dbpediaPizza_2; http://example.org/pizza#noTypeEntity; http://example.org/pizza#badLangDescription; http://example.org/pizza#noInterlink; http://example.org/pizza#person_1",
+        "violations": "http://example.org/pizza#classicOldPizza2; http://example.org/pizza#customPizza_3; nfdaa60e4fee24583b1d2e427a84efeb6b1; http://example.org/pizza#badSeq; http://example.org/pizza#person_1; http://example.org/pizza?flavor=cheese&size=large; http://example.org/pizza#badBag; http://example.org/pizza#noTypeEntity; http://example.org/pizza#ingredient; http://example.org/pizza/pizza?type=veggie; http://example.org/pizza#orphanPizza; http://example.org/pizza#missingObjectPizza; http://example.org/pizza#goodPricePizza; http://example.org/pizza#dateTimeInsteadOfDate; http://example.org/pizza#labelNoLang; http://example.org/pizza#noLangLabel; http://example.org/pizza#classicPizza; http://example.org/pizza#noInterlink; http://example.org/pizza#wrongLangOnLiteralPizza; http://example.org/pizza#meatLoversPizza; http://example.org/pizza#namelessPizza; http://dbpedia.org/resource/dbpediaPizza; http://example.org/pizza#chefMario; http://example.org/pizza#multiLabelPizza; http://example.org/pizza/this-uri-is-exactly-eighty-characters-long-for-testing-purposes-1234567; http://example.org/pizza#labelWhitespacePizza; http://example.org/pizza#mozzarellaTopping; http://example.org/pizza#englishLabelPizza; http://example.org/pizza#emptyDescLangPizza; http://example.org/pizza#confusedPizza; http://example.org/pizza#veggiePizza; http://example.org/pizza#emptyLabelPizza; http://example.org/pizza#blankNodeInValue; http://example.org/pizza#myStore; http://example.org/pizza#classicOldPizza1; http://example.org/pizza#multiLangLabelPizza; http://example.org/pizza#pizzaReUseTopping; http://example.org/pizza#duplicateTypesPizza; http://example.org/pizza#langTagDecimal; http://example.org/pizza#hawaiianPizza; http://example.org/pizza#mySpiceLevel; http://example.org/pizza#badLangDescription; http://example.org/pizza#weirdLangPizza; http://example.org/pizza#badPricePizza; http://example.org/pizza#multiTypePizza; http://example.org/pizza/simple-pizza; nfdaa60e4fee24583b1d2e427a84efeb6b2; http://dbpedia.org/resource/dbpediaPizza_2; nfdaa60e4fee24583b1d2e427a84efeb6b4; http://example.org/pizza?has=param; http://example.org/pizza#multiLicensePizza; http://example.org/pizza#disjointPizza; http://example.org/pizza#sciencePizza; http://example.org/pizza#missingRequiredProp; http://example.org/pizza/this-is-a-very-very-very-very-very-very-very-long-uri-for-pizza; http://example.org/pizza#customPizza; http://example.org/pizza#wrongBooleanPizza; http://example.org/pizza#spicyPizza; http://example.org/pizza#customPizza_2; http://example.org/pizza#tooSpicyPizza; http://example.org/pizza#unlinkedPizza; http://example.org/pizza#tomatoTopping; http://example.org/pizza#deprecatedPropPizza",
         "num_violations": 63
     },
     "SelfDescriptiveFormatProperties_0": {
@@ -191,8 +191,8 @@
         "measure": 0,
         "shape": "ex:SelfDescriptiveFormatPropertiesShape_0",
         "message": "",
-        "property": "http://www.co-ode.org/ontologies/pizza/pizza.owl#cookedDate",
-        "violations": "2025-34-25;2025-07-01 12:00:00;2025-07-11;2025-06-25"
+        "property": "http://xmlns.com/foaf/0.1/name",
+        "violations": "Mario Rossi"
     },
     "SelfDescriptiveFormatProperties_1": {
         "dimension": "Interpretability",
@@ -201,16 +201,18 @@
         "measure": 0,
         "shape": "ex:SelfDescriptiveFormatPropertiesShape_1",
         "message": "",
-        "property": "http://www.co-ode.org/ontologies/pizza/pizza.owl#undefinedToppingProperty",
-        "violations": "some topping;extra topping"
+        "property": "http://www.co-ode.org/ontologies/pizza/pizza.owl#thingDomainProperty",
+        "violations": "something"
     },
     "SelfDescriptiveFormatProperties_2": {
         "dimension": "Interpretability",
         "metric_id": "ITP1",
         "metric": "Use of self-descriptive formats",
-        "measure": 1,
+        "measure": 0,
         "shape": "ex:SelfDescriptiveFormatPropertiesShape_2",
-        "message": ""
+        "message": "",
+        "property": "http://www.co-ode.org/ontologies/pizza/pizza.owl#hasFloatScore",
+        "violations": "7.2;7"
     },
     "SelfDescriptiveFormatProperties_3": {
         "dimension": "Interpretability",
@@ -219,28 +221,24 @@
         "measure": 0,
         "shape": "ex:SelfDescriptiveFormatPropertiesShape_3",
         "message": "",
-        "property": "http://www.co-ode.org/ontologies/pizza/pizza.owl#thingDomainProperty",
-        "violations": "something"
+        "property": "http://www.co-ode.org/ontologies/pizza/pizza.owl#bakedAt",
+        "violations": "2025-06-45;2025-06-27 13:30:00;2025-06-27"
     },
     "SelfDescriptiveFormatProperties_4": {
         "dimension": "Interpretability",
         "metric_id": "ITP1",
         "metric": "Use of self-descriptive formats",
-        "measure": 0,
+        "measure": 1,
         "shape": "ex:SelfDescriptiveFormatPropertiesShape_4",
-        "message": "",
-        "property": "http://www.w3.org/2000/01/rdf-schema#label",
-        "violations": "Label without lang tag;Classic Old Pizza 1;No language tag label;No Interlink Pizza;Extra whitespace  ;Some pizza from dbpedia;With label in english;Classic Margherita;Confused Pizza;Unnamed Pizza;Hawaiian Pizza;No Type Pizza;Pizza es;Mozzarella;Pizza fr;customPizza_3 is an instance of an undefined class;Blank Node Pizza;Veggie Pizza;Classic Old Pizza 2;Pizza en;Strange lang tag;Meat Lovers Pizza;Pizza de;entity that uses undefined property;Tomato;Another one to break uriSpace and regex compliance;instance of a property"
+        "message": ""
     },
     "SelfDescriptiveFormatProperties_5": {
         "dimension": "Interpretability",
         "metric_id": "ITP1",
         "metric": "Use of self-descriptive formats",
-        "measure": 0,
+        "measure": 1,
         "shape": "ex:SelfDescriptiveFormatPropertiesShape_5",
-        "message": "",
-        "property": "http://www.co-ode.org/ontologies/pizza/pizza.owl#bakingMonth",
-        "violations": "--06"
+        "message": ""
     },
     "SelfDescriptiveFormatProperties_6": {
         "dimension": "Interpretability",
@@ -249,8 +247,8 @@
         "measure": 0,
         "shape": "ex:SelfDescriptiveFormatPropertiesShape_6",
         "message": "",
-        "property": "http://www.co-ode.org/ontologies/pizza/pizza.owl#spicinessLevel",
-        "violations": "3;5;3;extremely hot;0.5;10"
+        "property": "http://www.co-ode.org/ontologies/pizza/pizza.owl#bakingYear",
+        "violations": "25;2025-01-01"
     },
     "SelfDescriptiveFormatProperties_7": {
         "dimension": "Interpretability",
@@ -259,18 +257,16 @@
         "measure": 0,
         "shape": "ex:SelfDescriptiveFormatPropertiesShape_7",
         "message": "",
-        "property": "http://www.co-ode.org/ontologies/pizza/pizza.owl#madeIn",
-        "violations": "my store literal"
+        "property": "http://www.co-ode.org/ontologies/pizza/pizza.owl#NonVegetarianPizza",
+        "violations": "another class used as property"
     },
     "SelfDescriptiveFormatProperties_8": {
         "dimension": "Interpretability",
         "metric_id": "ITP1",
         "metric": "Use of self-descriptive formats",
-        "measure": 0,
+        "measure": 1,
         "shape": "ex:SelfDescriptiveFormatPropertiesShape_8",
-        "message": "",
-        "property": "http://www.co-ode.org/ontologies/pizza/pizza.owl#hasFloatScore",
-        "violations": "7;7.2"
+        "message": ""
     },
     "SelfDescriptiveFormatProperties_9": {
         "dimension": "Interpretability",
@@ -279,8 +275,8 @@
         "measure": 0,
         "shape": "ex:SelfDescriptiveFormatPropertiesShape_9",
         "message": "",
-        "property": "http://www.co-ode.org/ontologies/pizza/pizza.owl#Store",
-        "violations": "store used as property"
+        "property": "http://www.co-ode.org/ontologies/pizza/pizza.owl#bakingDay",
+        "violations": "---45;---27;---12"
     },
     "SelfDescriptiveFormatProperties_10": {
         "dimension": "Interpretability",
@@ -297,8 +293,8 @@
         "measure": 0,
         "shape": "ex:SelfDescriptiveFormatPropertiesShape_11",
         "message": "",
-        "property": "http://www.co-ode.org/ontologies/pizza/pizza.owl#literalProperty",
-        "violations": "n8fab6a077e7f463f8410f141d9f2f89bb3"
+        "property": "http://www.co-ode.org/ontologies/pizza/pizza.owl#spicinessLevel",
+        "violations": "0.5;3;10;3;extremely hot;5"
     },
     "SelfDescriptiveFormatProperties_12": {
         "dimension": "Interpretability",
@@ -307,8 +303,8 @@
         "measure": 0,
         "shape": "ex:SelfDescriptiveFormatPropertiesShape_12",
         "message": "",
-        "property": "http://www.co-ode.org/ontologies/pizza/pizza.owl#price",
-        "violations": "10.00;12.99;10.5"
+        "property": "http://www.co-ode.org/ontologies/pizza/pizza.owl#madeIn",
+        "violations": "my store literal"
     },
     "SelfDescriptiveFormatProperties_13": {
         "dimension": "Interpretability",
@@ -322,11 +318,9 @@
         "dimension": "Interpretability",
         "metric_id": "ITP1",
         "metric": "Use of self-descriptive formats",
-        "measure": 0,
+        "measure": 1,
         "shape": "ex:SelfDescriptiveFormatPropertiesShape_14",
-        "message": "",
-        "property": "http://www.w3.org/2000/01/rdf-schema#comment",
-        "violations": " Leading and trailing spaces ;Beschreibung auf Deutsch"
+        "message": ""
     },
     "SelfDescriptiveFormatProperties_15": {
         "dimension": "Interpretability",
@@ -335,8 +329,8 @@
         "measure": 0,
         "shape": "ex:SelfDescriptiveFormatPropertiesShape_15",
         "message": "",
-        "property": "http://www.co-ode.org/ontologies/pizza/pizza.owl#bakedAt",
-        "violations": "2025-06-27;2025-06-27 13:30:00;2025-06-45"
+        "property": "http://www.co-ode.org/ontologies/pizza/pizza.owl#price",
+        "violations": "10.00;10.5;12.99"
     },
     "SelfDescriptiveFormatProperties_16": {
         "dimension": "Interpretability",
@@ -345,8 +339,8 @@
         "measure": 0,
         "shape": "ex:SelfDescriptiveFormatPropertiesShape_16",
         "message": "",
-        "property": "http://www.co-ode.org/ontologies/pizza/pizza.owl#oldProperty",
-        "violations": "deprecated value"
+        "property": "http://www.co-ode.org/ontologies/pizza/pizza.owl#hasDoubleRating",
+        "violations": "8.654321"
     },
     "SelfDescriptiveFormatProperties_17": {
         "dimension": "Interpretability",
@@ -355,16 +349,18 @@
         "measure": 0,
         "shape": "ex:SelfDescriptiveFormatPropertiesShape_17",
         "message": "",
-        "property": "http://www.co-ode.org/ontologies/pizza/pizza.owl#bakingYear",
-        "violations": "25;2025-01-01"
+        "property": "http://www.co-ode.org/ontologies/pizza/pizza.owl#hasTopping",
+        "violations": "nfdaa60e4fee24583b1d2e427a84efeb6b2;some literal"
     },
     "SelfDescriptiveFormatProperties_18": {
         "dimension": "Interpretability",
         "metric_id": "ITP1",
         "metric": "Use of self-descriptive formats",
-        "measure": 1,
+        "measure": 0,
         "shape": "ex:SelfDescriptiveFormatPropertiesShape_18",
-        "message": ""
+        "message": "",
+        "property": "http://www.co-ode.org/ontologies/pizza/pizza.owl#cookedDate",
+        "violations": "2025-34-25;2025-07-01 12:00:00;2025-06-25;2025-07-11"
     },
     "SelfDescriptiveFormatProperties_19": {
         "dimension": "Interpretability",
@@ -373,44 +369,44 @@
         "measure": 0,
         "shape": "ex:SelfDescriptiveFormatPropertiesShape_19",
         "message": "",
-        "property": "http://www.co-ode.org/ontologies/pizza/pizza.owl#hasTopping",
-        "violations": "n8fab6a077e7f463f8410f141d9f2f89bb2;some literal"
+        "property": "http://www.w3.org/2000/01/rdf-schema#comment",
+        "violations": "Beschreibung auf Deutsch; Leading and trailing spaces "
     },
     "SelfDescriptiveFormatProperties_20": {
         "dimension": "Interpretability",
         "metric_id": "ITP1",
         "metric": "Use of self-descriptive formats",
-        "measure": 1,
+        "measure": 0,
         "shape": "ex:SelfDescriptiveFormatPropertiesShape_20",
-        "message": ""
+        "message": "",
+        "property": "http://www.co-ode.org/ontologies/pizza/pizza.owl#undefinedToppingProperty",
+        "violations": "some topping;extra topping"
     },
     "SelfDescriptiveFormatProperties_21": {
         "dimension": "Interpretability",
         "metric_id": "ITP1",
         "metric": "Use of self-descriptive formats",
-        "measure": 1,
+        "measure": 0,
         "shape": "ex:SelfDescriptiveFormatPropertiesShape_21",
-        "message": ""
+        "message": "",
+        "property": "http://www.co-ode.org/ontologies/pizza/pizza.owl#resourceProperty",
+        "violations": "nfdaa60e4fee24583b1d2e427a84efeb6b3"
     },
     "SelfDescriptiveFormatProperties_22": {
         "dimension": "Interpretability",
         "metric_id": "ITP1",
         "metric": "Use of self-descriptive formats",
-        "measure": 0,
+        "measure": 1,
         "shape": "ex:SelfDescriptiveFormatPropertiesShape_22",
-        "message": "",
-        "property": "http://www.co-ode.org/ontologies/pizza/pizza.owl#madeBy",
-        "violations": "Caro"
+        "message": ""
     },
     "SelfDescriptiveFormatProperties_23": {
         "dimension": "Interpretability",
         "metric_id": "ITP1",
         "metric": "Use of self-descriptive formats",
-        "measure": 0,
+        "measure": 1,
         "shape": "ex:SelfDescriptiveFormatPropertiesShape_23",
-        "message": "",
-        "property": "http://xmlns.com/foaf/0.1/name",
-        "violations": "Mario Rossi"
+        "message": ""
     },
     "SelfDescriptiveFormatProperties_24": {
         "dimension": "Interpretability",
@@ -419,8 +415,8 @@
         "measure": 0,
         "shape": "ex:SelfDescriptiveFormatPropertiesShape_24",
         "message": "",
-        "property": "http://www.co-ode.org/ontologies/pizza/pizza.owl#NonVegetarianPizza",
-        "violations": "another class used as property"
+        "property": "http://www.co-ode.org/ontologies/pizza/pizza.owl#isVegetarian",
+        "violations": "sometimes"
     },
     "SelfDescriptiveFormatProperties_25": {
         "dimension": "Interpretability",
@@ -429,8 +425,8 @@
         "measure": 0,
         "shape": "ex:SelfDescriptiveFormatPropertiesShape_25",
         "message": "",
-        "property": "http://www.co-ode.org/ontologies/pizza/pizza.owl#resourceProperty",
-        "violations": "n8fab6a077e7f463f8410f141d9f2f89bb3"
+        "property": "http://www.co-ode.org/ontologies/pizza/pizza.owl#bakingMonth",
+        "violations": "--06"
     },
     "SelfDescriptiveFormatProperties_26": {
         "dimension": "Interpretability",
@@ -439,52 +435,64 @@
         "measure": 0,
         "shape": "ex:SelfDescriptiveFormatPropertiesShape_26",
         "message": "",
-        "property": "http://www.co-ode.org/ontologies/pizza/pizza.owl#bakingDay",
-        "violations": "---27;---12;---45"
+        "property": "http://www.co-ode.org/ontologies/pizza/pizza.owl#literalProperty",
+        "violations": "nfdaa60e4fee24583b1d2e427a84efeb6b3"
     },
     "SelfDescriptiveFormatProperties_27": {
         "dimension": "Interpretability",
         "metric_id": "ITP1",
         "metric": "Use of self-descriptive formats",
-        "measure": 1,
+        "measure": 0,
         "shape": "ex:SelfDescriptiveFormatPropertiesShape_27",
-        "message": ""
+        "message": "",
+        "property": "http://www.co-ode.org/ontologies/pizza/pizza.owl#oldProperty",
+        "violations": "deprecated value"
     },
     "SelfDescriptiveFormatProperties_28": {
         "dimension": "Interpretability",
         "metric_id": "ITP1",
         "metric": "Use of self-descriptive formats",
-        "measure": 0,
+        "measure": 1,
         "shape": "ex:SelfDescriptiveFormatPropertiesShape_28",
-        "message": "",
-        "property": "http://www.co-ode.org/ontologies/pizza/pizza.owl#hasDoubleRating",
-        "violations": "8.654321"
+        "message": ""
     },
     "SelfDescriptiveFormatProperties_29": {
         "dimension": "Interpretability",
         "metric_id": "ITP1",
         "metric": "Use of self-descriptive formats",
-        "measure": 1,
+        "measure": 0,
         "shape": "ex:SelfDescriptiveFormatPropertiesShape_29",
-        "message": ""
+        "message": "",
+        "property": "http://www.co-ode.org/ontologies/pizza/pizza.owl#Store",
+        "violations": "store used as property"
     },
     "SelfDescriptiveFormatProperties_30": {
         "dimension": "Interpretability",
         "metric_id": "ITP1",
         "metric": "Use of self-descriptive formats",
-        "measure": 1,
+        "measure": 0,
         "shape": "ex:SelfDescriptiveFormatPropertiesShape_30",
-        "message": ""
+        "message": "",
+        "property": "http://www.co-ode.org/ontologies/pizza/pizza.owl#madeBy",
+        "violations": "Caro"
     },
     "SelfDescriptiveFormatProperties_31": {
         "dimension": "Interpretability",
         "metric_id": "ITP1",
         "metric": "Use of self-descriptive formats",
-        "measure": 0,
+        "measure": 1,
         "shape": "ex:SelfDescriptiveFormatPropertiesShape_31",
+        "message": ""
+    },
+    "SelfDescriptiveFormatProperties_32": {
+        "dimension": "Interpretability",
+        "metric_id": "ITP1",
+        "metric": "Use of self-descriptive formats",
+        "measure": 0,
+        "shape": "ex:SelfDescriptiveFormatPropertiesShape_32",
         "message": "",
-        "property": "http://www.co-ode.org/ontologies/pizza/pizza.owl#isVegetarian",
-        "violations": "sometimes"
+        "property": "http://www.w3.org/2000/01/rdf-schema#label",
+        "violations": "Tomato;No Interlink Pizza;Mozzarella;Classic Old Pizza 2;Classic Margherita;entity that uses undefined property;Strange lang tag;No language tag label;With label in english;Pizza fr;Blank Node Pizza;No Type Pizza;Another one to break uriSpace and regex compliance;Pizza es;Classic Old Pizza 1;Veggie Pizza;Extra whitespace  ;Meat Lovers Pizza;Pizza en;Unnamed Pizza;Some pizza from dbpedia;Pizza de;instance of a property;customPizza_3 is an instance of an undefined class;Hawaiian Pizza;Label without lang tag;Confused Pizza"
     },
     "SchemaCompletenessClassUsage_1": {
         "dimension": "Completeness",
@@ -2826,7 +2834,7 @@
         "measure": 0.6666666666666667,
         "shape": "ex:CorrectDomainShape_7",
         "message": "The property http://www.co-ode.org/ontologies/pizza/pizza.owl#hasTopping is used with an incorrect domain",
-        "violations": "http://example.org/pizza#classicOldPizza1; http://example.org/pizza#classicOldPizza2",
+        "violations": "http://example.org/pizza#classicOldPizza2; http://example.org/pizza#classicOldPizza1",
         "num_violations": 2,
         "property": "http://www.co-ode.org/ontologies/pizza/pizza.owl#hasTopping"
     },
@@ -2837,7 +2845,7 @@
         "measure": 0.5,
         "shape": "ex:CorrectRangeShape_8",
         "message": "The property http://www.co-ode.org/ontologies/pizza/pizza.owl#hasTopping is used with an incorrect range",
-        "violations": "http://example.org/pizza#classicOldPizza1; http://example.org/pizza#blankNodeInValue; http://example.org/pizza#classicOldPizza2",
+        "violations": "http://example.org/pizza#classicOldPizza2; http://example.org/pizza#blankNodeInValue; http://example.org/pizza#classicOldPizza1",
         "num_violations": 3,
         "property": "http://www.co-ode.org/ontologies/pizza/pizza.owl#hasTopping"
     },
@@ -3060,7 +3068,7 @@
         "measure": 0.0,
         "shape": "ex:MisuseOwlObjectPropertiesShape_29",
         "message": "The object property http://www.co-ode.org/ontologies/pizza/pizza.owl#thingDomainProperty is being used with Literals",
-        "violations": "n8fab6a077e7f463f8410f141d9f2f89bb4",
+        "violations": "nfdaa60e4fee24583b1d2e427a84efeb6b4",
         "num_violations": 1,
         "property": "http://www.co-ode.org/ontologies/pizza/pizza.owl#thingDomainProperty"
     },
@@ -3116,7 +3124,7 @@
         "measure": 0.5,
         "shape": "ex:CorrectRangeShape_35",
         "message": "The property http://www.co-ode.org/ontologies/pizza/pizza.owl#cookedDate is used with an incorrect range",
-        "violations": "http://example.org/pizza#classicPizza; http://example.org/pizza#dateTimeInsteadOfDate",
+        "violations": "http://example.org/pizza#dateTimeInsteadOfDate; http://example.org/pizza#classicPizza",
         "num_violations": 2,
         "property": "http://www.co-ode.org/ontologies/pizza/pizza.owl#cookedDate"
     },
@@ -3127,7 +3135,7 @@
         "measure": 0.5,
         "shape": "ex:MalformedLiteralShape_36",
         "message": "The property http://www.co-ode.org/ontologies/pizza/pizza.owl#cookedDate is used with an incompatible datatype or an il-typed literal",
-        "violations": "http://example.org/pizza#classicPizza; http://example.org/pizza#dateTimeInsteadOfDate",
+        "violations": "http://example.org/pizza#dateTimeInsteadOfDate; http://example.org/pizza#classicPizza",
         "num_violations": 2,
         "property": "http://www.co-ode.org/ontologies/pizza/pizza.owl#cookedDate"
     },
@@ -3224,7 +3232,7 @@
         "measure": 0.16666666666666663,
         "shape": "ex:CorrectRangeShape_45",
         "message": "The property http://www.co-ode.org/ontologies/pizza/pizza.owl#spicinessLevel is used with an incorrect range",
-        "violations": "http://example.org/pizza#spicyPizza; http://example.org/pizza#tooSpicyPizza; http://example.org/pizza#dateTimeInsteadOfDate; http://example.org/pizza#classicPizza; http://example.org/pizza#hawaiianPizza",
+        "violations": "http://example.org/pizza#classicPizza; http://example.org/pizza#spicyPizza; http://example.org/pizza#hawaiianPizza; http://example.org/pizza#tooSpicyPizza; http://example.org/pizza#dateTimeInsteadOfDate",
         "num_violations": 5,
         "property": "http://www.co-ode.org/ontologies/pizza/pizza.owl#spicinessLevel"
     },
@@ -3235,7 +3243,7 @@
         "measure": 0.16666666666666663,
         "shape": "ex:MalformedLiteralShape_46",
         "message": "The property http://www.co-ode.org/ontologies/pizza/pizza.owl#spicinessLevel is used with an incompatible datatype or an il-typed literal",
-        "violations": "http://example.org/pizza#spicyPizza; http://example.org/pizza#tooSpicyPizza; http://example.org/pizza#dateTimeInsteadOfDate; http://example.org/pizza#classicPizza; http://example.org/pizza#hawaiianPizza",
+        "violations": "http://example.org/pizza#classicPizza; http://example.org/pizza#spicyPizza; http://example.org/pizza#hawaiianPizza; http://example.org/pizza#tooSpicyPizza; http://example.org/pizza#dateTimeInsteadOfDate",
         "num_violations": 5,
         "property": "http://www.co-ode.org/ontologies/pizza/pizza.owl#spicinessLevel"
     },
@@ -3591,7 +3599,7 @@
         "measure": 0.25,
         "shape": "ex:IrreflexivePropertyShape_82",
         "message": "The irreflexive constraint for the property http://www.co-ode.org/ontologies/pizza/pizza.owl#isDifferentFrom is not enforced",
-        "violations": "http://example.org/pizza#spicyPizza; http://example.org/pizza#classicPizza; http://example.org/pizza#disjointPizza",
+        "violations": "http://example.org/pizza#classicPizza; http://example.org/pizza#disjointPizza; http://example.org/pizza#spicyPizza",
         "num_violations": 3,
         "property": "http://www.co-ode.org/ontologies/pizza/pizza.owl#isDifferentFrom"
     },
@@ -3620,7 +3628,7 @@
         "measure": 0.5,
         "shape": "ex:FunctionalPropertyShape_84",
         "message": "The property http://www.co-ode.org/ontologies/pizza/pizza.owl#cookedDate is used with more than one value for the same node",
-        "violations": "http://example.org/pizza#classicPizza; http://example.org/pizza#hawaiianPizza",
+        "violations": "http://example.org/pizza#hawaiianPizza; http://example.org/pizza#classicPizza",
         "num_violations": 2,
         "property": "http://www.co-ode.org/ontologies/pizza/pizza.owl#cookedDate"
     },
@@ -3648,7 +3656,7 @@
         "meta_metric_calculation": "",
         "shape_name": "DeprecatedClassesShape",
         "shape_template": "ex:DeprecatedClassesShape\\n\\ta sh:NodeShape ;\\n\\tsh:targetSubjectsOf rdf:type;\\n\\tsh:or (\\n\\t\\t[sh:path rdf:type; sh:hasValue rdfs:Class;]\\n\\t\\t[sh:path rdf:type; sh:hasValue rdf:Property;]\\n\\t\\t[sh:path rdf:type; sh:hasValue owl:\\n\\t\\tNamedIndividual;]\\n\\t\\t[\\n\\t\\tsh:path rdf:type;\\n\\t\\tsh:not [ sh:in (CLASSES_LIST); ];\\n\\t\\t]\\n\\t).",
-        "violations": "http://example.org/pizza#classicOldPizza2;http://example.org/pizza#classicOldPizza1;http://example.org/pizza#meatLoversPizza",
+        "violations": "http://example.org/pizza#meatLoversPizza;http://example.org/pizza#classicOldPizza1;http://example.org/pizza#classicOldPizza2",
         "num_violations": "",
         "vocab": ""
     },
@@ -3672,7 +3680,7 @@
         "measure": 0.9565217391304348,
         "shape": "ex:DeprecatedPropertiesShape_87",
         "message": "Deprecated properties are being used in the dataset",
-        "violations": "http://example.org/pizza#meatLoversPizza; http://example.org/pizza#veggiePizza; http://example.org/pizza#hawaiianPizza",
+        "violations": "http://example.org/pizza#hawaiianPizza; http://example.org/pizza#veggiePizza; http://example.org/pizza#meatLoversPizza",
         "num_violations": 3,
         "property": "http://www.co-ode.org/ontologies/pizza/pizza.owl#oldToppingProperty"
     },
@@ -3688,5 +3696,51 @@
         "metric_calculation": "0 if property is used as a class, 1 otherwise.",
         "meta_metric_calculation": "Number of correctly used properties / Number of properties defined in vocabularies",
         "shape_template": "ex:MisplacedPropertiesShape\\n\\ta sh:NodeShape ;\\n\\tsh:targetNode PROPERTY_URI;\\n\\tsh:property [\\n\\tsh:path [sh:inversePath rdf:type];\\n\\tsh:maxCount 0;\\n\\t]."
+    },
+    "CorrectDomain_89": {
+        "dimension": "Consistency",
+        "metric_id": "CN9",
+        "metric": "Correct domain and range definition.",
+        "measure": 0.0,
+        "shape": "ex:CorrectDomainShape_89",
+        "message": "The property http://www.co-ode.org/ontologies/pizza/pizza.owl#myAsymmetricProperty is used with an incorrect domain",
+        "violations": "http://example.org/pizza#pizza_4; http://example.org/pizza#pizza_1; http://example.org/pizza#pizza_2",
+        "num_violations": 3,
+        "property": "http://www.co-ode.org/ontologies/pizza/pizza.owl#myAsymmetricProperty"
+    },
+    "CorrectRange_90": {
+        "dimension": "Consistency",
+        "metric_id": "CN9",
+        "metric": "Correct domain and range definition.",
+        "measure": 0.0,
+        "shape": "ex:CorrectRangeShape_90",
+        "message": "The property http://www.co-ode.org/ontologies/pizza/pizza.owl#myAsymmetricProperty is used with an incorrect range",
+        "violations": "http://example.org/pizza#pizza_4; http://example.org/pizza#pizza_1; http://example.org/pizza#pizza_2",
+        "num_violations": 3,
+        "property": "http://www.co-ode.org/ontologies/pizza/pizza.owl#myAsymmetricProperty"
+    },
+    "MisplacedProperties_91": {
+        "dimension": "Consistency",
+        "metric_id": "CN2",
+        "metric": "No misplaced classes or properties",
+        "measure": 1,
+        "shape": "ex:MisplacedPropertiesShape_91",
+        "message": "",
+        "description": "Verifies that properties aren't used as classes",
+        "metric_type": "binary",
+        "metric_calculation": "0 if property is used as a class, 1 otherwise.",
+        "meta_metric_calculation": "Number of correctly used properties / Number of properties defined in vocabularies",
+        "shape_template": "ex:MisplacedPropertiesShape\\n\\ta sh:NodeShape ;\\n\\tsh:targetNode PROPERTY_URI;\\n\\tsh:property [\\n\\tsh:path [sh:inversePath rdf:type];\\n\\tsh:maxCount 0;\\n\\t]."
+    },
+    "AsymmetricProperty_92": {
+        "dimension": "Consistency",
+        "metric_id": "CN10",
+        "metric": "No inconsistent values",
+        "measure": 0.33333333333333337,
+        "shape": "ex:AsymmetricPropertyShape_92",
+        "message": "The property http://www.co-ode.org/ontologies/pizza/pizza.owl#myAsymmetricProperty is used incorrectly (asymmetric)",
+        "violations": "http://example.org/pizza#pizza_1; http://example.org/pizza#pizza_2",
+        "num_violations": 2,
+        "property": "http://www.co-ode.org/ontologies/pizza/pizza.owl#myAsymmetricProperty"
     }
 }

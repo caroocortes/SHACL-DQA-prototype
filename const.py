@@ -66,6 +66,7 @@ COUNT_METRICS = {"UsageExternalURIEntities",
                 "IrreflexiveProperty",
                 "EntitiesDisjointClasses",
                 "FunctionalProperty",
+                "AsymmetricProperty",
                 # "MalformedDatatype",
                 "MalformedLiteral", 
                 "DeprecatedProperties",
@@ -89,6 +90,7 @@ NUM_CLASSES = { "LabelForClasses"}
 NUM_PROPERTIES = {"LabelForProperties"}
 
 NUM_SUBJECTS_PER_PROPERTY = {"FunctionalProperty", 
+                             "AsymmetricProperty",
                             "IrreflexiveProperty", 
                             "CorrectRange", 
                             "CorrectDomain", 
@@ -278,6 +280,14 @@ DQ_MEASURES_DATA_SPECIFIC = {
         'vocab': ''
     },
     "FunctionalProperty": {
+        "dimension": "Consistency",
+        "metric_id": "CN10",
+        "metric": "No inconsistent values",
+        "measure": 1,
+        "shape": "",
+        "message": ""
+    },
+    "AsymmetricProperty": {
         "dimension": "Consistency",
         "metric_id": "CN10",
         "metric": "No inconsistent values",

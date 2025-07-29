@@ -466,7 +466,7 @@ def profile_vocab(dq_assessment, vocab):
         if (vocab_ns and str(s).startswith(vocab_ns) and 
             s not in g.subjects(OWL.deprecated, Literal(True)) and 
             s not in g.subjects(RDF.type, OWL.DeprecatedProperty) ):
-            
+
             ontology_info["asymmetric"].append(s)
 
             if (s not in dt_props and s not in obj_props and s not in ontology_info["rdf_properties"].keys()):

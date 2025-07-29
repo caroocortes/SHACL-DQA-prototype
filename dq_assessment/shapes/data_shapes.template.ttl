@@ -481,6 +481,17 @@ ex:FunctionalPropertyShape_{{shape_index}}
     ].
 {%- endmacro %}
 
+{% macro consistency_asymmetric_property(shape_index, property_uri) -%}
+ex:AsymmetricPropertyShape_{{shape_index}}
+    a sh:NodeShape ;
+    sh:targetSubjectsOf <{{property_uri}}> ;
+    sh:property [
+        sh:path [sh:inversePath <{{property_uri}}>];
+        sh:disjoint <{{property_uri}}> ;
+        sh:message "AsymmetricProperty_{{shape_index}} - The property {{property_uri}} is used incorrectly (asymmetric)" ;
+    ].
+{%- endmacro %}
+
 {% macro consistency_correct_domain(shape_index, property_uri, domain_class) -%}
 ex:CorrectDomainShape_{{shape_index}}
     a sh:NodeShape ;

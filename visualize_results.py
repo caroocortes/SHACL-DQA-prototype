@@ -107,6 +107,7 @@ def show_dq_assessment_statistics(run_info, dataset_name, df):
     count_irreflexive_props = graph_profile.get('count_irreflexive_props', 0)
     count_inverse_functional_props = graph_profile.get('count_inverse_functional_props', 0)
     count_functional_props = graph_profile.get('count_functional_props', 0)
+    count_asymmetric_props = graph_profile.get('count_asymmetric_props', 0)
     num_classes_vocabularies = graph_profile.get('num_classes_vocabularies', 0)
     num_properties_vocabularies = graph_profile.get('num_properties_vocabularies', 0)
     num_properties_domain = graph_profile.get('num_properties_domain', 0)
@@ -135,6 +136,8 @@ def show_dq_assessment_statistics(run_info, dataset_name, df):
         stats["Inverse-functional properties used"] = count_inverse_functional_props
     if count_functional_props > 0:
         stats["Functional properties used"] = count_functional_props
+    if count_asymmetric_props > 0:
+        stats["Asymmetric properties used"] = count_asymmetric_props
     if count_irreflexive_props > 0:
         stats["Irreflexive properties used"] = count_irreflexive_props
     if num_properties_vocabularies > 0:

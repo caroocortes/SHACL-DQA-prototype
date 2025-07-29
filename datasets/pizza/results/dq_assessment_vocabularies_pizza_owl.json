@@ -10,7 +10,7 @@
         "metric_type": "count",
         "metric_calculation": "1 - (Number of violations / Number of classes)",
         "shape_template": "ex:LabelForClassesShape\\n\\ta sh:NodeShape;\\n\\tsh:targetClass rdfs:Class;\\n\\tsh:property [\\n\\t\\tsh:path rdfs:label; sh:minCount 1;\\n\\t].",
-        "violations": "N9e4dc76b3a56440fa9b9fb46d3b970f4; N5d3b5fec60504b8eb87823989da2c4bb; http://www.co-ode.org/ontologies/pizza/pizza.owl#AuxClassNoLabel; N39e58e143904447ab80b1a916490818e; Nb04b4f8622364693b003f953ea61c982; N486cc9cf16d640b38899ab7e229299ba; Na65ea26a409e43efad24fb7db662e796; N91c3e81c15904220897246fec2d3092d; Nf6cb2f251d794c71b7078a9edc2d76ba; Nddf305331442423497ca46374f9db35a; N72e64b5d400e404c87f692927b428a19; N1e7e062ec00b4254bd202f9814fecb8b; N0969c97ad22349bbb1a710ea941466a3; N5c15a52fe4fd450c944c8c03b2c5d12a; Nd4551832388747718bfa91a0de08ce66; Ne673a3687553468b98887d4e9b89d84b; Ndff6880285604e5ab58ef66e4524662a; Nef2ac1c8bd554b41b7c7396c83a58043; Nd2ec44ad62c4475590b14ccf3bfec937; Nbac8cc992f9741d4b867efda34ec0100; Nd3b846c384fb40068a9047a1d535e06e; N1df04bc86a214edd8ae542b9a2bfda60; N5934557e54704c398716ad62e65a0eb4; N8f13c26e36294f27badfeb85e6c28f90; N49621f077c974dd7a7a03714bd1e0c51; http://www.co-ode.org/ontologies/pizza/pizza.owl#PizzaDeprecated; N65eec0d5afa54d75b0af93ad76c8a34f; N77149993c1d44d4fa487e7ac7beadc98; N446dd364fcb8479da77dd710df4612af; N50e8bd5c243d46c499af39fcfa78b1be; N7a5ac0a122bf40f7a4b1b725398bb231; N1d2be68c14ee4584b63c2d4cd99f0e38; N985b32c6faa2404682c5ba9f6bcfd6b9; N7359bf70d59f4697955f8c1034312893; N38eb37eb6a2c4f1badf30f7f5e0822a4; Na4f6816345f146c3a5633f91d638e6a2; Nd05f9f73b30841cfb6f063ff10a1ca0c; N38215fd995ad482890d79ed8d25f3107; http://www.co-ode.org/ontologies/pizza/pizza.owl#OldPizzaStyle; N4003deca80064b5fb3303cf4f8f8e255; N94a84737377a49929b9c4194800bae2e; N5595a8d507a04fd9b6a90a8413939212; N2cd47fceda394dd281991962152ce536; Nc878ce43cadb43789cd194268e7dfe10; N559bb3b2cfeb433fb83276a853e7f01e; N02f1491ccf144a6aa667a3009b1291dc; Ne1bdfea56ede44888acf5c15bb111683",
+        "violations": "N286858aaf21948bbafd276e8450e4699; Nab8cc13f29c14478815bd012603ab842; N4c306c63a3b44ad59a28ba1d3bf73726; N92ea696b5f294a10a1b872b120a134a7; N60887e5502fb4542adc5061501a6a201; N8ed504fa00a34b6189de2f5d3d35d08a; N99412ff0b20843608a830fc4dee8e69f; N780af36da6824bcd906741eb08478ee9; Nbe77967fd4344077becec53bef335dff; N563b436c0d6740fda8454d6d353e39f2; N0ad181d5e54449118bf807184a76a532; N7296d5a6325a40cb8f63e2ccf9b0b14b; Na824e56599c243baaaa48e77f1626329; N56b478ac067c43e3aba1fc2ef688f9d7; N48d451796f844ff08fdf72e0c4c4de9f; Nafd9a47c0fa54099ac191644891b7079; Na35d889551084a3fa112825d3729d665; http://www.co-ode.org/ontologies/pizza/pizza.owl#AuxClassNoLabel; N637790e427fd4d08be7e335ebd5a3490; N1e3982bb5cbc462bb956bc5665f880ab; Nb3702bd3de634c448dd392b3c7496946; N4491a32492914f83b26a25758dbcfead; N2cd94d2bf44b49a7ad1c8fb8398bfbd2; N90820f79789942919a7e0935ddb09efa; N3a15510338a246f886ebe2858f52ccba; Nfbbb0981d5234ec1935a5b94b1e6e54d; N8823eb8de108469abddb2096760b6f71; N6fa5bd49f2bf40c29934cfb5e2d0251a; N57cfeaef6812464a8d88c82939cca78a; N59e0519e07954bbc934936c72177b849; Nf6ac2f83c3284f93a0424986d0e78e6b; Nb82a34c0ad6b454a85769102a65f1025; N011243e230e64817bb55dcc2fd66b483; N7dcd8dbcafe245c7ad2ac38e1bb6b6c0; http://www.co-ode.org/ontologies/pizza/pizza.owl#OldPizzaStyle; N8dfbe9a7a6594d8381f1ecf6025b4192; Nffd014fe9ed346cc9f0d903b542a3976; N635d80cbda7946f7912238c16a80081e; N3c6382bdd688496ab77d6b92ab9d0d78; http://www.co-ode.org/ontologies/pizza/pizza.owl#PizzaDeprecated; N29188e5f667e4168a466cb320c946bcd; N77b1f25f799544fe87537aced1ed780d; N88096ca6d467452d916ab7a224af31e5; Nb53f7bed269040c39f6b8a9107aff6f5; N9c16ae97672e4334bce4cbf06cadc7a7; N0e39a38995b04caba21d31c8bdd55985; N14a73d3cadb54c0c92a03e90dcd55261",
         "num_violations": 47,
         "vocab": "pizza_owl"
     },
@@ -25,8 +25,8 @@
         "metric_type": "count",
         "metric_calculation": "1 - (Number of violations / Number of properties)",
         "shape_template": "ex:LabelForPropertiesShape\\n\\ta sh:NodeShape ;\\n\\tsh:targetClass rdf:Property;\\n\\tsh:property [\\n\\t\\tsh:path rdfs:label; sh:minCount 1;\\n\\t].",
-        "violations": "http://www.co-ode.org/ontologies/pizza/pizza.owl#bakingMonth; http://www.co-ode.org/ontologies/pizza/pizza.owl#isDifferentFrom; http://www.co-ode.org/ontologies/pizza/pizza.owl#hasTopping; http://www.co-ode.org/ontologies/pizza/pizza.owl#hasBase; http://www.co-ode.org/ontologies/pizza/pizza.owl#isIngredientOf; http://www.co-ode.org/ontologies/pizza/pizza.owl#isToppingOf; http://www.co-ode.org/ontologies/pizza/pizza.owl#hasSpiciness; http://www.co-ode.org/ontologies/pizza/pizza.owl#bakedAt; http://www.co-ode.org/ontologies/pizza/pizza.owl#hasDoubleRating; http://www.co-ode.org/ontologies/pizza/pizza.owl#madeIn; http://www.co-ode.org/ontologies/pizza/pizza.owl#hasFloatScore; http://www.co-ode.org/ontologies/pizza/pizza.owl#cookedDate; http://www.co-ode.org/ontologies/pizza/pizza.owl#oldToppingProperty; http://www.co-ode.org/ontologies/pizza/pizza.owl#resourceProperty; http://www.co-ode.org/ontologies/pizza/pizza.owl#bakingDay; http://www.co-ode.org/ontologies/pizza/pizza.owl#hasIngredient; http://www.co-ode.org/ontologies/pizza/pizza.owl#madeBy; http://www.co-ode.org/ontologies/pizza/pizza.owl#spicinessLevel; http://www.co-ode.org/ontologies/pizza/pizza.owl#thingDomainProperty; http://www.co-ode.org/ontologies/pizza/pizza.owl#hasCountryOfOrigin; http://www.co-ode.org/ontologies/pizza/pizza.owl#literalProperty; http://www.co-ode.org/ontologies/pizza/pizza.owl#thingProperty; http://www.co-ode.org/ontologies/pizza/pizza.owl#bakingYear; http://www.co-ode.org/ontologies/pizza/pizza.owl#AuxPropertyNoLabel; http://www.co-ode.org/ontologies/pizza/pizza.owl#isBaseOf",
-        "num_violations": 25,
+        "violations": "http://www.co-ode.org/ontologies/pizza/pizza.owl#thingDomainProperty; http://www.co-ode.org/ontologies/pizza/pizza.owl#hasFloatScore; http://www.co-ode.org/ontologies/pizza/pizza.owl#bakedAt; http://www.co-ode.org/ontologies/pizza/pizza.owl#oldToppingProperty; http://www.co-ode.org/ontologies/pizza/pizza.owl#myAsymmetricProperty; http://www.co-ode.org/ontologies/pizza/pizza.owl#isToppingOf; http://www.co-ode.org/ontologies/pizza/pizza.owl#bakingYear; http://www.co-ode.org/ontologies/pizza/pizza.owl#isIngredientOf; http://www.co-ode.org/ontologies/pizza/pizza.owl#bakingDay; http://www.co-ode.org/ontologies/pizza/pizza.owl#isDifferentFrom; http://www.co-ode.org/ontologies/pizza/pizza.owl#spicinessLevel; http://www.co-ode.org/ontologies/pizza/pizza.owl#madeIn; http://www.co-ode.org/ontologies/pizza/pizza.owl#thingProperty; http://www.co-ode.org/ontologies/pizza/pizza.owl#hasSpiciness; http://www.co-ode.org/ontologies/pizza/pizza.owl#hasCountryOfOrigin; http://www.co-ode.org/ontologies/pizza/pizza.owl#hasDoubleRating; http://www.co-ode.org/ontologies/pizza/pizza.owl#hasIngredient; http://www.co-ode.org/ontologies/pizza/pizza.owl#hasTopping; http://www.co-ode.org/ontologies/pizza/pizza.owl#cookedDate; http://www.co-ode.org/ontologies/pizza/pizza.owl#resourceProperty; http://www.co-ode.org/ontologies/pizza/pizza.owl#isBaseOf; http://www.co-ode.org/ontologies/pizza/pizza.owl#bakingMonth; http://www.co-ode.org/ontologies/pizza/pizza.owl#literalProperty; http://www.co-ode.org/ontologies/pizza/pizza.owl#AuxPropertyNoLabel; http://www.co-ode.org/ontologies/pizza/pizza.owl#hasBase; http://www.co-ode.org/ontologies/pizza/pizza.owl#madeBy",
+        "num_violations": 26,
         "vocab": "pizza_owl"
     },
     "UndefinedClass_0": {
@@ -42,29 +42,28 @@
         "dimension": "Interpretability",
         "metric_id": "ITP3",
         "metric": "Invalid usage of undefined classes and properties",
-        "measure": 1,
+        "measure": 0,
         "shape": "ex:UndefinedClassShape_1",
-        "message": "",
+        "message": "The class http://www.co-ode.org/ontologies/pizza/pizza.owl#UndefinedPizzaClass is not defined",
+        "class": "http://www.co-ode.org/ontologies/pizza/pizza.owl#UndefinedPizzaClass",
         "vocab": "pizza_owl"
     },
     "UndefinedClass_2": {
         "dimension": "Interpretability",
         "metric_id": "ITP3",
         "metric": "Invalid usage of undefined classes and properties",
-        "measure": 0,
+        "measure": 1,
         "shape": "ex:UndefinedClassShape_2",
-        "message": "The class http://www.co-ode.org/ontologies/pizza/pizza.owl#hasIngredient is not defined",
-        "class": "http://www.co-ode.org/ontologies/pizza/pizza.owl#hasIngredient",
+        "message": "",
         "vocab": "pizza_owl"
     },
     "UndefinedClass_3": {
         "dimension": "Interpretability",
         "metric_id": "ITP3",
         "metric": "Invalid usage of undefined classes and properties",
-        "measure": 0,
+        "measure": 1,
         "shape": "ex:UndefinedClassShape_3",
-        "message": "The class http://www.co-ode.org/ontologies/pizza/pizza.owl#SpiceLevel is not defined",
-        "class": "http://www.co-ode.org/ontologies/pizza/pizza.owl#SpiceLevel",
+        "message": "",
         "vocab": "pizza_owl"
     },
     "UndefinedClass_4": {
@@ -89,19 +88,19 @@
         "dimension": "Interpretability",
         "metric_id": "ITP3",
         "metric": "Invalid usage of undefined classes and properties",
-        "measure": 0,
+        "measure": 1,
         "shape": "ex:UndefinedClassShape_6",
-        "message": "The class http://www.co-ode.org/ontologies/pizza/pizza.owl#UndefinedPizzaClass is not defined",
-        "class": "http://www.co-ode.org/ontologies/pizza/pizza.owl#UndefinedPizzaClass",
+        "message": "",
         "vocab": "pizza_owl"
     },
     "UndefinedClass_7": {
         "dimension": "Interpretability",
         "metric_id": "ITP3",
         "metric": "Invalid usage of undefined classes and properties",
-        "measure": 1,
+        "measure": 0,
         "shape": "ex:UndefinedClassShape_7",
-        "message": "",
+        "message": "The class http://www.co-ode.org/ontologies/pizza/pizza.owl#SpiceLevel is not defined",
+        "class": "http://www.co-ode.org/ontologies/pizza/pizza.owl#SpiceLevel",
         "vocab": "pizza_owl"
     },
     "UndefinedClass_8": {
@@ -110,17 +109,18 @@
         "metric": "Invalid usage of undefined classes and properties",
         "measure": 0,
         "shape": "ex:UndefinedClassShape_8",
-        "message": "The class http://www.co-ode.org/ontologies/pizza/pizza.owl#UndefClass is not defined",
-        "class": "http://www.co-ode.org/ontologies/pizza/pizza.owl#UndefClass",
+        "message": "The class http://www.co-ode.org/ontologies/pizza/pizza.owl#hasIngredient is not defined",
+        "class": "http://www.co-ode.org/ontologies/pizza/pizza.owl#hasIngredient",
         "vocab": "pizza_owl"
     },
     "UndefinedClass_9": {
         "dimension": "Interpretability",
         "metric_id": "ITP3",
         "metric": "Invalid usage of undefined classes and properties",
-        "measure": 1,
+        "measure": 0,
         "shape": "ex:UndefinedClassShape_9",
-        "message": "",
+        "message": "The class http://www.co-ode.org/ontologies/pizza/pizza.owl#UndefClass is not defined",
+        "class": "http://www.co-ode.org/ontologies/pizza/pizza.owl#UndefClass",
         "vocab": "pizza_owl"
     },
     "UndefinedClass_10": {
@@ -172,10 +172,9 @@
         "dimension": "Interpretability",
         "metric_id": "ITP3",
         "metric": "Invalid usage of undefined classes and properties",
-        "measure": 0,
+        "measure": 1,
         "shape": "ex:UndefinedPropertyShape_3",
-        "message": "The property http://www.co-ode.org/ontologies/pizza/pizza.owl#NonVegetarianPizza is undefined",
-        "property": "http://www.co-ode.org/ontologies/pizza/pizza.owl#NonVegetarianPizza",
+        "message": "",
         "vocab": "pizza_owl"
     },
     "UndefinedProperty_4": {
@@ -200,9 +199,10 @@
         "dimension": "Interpretability",
         "metric_id": "ITP3",
         "metric": "Invalid usage of undefined classes and properties",
-        "measure": 1,
+        "measure": 0,
         "shape": "ex:UndefinedPropertyShape_6",
-        "message": "",
+        "message": "The property http://www.co-ode.org/ontologies/pizza/pizza.owl#NonVegetarianPizza is undefined",
+        "property": "http://www.co-ode.org/ontologies/pizza/pizza.owl#NonVegetarianPizza",
         "vocab": "pizza_owl"
     },
     "UndefinedProperty_7": {
@@ -218,10 +218,9 @@
         "dimension": "Interpretability",
         "metric_id": "ITP3",
         "metric": "Invalid usage of undefined classes and properties",
-        "measure": 0,
+        "measure": 1,
         "shape": "ex:UndefinedPropertyShape_8",
-        "message": "The property http://www.co-ode.org/ontologies/pizza/pizza.owl#isVegetarian is undefined",
-        "property": "http://www.co-ode.org/ontologies/pizza/pizza.owl#isVegetarian",
+        "message": "",
         "vocab": "pizza_owl"
     },
     "UndefinedProperty_9": {
@@ -257,8 +256,8 @@
         "metric": "Invalid usage of undefined classes and properties",
         "measure": 0,
         "shape": "ex:UndefinedPropertyShape_12",
-        "message": "The property http://www.co-ode.org/ontologies/pizza/pizza.owl#Store is undefined",
-        "property": "http://www.co-ode.org/ontologies/pizza/pizza.owl#Store",
+        "message": "The property http://www.co-ode.org/ontologies/pizza/pizza.owl#price is undefined",
+        "property": "http://www.co-ode.org/ontologies/pizza/pizza.owl#price",
         "vocab": "pizza_owl"
     },
     "UndefinedProperty_13": {
@@ -292,19 +291,19 @@
         "dimension": "Interpretability",
         "metric_id": "ITP3",
         "metric": "Invalid usage of undefined classes and properties",
-        "measure": 1,
+        "measure": 0,
         "shape": "ex:UndefinedPropertyShape_16",
-        "message": "",
+        "message": "The property http://www.co-ode.org/ontologies/pizza/pizza.owl#undefinedToppingProperty is undefined",
+        "property": "http://www.co-ode.org/ontologies/pizza/pizza.owl#undefinedToppingProperty",
         "vocab": "pizza_owl"
     },
     "UndefinedProperty_17": {
         "dimension": "Interpretability",
         "metric_id": "ITP3",
         "metric": "Invalid usage of undefined classes and properties",
-        "measure": 0,
+        "measure": 1,
         "shape": "ex:UndefinedPropertyShape_17",
-        "message": "The property http://www.co-ode.org/ontologies/pizza/pizza.owl#oldProperty is undefined",
-        "property": "http://www.co-ode.org/ontologies/pizza/pizza.owl#oldProperty",
+        "message": "",
         "vocab": "pizza_owl"
     },
     "UndefinedProperty_18": {
@@ -313,18 +312,17 @@
         "metric": "Invalid usage of undefined classes and properties",
         "measure": 0,
         "shape": "ex:UndefinedPropertyShape_18",
-        "message": "The property http://www.co-ode.org/ontologies/pizza/pizza.owl#price is undefined",
-        "property": "http://www.co-ode.org/ontologies/pizza/pizza.owl#price",
+        "message": "The property http://www.co-ode.org/ontologies/pizza/pizza.owl#isVegetarian is undefined",
+        "property": "http://www.co-ode.org/ontologies/pizza/pizza.owl#isVegetarian",
         "vocab": "pizza_owl"
     },
     "UndefinedProperty_19": {
         "dimension": "Interpretability",
         "metric_id": "ITP3",
         "metric": "Invalid usage of undefined classes and properties",
-        "measure": 0,
+        "measure": 1,
         "shape": "ex:UndefinedPropertyShape_19",
-        "message": "The property http://www.co-ode.org/ontologies/pizza/pizza.owl#undefinedToppingProperty is undefined",
-        "property": "http://www.co-ode.org/ontologies/pizza/pizza.owl#undefinedToppingProperty",
+        "message": "",
         "vocab": "pizza_owl"
     },
     "UndefinedProperty_20": {
@@ -340,17 +338,28 @@
         "dimension": "Interpretability",
         "metric_id": "ITP3",
         "metric": "Invalid usage of undefined classes and properties",
-        "measure": 1,
+        "measure": 0,
         "shape": "ex:UndefinedPropertyShape_21",
-        "message": "",
+        "message": "The property http://www.co-ode.org/ontologies/pizza/pizza.owl#oldProperty is undefined",
+        "property": "http://www.co-ode.org/ontologies/pizza/pizza.owl#oldProperty",
         "vocab": "pizza_owl"
     },
     "UndefinedProperty_22": {
         "dimension": "Interpretability",
         "metric_id": "ITP3",
         "metric": "Invalid usage of undefined classes and properties",
-        "measure": 1,
+        "measure": 0,
         "shape": "ex:UndefinedPropertyShape_22",
+        "message": "The property http://www.co-ode.org/ontologies/pizza/pizza.owl#Store is undefined",
+        "property": "http://www.co-ode.org/ontologies/pizza/pizza.owl#Store",
+        "vocab": "pizza_owl"
+    },
+    "UndefinedProperty_23": {
+        "dimension": "Interpretability",
+        "metric_id": "ITP3",
+        "metric": "Invalid usage of undefined classes and properties",
+        "measure": 1,
+        "shape": "ex:UndefinedPropertyShape_23",
         "message": "",
         "vocab": "pizza_owl"
     }

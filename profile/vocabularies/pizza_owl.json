@@ -103,50 +103,50 @@
         "http://www.co-ode.org/ontologies/pizza/pizza.owl#Store"
     ],
     "other_classes": [
-        "N6a0dca8e313f4378b587cb4e7b25a0d6",
-        "N7d2350c9dc9c4744b508ac35de7ff467",
-        "Nf848b063b7744e4497f5c263c688ae2e",
-        "N2ddbea74abea4140a9e462a97a497f4a",
-        "Ne8ea6e362528486abbe757272fb198b5",
-        "N9352c8178af340318b635e3942725fce",
-        "Nafd336d9da134e8fa3953f0a922d41fe",
-        "Nf488272c939147ab932c76a6c0691185",
-        "N80b5d02b7e6b40ffa337d86e345fbc2f",
-        "N68cc777e523e4fbb881d0d16358cbd62",
-        "N0c199d6ed3fd416aafa76fc14ca38bce",
-        "N460165bc47d04d75a50ea84ae3eb27e2",
-        "N3b9580103cc14c2ab46147c1eafd4921",
-        "N9f55cadefc7e488b9234eb821786b7a7",
-        "N844ec183ff5c44ad809cbae49ecb46fe",
-        "Nef9acbd145e64941ae994a862b765c89",
-        "N753e5c54bb4843969f1adb6ba1d23fae",
-        "Na4a3584075734e3dbc7ed837c7aa726f",
-        "Nf7e24bfb07474bd8bfac6689d480ca90",
-        "N151b5319d5444783b2cfe46f5b052a9f",
-        "N75a39fa8ac284e36a00abe6a3db881c7",
-        "Ne1728634028b43dc8f0a13e42bb4d562",
-        "N93d5f782badb45f68c5c614edce69712",
-        "Nb203628c2d5e40bfb5d2203143d1ac83",
-        "N319af6ff5ce44ee3a9c3d2393218f070",
-        "N92f37f29cf874bf78c820b364a111c21",
-        "Nfe6d9d592f8c4d28ade379a68e3a6dd4",
-        "N9c3cb9b77b124639a8f4e9e5a5d57e0a",
-        "N108a565686194d93a453d169e7af8c2c",
-        "Nb665b314c4974003beea6be49f16c88b",
-        "N90553b698d05445796b740217f16e8a6",
-        "Nf7bfa372e01b4e3a8a4aceaac9b7db62",
-        "N3fff5bcfb55a4530a06144abef9802a7",
-        "Nb66f9de8c6ed4a5d88710188afec4176",
-        "N63d27c6fc04644c1b474801c7decaa65",
-        "N69be591212e844a3913407cb5ade449f",
-        "N90e003344db146d7846df2f0aa701cb8",
-        "Nbaad4e1c78974364add1d2a0f73d8d23",
-        "Nefe0b91726c94350b41e953f40a942d5",
-        "N3d0769fe74cd46658a089bf41b3cb4da",
-        "Nc994eab160f7449697fe043ffc1048b7",
-        "Nbca8d578ca0542f18bcc288f1324a344",
-        "Nb78e0e28fb63418bbe8e415b6494541e",
-        "N237d0523c5d84d4f97ac3bbf8fbe9155"
+        "N14dc2bf2ac604e3daa02baa90074443c",
+        "N5fd130fedfcf4509ae1b0c45dedb393c",
+        "N1714d6cdc9dd44ecbdb63e74ccace887",
+        "N28db4b6a7011440ba6f649cb423ee5cc",
+        "N142095749b1b477d9dd690c7d27c5fdf",
+        "N0b206f7f497b450ba866d6961c11f79d",
+        "N795b1b6b45dd46b0af1f25444d7e5235",
+        "N8bc0f0fd55ff444cbf7df51f83116573",
+        "Nc463872f015147e2838c8d09501bed1d",
+        "N0092ef2c63d24f99ae988555210ae7c9",
+        "Nb8e0262abbe24886bd6e15db933abe1f",
+        "N2d0eb17d10fb469897ed5acf92e72166",
+        "N39be22261f7641618e8d1a5fad88a7ae",
+        "N6acea808d2554223ac8c670369f01078",
+        "Naf1c0dc1575748dba8cb017633ea76b4",
+        "N284e04fd38304ffe8d12da4ad4336b31",
+        "N141b542df2024d3aa7d38d2d836a43eb",
+        "N0a7be6990ce04ef48d5bb7819bcbf35c",
+        "Nfe1c9847217349fe80b3389beda7628f",
+        "N2797b92c8491462aa001a5d5b28d46a3",
+        "Nfff620baa6964b9f85650e0fa3d203c3",
+        "N803c6a90efbb4ca9a0c1feca0a955105",
+        "Naf437f72eead4918ac6d7e9e5b724a78",
+        "N908369dbf8004334954b869931ca08f3",
+        "N2b1a84183ca543e8889dcf22f7f54758",
+        "Nf7114d5f45484b3fbbb22f25b9acc4b1",
+        "N8e9c67ad6a414bda92fee19ad4b355c7",
+        "Nced50f2cfd7a48fab39b4772fbbdf4f1",
+        "N33b5c7d2977b431a86dc61c7e3da0432",
+        "N36c3af17eae5413ca3d0f9b81e300e60",
+        "N8500f7a440bd4a1386160c9042a3194c",
+        "N9fb6a893e72944ddb75daf7f32813d20",
+        "N92d70fcd7065420192fbbd86e7fa308e",
+        "Nf533810c01fb4606acbe63a64320886f",
+        "N5c4e29beae1c4286b4b62760c708a372",
+        "N3464c78fe74f4621a64ac405db49f49f",
+        "N2177551ccc4c42a489f9ebf9e78ad5cf",
+        "Nc32b827040e34588ae63c5fbc98f01f2",
+        "N711903adf3e8445b9e0a287bb60a4cf2",
+        "N9a7e949b09a54d3b93330a0701c4d9ce",
+        "Nc403c7f57d6e418086bb998d1422eafc",
+        "Nb748dcdf9be54a809dc39d065681c6c9",
+        "N85db986b320545a6885e4c03c266d303",
+        "Nc34d22c88b6a4ba183e671612a6f11b4"
     ],
     "other_properties": [],
     "object_properties": {
@@ -275,9 +275,19 @@
         "http://www.co-ode.org/ontologies/pizza/pizza.owl#hasIngredient",
         "http://www.co-ode.org/ontologies/pizza/pizza.owl#isIngredientOf"
     ],
-    "asymmetric": [],
+    "asymmetric": [
+        "http://www.co-ode.org/ontologies/pizza/pizza.owl#myAsymmetricProperty"
+    ],
     "symmetric": [],
     "disjoint_classes": [
+        [
+            "http://www.co-ode.org/ontologies/pizza/pizza.owl#DeepPanBase",
+            "http://www.co-ode.org/ontologies/pizza/pizza.owl#ThinAndCrispyBase"
+        ],
+        [
+            "http://www.co-ode.org/ontologies/pizza/pizza.owl#SlicedTomatoTopping",
+            "http://www.co-ode.org/ontologies/pizza/pizza.owl#SundriedTomatoTopping"
+        ],
         [
             "http://www.co-ode.org/ontologies/pizza/pizza.owl#DomainConcept",
             "http://www.co-ode.org/ontologies/pizza/pizza.owl#ValuePartition"
@@ -287,19 +297,18 @@
             "http://www.co-ode.org/ontologies/pizza/pizza.owl#RosemaryTopping"
         ],
         [
-            "http://www.co-ode.org/ontologies/pizza/pizza.owl#SlicedTomatoTopping",
-            "http://www.co-ode.org/ontologies/pizza/pizza.owl#SundriedTomatoTopping"
-        ],
-        [
             "http://www.co-ode.org/ontologies/pizza/pizza.owl#NonVegetarianPizza",
             "http://www.co-ode.org/ontologies/pizza/pizza.owl#VegetarianPizza"
-        ],
-        [
-            "http://www.co-ode.org/ontologies/pizza/pizza.owl#DeepPanBase",
-            "http://www.co-ode.org/ontologies/pizza/pizza.owl#ThinAndCrispyBase"
         ]
     ],
     "rdf_properties": {
+        "http://www.co-ode.org/ontologies/pizza/pizza.owl#myAsymmetricProperty": {
+            "domain": "http://www.co-ode.org/ontologies/pizza/pizza.owl#Pizza",
+            "range": {
+                "type": "literal",
+                "value": "http://www.w3.org/2000/01/rdf-schema#Literal"
+            }
+        },
         "http://www.co-ode.org/ontologies/pizza/pizza.owl#AuxPropertyNoLabel": {
             "domain": null,
             "range": {
@@ -310,9 +319,9 @@
     },
     "num_classes": 101,
     "num_other_classes": 44,
-    "num_properties": 24,
+    "num_properties": 25,
     "num_other_properties": 0,
     "num_all_classes": 103,
-    "num_all_properties": 25,
+    "num_all_properties": 26,
     "num_entities": 10
 }

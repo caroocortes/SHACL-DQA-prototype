@@ -18,178 +18,178 @@ ex:LabelForPropertiesShape a sh:NodeShape ;
 
 ex:UndefinedClassShape_0 a sh:NodeShape ;
     sh:property [ sh:hasValue rdfs:Class ;
-            sh:message "UndefinedClass_0 - The class http://www.co-ode.org/ontologies/pizza/pizza.owl#CheeseTopping is not defined" ;
-            sh:minCount 1 ;
-            sh:path rdf:type ] ;
-    sh:targetNode <http://www.co-ode.org/ontologies/pizza/pizza.owl#CheeseTopping> .
-
-ex:UndefinedClassShape_1 a sh:NodeShape ;
-    sh:property [ sh:hasValue rdfs:Class ;
-            sh:message "UndefinedClass_1 - The class http://www.co-ode.org/ontologies/pizza/pizza.owl#PizzaDeprecated is not defined" ;
-            sh:minCount 1 ;
-            sh:path rdf:type ] ;
-    sh:targetNode <http://www.co-ode.org/ontologies/pizza/pizza.owl#PizzaDeprecated> .
-
-ex:UndefinedClassShape_10 a sh:NodeShape ;
-    sh:property [ sh:hasValue rdfs:Class ;
-            sh:message "UndefinedClass_10 - The class http://www.co-ode.org/ontologies/pizza/pizza.owl#NonVegetarianPizza is not defined" ;
-            sh:minCount 1 ;
-            sh:path rdf:type ] ;
-    sh:targetNode <http://www.co-ode.org/ontologies/pizza/pizza.owl#NonVegetarianPizza> .
-
-ex:UndefinedClassShape_11 a sh:NodeShape ;
-    sh:property [ sh:hasValue rdfs:Class ;
-            sh:message "UndefinedClass_11 - The class http://www.co-ode.org/ontologies/pizza/pizza.owl#Store is not defined" ;
-            sh:minCount 1 ;
-            sh:path rdf:type ] ;
-    sh:targetNode <http://www.co-ode.org/ontologies/pizza/pizza.owl#Store> .
-
-ex:UndefinedClassShape_2 a sh:NodeShape ;
-    sh:property [ sh:hasValue rdfs:Class ;
-            sh:message "UndefinedClass_2 - The class http://www.co-ode.org/ontologies/pizza/pizza.owl#hasIngredient is not defined" ;
-            sh:minCount 1 ;
-            sh:path rdf:type ] ;
-    sh:targetNode <http://www.co-ode.org/ontologies/pizza/pizza.owl#hasIngredient> .
-
-ex:UndefinedClassShape_3 a sh:NodeShape ;
-    sh:property [ sh:hasValue rdfs:Class ;
-            sh:message "UndefinedClass_3 - The class http://www.co-ode.org/ontologies/pizza/pizza.owl#SpiceLevel is not defined" ;
-            sh:minCount 1 ;
-            sh:path rdf:type ] ;
-    sh:targetNode <http://www.co-ode.org/ontologies/pizza/pizza.owl#SpiceLevel> .
-
-ex:UndefinedClassShape_4 a sh:NodeShape ;
-    sh:property [ sh:hasValue rdfs:Class ;
-            sh:message "UndefinedClass_4 - The class http://www.co-ode.org/ontologies/pizza/pizza.owl#OldPizzaStyle is not defined" ;
+            sh:message "UndefinedClass_0 - The class http://www.co-ode.org/ontologies/pizza/pizza.owl#OldPizzaStyle is not defined" ;
             sh:minCount 1 ;
             sh:path rdf:type ] ;
     sh:targetNode <http://www.co-ode.org/ontologies/pizza/pizza.owl#OldPizzaStyle> .
 
-ex:UndefinedClassShape_5 a sh:NodeShape ;
+ex:UndefinedClassShape_1 a sh:NodeShape ;
     sh:property [ sh:hasValue rdfs:Class ;
-            sh:message "UndefinedClass_5 - The class http://www.co-ode.org/ontologies/pizza/pizza.owl#Pizza is not defined" ;
-            sh:minCount 1 ;
-            sh:path rdf:type ] ;
-    sh:targetNode <http://www.co-ode.org/ontologies/pizza/pizza.owl#Pizza> .
-
-ex:UndefinedClassShape_6 a sh:NodeShape ;
-    sh:property [ sh:hasValue rdfs:Class ;
-            sh:message "UndefinedClass_6 - The class http://www.co-ode.org/ontologies/pizza/pizza.owl#UndefinedPizzaClass is not defined" ;
+            sh:message "UndefinedClass_1 - The class http://www.co-ode.org/ontologies/pizza/pizza.owl#UndefinedPizzaClass is not defined" ;
             sh:minCount 1 ;
             sh:path rdf:type ] ;
     sh:targetNode <http://www.co-ode.org/ontologies/pizza/pizza.owl#UndefinedPizzaClass> .
 
-ex:UndefinedClassShape_7 a sh:NodeShape ;
+ex:UndefinedClassShape_10 a sh:NodeShape ;
     sh:property [ sh:hasValue rdfs:Class ;
-            sh:message "UndefinedClass_7 - The class http://www.co-ode.org/ontologies/pizza/pizza.owl#VegetarianPizza is not defined" ;
-            sh:minCount 1 ;
-            sh:path rdf:type ] ;
-    sh:targetNode <http://www.co-ode.org/ontologies/pizza/pizza.owl#VegetarianPizza> .
-
-ex:UndefinedClassShape_8 a sh:NodeShape ;
-    sh:property [ sh:hasValue rdfs:Class ;
-            sh:message "UndefinedClass_8 - The class http://www.co-ode.org/ontologies/pizza/pizza.owl#UndefClass is not defined" ;
-            sh:minCount 1 ;
-            sh:path rdf:type ] ;
-    sh:targetNode <http://www.co-ode.org/ontologies/pizza/pizza.owl#UndefClass> .
-
-ex:UndefinedClassShape_9 a sh:NodeShape ;
-    sh:property [ sh:hasValue rdfs:Class ;
-            sh:message "UndefinedClass_9 - The class http://www.co-ode.org/ontologies/pizza/pizza.owl#TomatoTopping is not defined" ;
+            sh:message "UndefinedClass_10 - The class http://www.co-ode.org/ontologies/pizza/pizza.owl#TomatoTopping is not defined" ;
             sh:minCount 1 ;
             sh:path rdf:type ] ;
     sh:targetNode <http://www.co-ode.org/ontologies/pizza/pizza.owl#TomatoTopping> .
 
-ex:UndefinedPropertyShape_0 a sh:NodeShape ;
-    sh:property [ sh:hasValue rdf:Property ;
-            sh:message "UndefinedProperty_0 - The property http://www.co-ode.org/ontologies/pizza/pizza.owl#bakingMonth is undefined" ;
+ex:UndefinedClassShape_11 a sh:NodeShape ;
+    sh:property [ sh:hasValue rdfs:Class ;
+            sh:message "UndefinedClass_11 - The class http://www.co-ode.org/ontologies/pizza/pizza.owl#PizzaDeprecated is not defined" ;
             sh:minCount 1 ;
             sh:path rdf:type ] ;
-    sh:targetNode <http://www.co-ode.org/ontologies/pizza/pizza.owl#bakingMonth> .
+    sh:targetNode <http://www.co-ode.org/ontologies/pizza/pizza.owl#PizzaDeprecated> .
 
-ex:UndefinedPropertyShape_1 a sh:NodeShape ;
-    sh:property [ sh:hasValue rdf:Property ;
-            sh:message "UndefinedProperty_1 - The property http://www.co-ode.org/ontologies/pizza/pizza.owl#isDifferentFrom is undefined" ;
+ex:UndefinedClassShape_2 a sh:NodeShape ;
+    sh:property [ sh:hasValue rdfs:Class ;
+            sh:message "UndefinedClass_2 - The class http://www.co-ode.org/ontologies/pizza/pizza.owl#Pizza is not defined" ;
             sh:minCount 1 ;
             sh:path rdf:type ] ;
-    sh:targetNode <http://www.co-ode.org/ontologies/pizza/pizza.owl#isDifferentFrom> .
+    sh:targetNode <http://www.co-ode.org/ontologies/pizza/pizza.owl#Pizza> .
 
-ex:UndefinedPropertyShape_10 a sh:NodeShape ;
-    sh:property [ sh:hasValue rdf:Property ;
-            sh:message "UndefinedProperty_10 - The property http://www.co-ode.org/ontologies/pizza/pizza.owl#oldToppingProperty is undefined" ;
-            sh:minCount 1 ;
-            sh:path rdf:type ] ;
-    sh:targetNode <http://www.co-ode.org/ontologies/pizza/pizza.owl#oldToppingProperty> .
-
-ex:UndefinedPropertyShape_11 a sh:NodeShape ;
-    sh:property [ sh:hasValue rdf:Property ;
-            sh:message "UndefinedProperty_11 - The property http://www.co-ode.org/ontologies/pizza/pizza.owl#resourceProperty is undefined" ;
-            sh:minCount 1 ;
-            sh:path rdf:type ] ;
-    sh:targetNode <http://www.co-ode.org/ontologies/pizza/pizza.owl#resourceProperty> .
-
-ex:UndefinedPropertyShape_12 a sh:NodeShape ;
-    sh:property [ sh:hasValue rdf:Property ;
-            sh:message "UndefinedProperty_12 - The property http://www.co-ode.org/ontologies/pizza/pizza.owl#Store is undefined" ;
+ex:UndefinedClassShape_3 a sh:NodeShape ;
+    sh:property [ sh:hasValue rdfs:Class ;
+            sh:message "UndefinedClass_3 - The class http://www.co-ode.org/ontologies/pizza/pizza.owl#Store is not defined" ;
             sh:minCount 1 ;
             sh:path rdf:type ] ;
     sh:targetNode <http://www.co-ode.org/ontologies/pizza/pizza.owl#Store> .
 
-ex:UndefinedPropertyShape_13 a sh:NodeShape ;
-    sh:property [ sh:hasValue rdf:Property ;
-            sh:message "UndefinedProperty_13 - The property http://www.co-ode.org/ontologies/pizza/pizza.owl#bakingDay is undefined" ;
+ex:UndefinedClassShape_4 a sh:NodeShape ;
+    sh:property [ sh:hasValue rdfs:Class ;
+            sh:message "UndefinedClass_4 - The class http://www.co-ode.org/ontologies/pizza/pizza.owl#NonVegetarianPizza is not defined" ;
             sh:minCount 1 ;
             sh:path rdf:type ] ;
-    sh:targetNode <http://www.co-ode.org/ontologies/pizza/pizza.owl#bakingDay> .
+    sh:targetNode <http://www.co-ode.org/ontologies/pizza/pizza.owl#NonVegetarianPizza> .
 
-ex:UndefinedPropertyShape_14 a sh:NodeShape ;
-    sh:property [ sh:hasValue rdf:Property ;
-            sh:message "UndefinedProperty_14 - The property http://www.co-ode.org/ontologies/pizza/pizza.owl#madeBy is undefined" ;
+ex:UndefinedClassShape_5 a sh:NodeShape ;
+    sh:property [ sh:hasValue rdfs:Class ;
+            sh:message "UndefinedClass_5 - The class http://www.co-ode.org/ontologies/pizza/pizza.owl#VegetarianPizza is not defined" ;
             sh:minCount 1 ;
             sh:path rdf:type ] ;
-    sh:targetNode <http://www.co-ode.org/ontologies/pizza/pizza.owl#madeBy> .
+    sh:targetNode <http://www.co-ode.org/ontologies/pizza/pizza.owl#VegetarianPizza> .
 
-ex:UndefinedPropertyShape_15 a sh:NodeShape ;
-    sh:property [ sh:hasValue rdf:Property ;
-            sh:message "UndefinedProperty_15 - The property http://www.co-ode.org/ontologies/pizza/pizza.owl#spicinessLevel is undefined" ;
+ex:UndefinedClassShape_6 a sh:NodeShape ;
+    sh:property [ sh:hasValue rdfs:Class ;
+            sh:message "UndefinedClass_6 - The class http://www.co-ode.org/ontologies/pizza/pizza.owl#CheeseTopping is not defined" ;
             sh:minCount 1 ;
             sh:path rdf:type ] ;
-    sh:targetNode <http://www.co-ode.org/ontologies/pizza/pizza.owl#spicinessLevel> .
+    sh:targetNode <http://www.co-ode.org/ontologies/pizza/pizza.owl#CheeseTopping> .
 
-ex:UndefinedPropertyShape_16 a sh:NodeShape ;
+ex:UndefinedClassShape_7 a sh:NodeShape ;
+    sh:property [ sh:hasValue rdfs:Class ;
+            sh:message "UndefinedClass_7 - The class http://www.co-ode.org/ontologies/pizza/pizza.owl#SpiceLevel is not defined" ;
+            sh:minCount 1 ;
+            sh:path rdf:type ] ;
+    sh:targetNode <http://www.co-ode.org/ontologies/pizza/pizza.owl#SpiceLevel> .
+
+ex:UndefinedClassShape_8 a sh:NodeShape ;
+    sh:property [ sh:hasValue rdfs:Class ;
+            sh:message "UndefinedClass_8 - The class http://www.co-ode.org/ontologies/pizza/pizza.owl#hasIngredient is not defined" ;
+            sh:minCount 1 ;
+            sh:path rdf:type ] ;
+    sh:targetNode <http://www.co-ode.org/ontologies/pizza/pizza.owl#hasIngredient> .
+
+ex:UndefinedClassShape_9 a sh:NodeShape ;
+    sh:property [ sh:hasValue rdfs:Class ;
+            sh:message "UndefinedClass_9 - The class http://www.co-ode.org/ontologies/pizza/pizza.owl#UndefClass is not defined" ;
+            sh:minCount 1 ;
+            sh:path rdf:type ] ;
+    sh:targetNode <http://www.co-ode.org/ontologies/pizza/pizza.owl#UndefClass> .
+
+ex:UndefinedPropertyShape_0 a sh:NodeShape ;
     sh:property [ sh:hasValue rdf:Property ;
-            sh:message "UndefinedProperty_16 - The property http://www.co-ode.org/ontologies/pizza/pizza.owl#thingDomainProperty is undefined" ;
+            sh:message "UndefinedProperty_0 - The property http://www.co-ode.org/ontologies/pizza/pizza.owl#thingDomainProperty is undefined" ;
             sh:minCount 1 ;
             sh:path rdf:type ] ;
     sh:targetNode <http://www.co-ode.org/ontologies/pizza/pizza.owl#thingDomainProperty> .
 
-ex:UndefinedPropertyShape_17 a sh:NodeShape ;
+ex:UndefinedPropertyShape_1 a sh:NodeShape ;
     sh:property [ sh:hasValue rdf:Property ;
-            sh:message "UndefinedProperty_17 - The property http://www.co-ode.org/ontologies/pizza/pizza.owl#oldProperty is undefined" ;
+            sh:message "UndefinedProperty_1 - The property http://www.co-ode.org/ontologies/pizza/pizza.owl#hasFloatScore is undefined" ;
             sh:minCount 1 ;
             sh:path rdf:type ] ;
-    sh:targetNode <http://www.co-ode.org/ontologies/pizza/pizza.owl#oldProperty> .
+    sh:targetNode <http://www.co-ode.org/ontologies/pizza/pizza.owl#hasFloatScore> .
 
-ex:UndefinedPropertyShape_18 a sh:NodeShape ;
+ex:UndefinedPropertyShape_10 a sh:NodeShape ;
     sh:property [ sh:hasValue rdf:Property ;
-            sh:message "UndefinedProperty_18 - The property http://www.co-ode.org/ontologies/pizza/pizza.owl#price is undefined" ;
+            sh:message "UndefinedProperty_10 - The property http://www.co-ode.org/ontologies/pizza/pizza.owl#madeIn is undefined" ;
+            sh:minCount 1 ;
+            sh:path rdf:type ] ;
+    sh:targetNode <http://www.co-ode.org/ontologies/pizza/pizza.owl#madeIn> .
+
+ex:UndefinedPropertyShape_11 a sh:NodeShape ;
+    sh:property [ sh:hasValue rdf:Property ;
+            sh:message "UndefinedProperty_11 - The property http://www.co-ode.org/ontologies/pizza/pizza.owl#thingProperty is undefined" ;
+            sh:minCount 1 ;
+            sh:path rdf:type ] ;
+    sh:targetNode <http://www.co-ode.org/ontologies/pizza/pizza.owl#thingProperty> .
+
+ex:UndefinedPropertyShape_12 a sh:NodeShape ;
+    sh:property [ sh:hasValue rdf:Property ;
+            sh:message "UndefinedProperty_12 - The property http://www.co-ode.org/ontologies/pizza/pizza.owl#price is undefined" ;
             sh:minCount 1 ;
             sh:path rdf:type ] ;
     sh:targetNode <http://www.co-ode.org/ontologies/pizza/pizza.owl#price> .
 
-ex:UndefinedPropertyShape_19 a sh:NodeShape ;
+ex:UndefinedPropertyShape_13 a sh:NodeShape ;
     sh:property [ sh:hasValue rdf:Property ;
-            sh:message "UndefinedProperty_19 - The property http://www.co-ode.org/ontologies/pizza/pizza.owl#undefinedToppingProperty is undefined" ;
+            sh:message "UndefinedProperty_13 - The property http://www.co-ode.org/ontologies/pizza/pizza.owl#hasDoubleRating is undefined" ;
+            sh:minCount 1 ;
+            sh:path rdf:type ] ;
+    sh:targetNode <http://www.co-ode.org/ontologies/pizza/pizza.owl#hasDoubleRating> .
+
+ex:UndefinedPropertyShape_14 a sh:NodeShape ;
+    sh:property [ sh:hasValue rdf:Property ;
+            sh:message "UndefinedProperty_14 - The property http://www.co-ode.org/ontologies/pizza/pizza.owl#hasTopping is undefined" ;
+            sh:minCount 1 ;
+            sh:path rdf:type ] ;
+    sh:targetNode <http://www.co-ode.org/ontologies/pizza/pizza.owl#hasTopping> .
+
+ex:UndefinedPropertyShape_15 a sh:NodeShape ;
+    sh:property [ sh:hasValue rdf:Property ;
+            sh:message "UndefinedProperty_15 - The property http://www.co-ode.org/ontologies/pizza/pizza.owl#cookedDate is undefined" ;
+            sh:minCount 1 ;
+            sh:path rdf:type ] ;
+    sh:targetNode <http://www.co-ode.org/ontologies/pizza/pizza.owl#cookedDate> .
+
+ex:UndefinedPropertyShape_16 a sh:NodeShape ;
+    sh:property [ sh:hasValue rdf:Property ;
+            sh:message "UndefinedProperty_16 - The property http://www.co-ode.org/ontologies/pizza/pizza.owl#undefinedToppingProperty is undefined" ;
             sh:minCount 1 ;
             sh:path rdf:type ] ;
     sh:targetNode <http://www.co-ode.org/ontologies/pizza/pizza.owl#undefinedToppingProperty> .
 
-ex:UndefinedPropertyShape_2 a sh:NodeShape ;
+ex:UndefinedPropertyShape_17 a sh:NodeShape ;
     sh:property [ sh:hasValue rdf:Property ;
-            sh:message "UndefinedProperty_2 - The property http://www.co-ode.org/ontologies/pizza/pizza.owl#hasTopping is undefined" ;
+            sh:message "UndefinedProperty_17 - The property http://www.co-ode.org/ontologies/pizza/pizza.owl#resourceProperty is undefined" ;
             sh:minCount 1 ;
             sh:path rdf:type ] ;
-    sh:targetNode <http://www.co-ode.org/ontologies/pizza/pizza.owl#hasTopping> .
+    sh:targetNode <http://www.co-ode.org/ontologies/pizza/pizza.owl#resourceProperty> .
+
+ex:UndefinedPropertyShape_18 a sh:NodeShape ;
+    sh:property [ sh:hasValue rdf:Property ;
+            sh:message "UndefinedProperty_18 - The property http://www.co-ode.org/ontologies/pizza/pizza.owl#isVegetarian is undefined" ;
+            sh:minCount 1 ;
+            sh:path rdf:type ] ;
+    sh:targetNode <http://www.co-ode.org/ontologies/pizza/pizza.owl#isVegetarian> .
+
+ex:UndefinedPropertyShape_19 a sh:NodeShape ;
+    sh:property [ sh:hasValue rdf:Property ;
+            sh:message "UndefinedProperty_19 - The property http://www.co-ode.org/ontologies/pizza/pizza.owl#bakingMonth is undefined" ;
+            sh:minCount 1 ;
+            sh:path rdf:type ] ;
+    sh:targetNode <http://www.co-ode.org/ontologies/pizza/pizza.owl#bakingMonth> .
+
+ex:UndefinedPropertyShape_2 a sh:NodeShape ;
+    sh:property [ sh:hasValue rdf:Property ;
+            sh:message "UndefinedProperty_2 - The property http://www.co-ode.org/ontologies/pizza/pizza.owl#bakedAt is undefined" ;
+            sh:minCount 1 ;
+            sh:path rdf:type ] ;
+    sh:targetNode <http://www.co-ode.org/ontologies/pizza/pizza.owl#bakedAt> .
 
 ex:UndefinedPropertyShape_20 a sh:NodeShape ;
     sh:property [ sh:hasValue rdf:Property ;
@@ -200,64 +200,71 @@ ex:UndefinedPropertyShape_20 a sh:NodeShape ;
 
 ex:UndefinedPropertyShape_21 a sh:NodeShape ;
     sh:property [ sh:hasValue rdf:Property ;
-            sh:message "UndefinedProperty_21 - The property http://www.co-ode.org/ontologies/pizza/pizza.owl#thingProperty is undefined" ;
+            sh:message "UndefinedProperty_21 - The property http://www.co-ode.org/ontologies/pizza/pizza.owl#oldProperty is undefined" ;
             sh:minCount 1 ;
             sh:path rdf:type ] ;
-    sh:targetNode <http://www.co-ode.org/ontologies/pizza/pizza.owl#thingProperty> .
+    sh:targetNode <http://www.co-ode.org/ontologies/pizza/pizza.owl#oldProperty> .
 
 ex:UndefinedPropertyShape_22 a sh:NodeShape ;
     sh:property [ sh:hasValue rdf:Property ;
-            sh:message "UndefinedProperty_22 - The property http://www.co-ode.org/ontologies/pizza/pizza.owl#bakingYear is undefined" ;
+            sh:message "UndefinedProperty_22 - The property http://www.co-ode.org/ontologies/pizza/pizza.owl#Store is undefined" ;
+            sh:minCount 1 ;
+            sh:path rdf:type ] ;
+    sh:targetNode <http://www.co-ode.org/ontologies/pizza/pizza.owl#Store> .
+
+ex:UndefinedPropertyShape_23 a sh:NodeShape ;
+    sh:property [ sh:hasValue rdf:Property ;
+            sh:message "UndefinedProperty_23 - The property http://www.co-ode.org/ontologies/pizza/pizza.owl#madeBy is undefined" ;
+            sh:minCount 1 ;
+            sh:path rdf:type ] ;
+    sh:targetNode <http://www.co-ode.org/ontologies/pizza/pizza.owl#madeBy> .
+
+ex:UndefinedPropertyShape_3 a sh:NodeShape ;
+    sh:property [ sh:hasValue rdf:Property ;
+            sh:message "UndefinedProperty_3 - The property http://www.co-ode.org/ontologies/pizza/pizza.owl#oldToppingProperty is undefined" ;
+            sh:minCount 1 ;
+            sh:path rdf:type ] ;
+    sh:targetNode <http://www.co-ode.org/ontologies/pizza/pizza.owl#oldToppingProperty> .
+
+ex:UndefinedPropertyShape_4 a sh:NodeShape ;
+    sh:property [ sh:hasValue rdf:Property ;
+            sh:message "UndefinedProperty_4 - The property http://www.co-ode.org/ontologies/pizza/pizza.owl#myAsymmetricProperty is undefined" ;
+            sh:minCount 1 ;
+            sh:path rdf:type ] ;
+    sh:targetNode <http://www.co-ode.org/ontologies/pizza/pizza.owl#myAsymmetricProperty> .
+
+ex:UndefinedPropertyShape_5 a sh:NodeShape ;
+    sh:property [ sh:hasValue rdf:Property ;
+            sh:message "UndefinedProperty_5 - The property http://www.co-ode.org/ontologies/pizza/pizza.owl#bakingYear is undefined" ;
             sh:minCount 1 ;
             sh:path rdf:type ] ;
     sh:targetNode <http://www.co-ode.org/ontologies/pizza/pizza.owl#bakingYear> .
 
-ex:UndefinedPropertyShape_3 a sh:NodeShape ;
+ex:UndefinedPropertyShape_6 a sh:NodeShape ;
     sh:property [ sh:hasValue rdf:Property ;
-            sh:message "UndefinedProperty_3 - The property http://www.co-ode.org/ontologies/pizza/pizza.owl#NonVegetarianPizza is undefined" ;
+            sh:message "UndefinedProperty_6 - The property http://www.co-ode.org/ontologies/pizza/pizza.owl#NonVegetarianPizza is undefined" ;
             sh:minCount 1 ;
             sh:path rdf:type ] ;
     sh:targetNode <http://www.co-ode.org/ontologies/pizza/pizza.owl#NonVegetarianPizza> .
 
-ex:UndefinedPropertyShape_4 a sh:NodeShape ;
-    sh:property [ sh:hasValue rdf:Property ;
-            sh:message "UndefinedProperty_4 - The property http://www.co-ode.org/ontologies/pizza/pizza.owl#bakedAt is undefined" ;
-            sh:minCount 1 ;
-            sh:path rdf:type ] ;
-    sh:targetNode <http://www.co-ode.org/ontologies/pizza/pizza.owl#bakedAt> .
-
-ex:UndefinedPropertyShape_5 a sh:NodeShape ;
-    sh:property [ sh:hasValue rdf:Property ;
-            sh:message "UndefinedProperty_5 - The property http://www.co-ode.org/ontologies/pizza/pizza.owl#hasDoubleRating is undefined" ;
-            sh:minCount 1 ;
-            sh:path rdf:type ] ;
-    sh:targetNode <http://www.co-ode.org/ontologies/pizza/pizza.owl#hasDoubleRating> .
-
-ex:UndefinedPropertyShape_6 a sh:NodeShape ;
-    sh:property [ sh:hasValue rdf:Property ;
-            sh:message "UndefinedProperty_6 - The property http://www.co-ode.org/ontologies/pizza/pizza.owl#madeIn is undefined" ;
-            sh:minCount 1 ;
-            sh:path rdf:type ] ;
-    sh:targetNode <http://www.co-ode.org/ontologies/pizza/pizza.owl#madeIn> .
-
 ex:UndefinedPropertyShape_7 a sh:NodeShape ;
     sh:property [ sh:hasValue rdf:Property ;
-            sh:message "UndefinedProperty_7 - The property http://www.co-ode.org/ontologies/pizza/pizza.owl#hasFloatScore is undefined" ;
+            sh:message "UndefinedProperty_7 - The property http://www.co-ode.org/ontologies/pizza/pizza.owl#bakingDay is undefined" ;
             sh:minCount 1 ;
             sh:path rdf:type ] ;
-    sh:targetNode <http://www.co-ode.org/ontologies/pizza/pizza.owl#hasFloatScore> .
+    sh:targetNode <http://www.co-ode.org/ontologies/pizza/pizza.owl#bakingDay> .
 
 ex:UndefinedPropertyShape_8 a sh:NodeShape ;
     sh:property [ sh:hasValue rdf:Property ;
-            sh:message "UndefinedProperty_8 - The property http://www.co-ode.org/ontologies/pizza/pizza.owl#isVegetarian is undefined" ;
+            sh:message "UndefinedProperty_8 - The property http://www.co-ode.org/ontologies/pizza/pizza.owl#isDifferentFrom is undefined" ;
             sh:minCount 1 ;
             sh:path rdf:type ] ;
-    sh:targetNode <http://www.co-ode.org/ontologies/pizza/pizza.owl#isVegetarian> .
+    sh:targetNode <http://www.co-ode.org/ontologies/pizza/pizza.owl#isDifferentFrom> .
 
 ex:UndefinedPropertyShape_9 a sh:NodeShape ;
     sh:property [ sh:hasValue rdf:Property ;
-            sh:message "UndefinedProperty_9 - The property http://www.co-ode.org/ontologies/pizza/pizza.owl#cookedDate is undefined" ;
+            sh:message "UndefinedProperty_9 - The property http://www.co-ode.org/ontologies/pizza/pizza.owl#spicinessLevel is undefined" ;
             sh:minCount 1 ;
             sh:path rdf:type ] ;
-    sh:targetNode <http://www.co-ode.org/ontologies/pizza/pizza.owl#cookedDate> .
+    sh:targetNode <http://www.co-ode.org/ontologies/pizza/pizza.owl#spicinessLevel> .
 

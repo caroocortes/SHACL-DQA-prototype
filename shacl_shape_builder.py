@@ -32,6 +32,7 @@ class SHACLShapeBuilder:
             "count_domain_props": 0,
             "count_irreflexive_props": 0,
             "count_functional_props": 0,
+            "count_asymmetric_props": 0,
             "count_inverse_functional_props": 0,
             "count_deprecated_classes": 0,
             "count_deprecated_properties": 0,
@@ -247,6 +248,12 @@ class SHACLShapeBuilder:
     def functional_properties(self, prop):
         shape = self.template.module.consistency_functional_property(self.counter["property_counter"], prop) + '\n'
         metric_name = "FunctionalProperty"
+        self.create_metric_info_prop(metric_name, prop)
+        return shape
+    
+    def asymmetric_properties(self, prop):
+        shape = self.template.module.consistency_asymmetric_property(self.counter["property_counter"], prop) + '\n'
+        metric_name = "AsymmetricProperty"
         self.create_metric_info_prop(metric_name, prop)
         return shape
     
@@ -468,6 +475,10 @@ class SHACLShapeBuilder:
                     if prop not in properties_misplaced:
                         shacl_shapes += self.misplaced_properties(prop)
                         properties_misplaced.append(prop)
+                    
+                    if prop in properties_in_dataset:
+                        self.counter['count_asymmetric_props'] += 1
+                        shacl_shapes += self.asymmetric_properties(prop)
 
             if len(vocab_profile['symmetric']) > 0:
                 for prop in vocab_profile['symmetric']:
@@ -494,6 +505,9 @@ class SHACLShapeBuilder:
 
         # Add number of functional properties
         graph_profile['count_functional_props'] = self.counter['count_functional_props']
+
+        # Add number of functional properties
+        graph_profile['count_asymmetric_props'] = self.counter['count_asymmetric_props']
 
         # Add number of dperecated classes
         graph_profile['count_deprecated_classes'] = self.counter['count_deprecated_classes']

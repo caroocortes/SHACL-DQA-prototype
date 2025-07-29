@@ -559,10 +559,9 @@ class DQAssessment:
                     message += ' (the values for the property are not correct)'
 
         for metric, info in violating_entities_per_shape.items():
-            
+
             count = len(info["entities"])
             denominator = get_denominator(metric, info, self.graph_profile)
-
             ratio = 1 - (count / denominator)
             results[metric]["measure"] = ratio
             results[metric]['violations'] = '; '.join(info['entities'])
@@ -759,6 +758,23 @@ class DQAssessment:
                 'num_violations': 0,
                 "vocab": ''
             },
+            "asymmetric_property": {
+                'dimension': 'Consistency',
+                'metric_id': 'CN10',
+                'metric': 'No inconsistent values',
+                'metric_description': 'Verifies the correct usage of asymmetric properties.',
+                'score': 0,
+                'message': 'properties don\'t conform to their asymmetric characteristic',
+                'metric_type': 'count',
+                'metric_calculation': '1 - (Number of violations / Number of entities that use the property)',
+                "meta_metric_calculation": "Number of asymmetric properties correctly used / Number of asymmetric properties",
+                'shape_name': 'AsymmetricPropertyShape',
+                "shape_template": "ex:AsymmetricPropertyShape\\n\\ta sh:NodeShape ;\\n\\tsh:targetSubjectsOf PROPERTY_URI;\\n\\tsh:property [\\n\\t\\tsh:path [sh:inversePath PROPERTY_URI];\\n\\t\\tsh:disjoint PROPERTY_URI;\\n\\t].",
+                'violations': '',
+                "violation_text": "(asymmetric property, individual score)",
+                'num_violations': 0,
+                "vocab": ''
+            },
             "schema_completeness_class_usage": {
                     'dimension': 'Completeness',
                     'metric_id': 'CP1',
@@ -948,6 +964,11 @@ class DQAssessment:
                     "count_functional_property_shapes": 0,
                     "functional_property_properties": []
                 },
+                "asymmetric_property": {
+                    "asymmetric_property_ones": 0,
+                    "count_asymmetric_property_shapes": 0,
+                    "asymmetric_property_properties": []
+                },
                 "schema_completeness_class_usage": {
                     "schema_completeness_class_usage_ones": 0,
                     "count_schema_completeness_class_usage_shapes": 0,
@@ -1038,6 +1059,9 @@ class DQAssessment:
 
                 elif shape_name.startswith("FunctionalProperty"):
                     self.create_aggregate_metric("functional_property", score, property_uri, type_="properties", tuple_=True)
+
+                elif shape_name.startswith("AsymmetricProperty"):
+                    self.create_aggregate_metric("asymmetric_property", score, property_uri, type_="properties", tuple_=True)
 
                 elif shape_name.startswith("SchemaCompletenessClassUsage"):
                     self.create_aggregate_metric("schema_completeness_class_usage", score, class_uri, type_='classes', tuple_=False)
@@ -1186,6 +1210,13 @@ class DQAssessment:
 
             # Functional properties
             metric_name = "functional_property"
+            if self.aggregate_dict_counter[metric_name][f'count_{metric_name}_shapes'] > 0:
+                ratio = (self.aggregate_dict_counter[metric_name][f'{metric_name}_ones']/self.aggregate_dict_counter[metric_name][f'count_{metric_name}_shapes'])
+                violations = '; '.join([f'({p},{s})' for p, s in self.aggregate_dict_counter[metric_name][f'{metric_name}_properties']])
+                num_violations = len(self.aggregate_dict_counter[metric_name][f'{metric_name}_properties'])
+                rows.append(self.create_metric_info(metric_name, ratio, violations, num_violations))
+
+            metric_name = "asymmetric_property"
             if self.aggregate_dict_counter[metric_name][f'count_{metric_name}_shapes'] > 0:
                 ratio = (self.aggregate_dict_counter[metric_name][f'{metric_name}_ones']/self.aggregate_dict_counter[metric_name][f'count_{metric_name}_shapes'])
                 violations = '; '.join([f'({p},{s})' for p, s in self.aggregate_dict_counter[metric_name][f'{metric_name}_properties']])

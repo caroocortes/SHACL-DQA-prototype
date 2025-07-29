@@ -255,3 +255,8 @@ ex_pizza:classicPizza pizza:resourceProperty _:some_blank_node.
 _:some_pizza pizza:thingDomainProperty "something".
 
 _:some_pizza a pizza:UndefClass.
+
+ex_pizza:pizza_1 pizza:myAsymmetricProperty ex_pizza:pizza_2.
+ex_pizza:pizza_2 pizza:myAsymmetricProperty ex_pizza:pizza_1.
+ex_pizza:pizza_2 pizza:myAsymmetricProperty ex_pizza:pizza_3.
+ex_pizza:pizza_4 pizza:myAsymmetricProperty ex_pizza:pizza_3.

@@ -3095,6 +3095,9 @@ This is an example ontology that contains all constructs required for the variou
     <rdfs:domain rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
     <rdfs:range rdf:resource="http://www.w3.org/2000/01/rdf-schema#Resource"/>
     </owl:ObjectProperty>
+
+    <owl:AsymmetricProperty rdf:about="http://www.co-ode.org/ontologies/pizza/pizza.owl#myAsymmetricProperty">
+    </owl:AsymmetricProperty>
 </rdf:RDF>
 
 

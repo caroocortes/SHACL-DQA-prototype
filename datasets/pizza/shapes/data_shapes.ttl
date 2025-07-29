@@ -7,6 +7,12 @@
 @prefix sh: <http://www.w3.org/ns/shacl#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
+ex:AsymmetricPropertyShape_92 a sh:NodeShape ;
+    sh:property [ sh:disjoint <http://www.co-ode.org/ontologies/pizza/pizza.owl#myAsymmetricProperty> ;
+            sh:message "AsymmetricProperty_92 - The property http://www.co-ode.org/ontologies/pizza/pizza.owl#myAsymmetricProperty is used incorrectly (asymmetric)" ;
+            sh:path [ sh:inversePath <http://www.co-ode.org/ontologies/pizza/pizza.owl#myAsymmetricProperty> ] ] ;
+    sh:targetSubjectsOf <http://www.co-ode.org/ontologies/pizza/pizza.owl#myAsymmetricProperty> .
+
 ex:BlankNodesUsageEntitiesShape a sh:NodeShape ;
     sh:or ( [ sh:hasValue rdfs:Class ;
                 sh:path rdf:type ] [ sh:hasValue rdf:Property ;
@@ -94,6 +100,11 @@ ex:CorrectDomainShape_79 a sh:NodeShape ;
     sh:class <http://www.co-ode.org/ontologies/pizza/pizza.owl#Pizza> ;
     sh:message "CorrectDomain_79 - The property http://www.co-ode.org/ontologies/pizza/pizza.owl#literalProperty is used with an incorrect domain" ;
     sh:targetSubjectsOf <http://www.co-ode.org/ontologies/pizza/pizza.owl#literalProperty> .
+
+ex:CorrectDomainShape_89 a sh:NodeShape ;
+    sh:class <http://www.co-ode.org/ontologies/pizza/pizza.owl#Pizza> ;
+    sh:message "CorrectDomain_89 - The property http://www.co-ode.org/ontologies/pizza/pizza.owl#myAsymmetricProperty is used with an incorrect domain" ;
+    sh:targetSubjectsOf <http://www.co-ode.org/ontologies/pizza/pizza.owl#myAsymmetricProperty> .
 
 ex:CorrectRangeShape_15 a sh:NodeShape ;
     sh:property [ sh:class <http://www.co-ode.org/ontologies/pizza/pizza.owl#Store> ;
@@ -192,6 +203,12 @@ ex:CorrectRangeShape_80 a sh:NodeShape ;
             sh:message "CorrectRange_80 - The property http://www.co-ode.org/ontologies/pizza/pizza.owl#literalProperty is used with an incorrect range" ;
             sh:path <http://www.co-ode.org/ontologies/pizza/pizza.owl#literalProperty> ] ;
     sh:targetSubjectsOf <http://www.co-ode.org/ontologies/pizza/pizza.owl#literalProperty> .
+
+ex:CorrectRangeShape_90 a sh:NodeShape ;
+    sh:property [ sh:message "CorrectRange_90 - The property http://www.co-ode.org/ontologies/pizza/pizza.owl#myAsymmetricProperty is used with an incorrect range" ;
+            sh:nodeKind sh:Literal ;
+            sh:path <http://www.co-ode.org/ontologies/pizza/pizza.owl#myAsymmetricProperty> ] ;
+    sh:targetSubjectsOf <http://www.co-ode.org/ontologies/pizza/pizza.owl#myAsymmetricProperty> .
 
 ex:DeprecatedClassesShape a sh:NodeShape ;
     sh:or ( [ sh:hasValue rdfs:Class ;
@@ -1389,15 +1406,21 @@ ex:MisplacedPropertiesShape_86 a sh:NodeShape ;
 
 ex:MisplacedPropertiesShape_88 a sh:NodeShape ;
     sh:property [ sh:maxCount 0 ;
-            sh:message "MisplacedProperties_88 - The property http://www.co-ode.org/ontologies/pizza/pizza.owl#AuxPropertyNoLabel is being used as a class" ;
+            sh:message "MisplacedProperties_88 - The property http://www.co-ode.org/ontologies/pizza/pizza.owl#myAsymmetricProperty is being used as a class" ;
             sh:path [ sh:inversePath rdf:type ] ] ;
-    sh:targetNode <http://www.co-ode.org/ontologies/pizza/pizza.owl#AuxPropertyNoLabel> .
+    sh:targetNode <http://www.co-ode.org/ontologies/pizza/pizza.owl#myAsymmetricProperty> .
 
 ex:MisplacedPropertiesShape_9 a sh:NodeShape ;
     sh:property [ sh:maxCount 0 ;
             sh:message "MisplacedProperties_9 - The property http://www.co-ode.org/ontologies/pizza/pizza.owl#isBaseOf is being used as a class" ;
             sh:path [ sh:inversePath rdf:type ] ] ;
     sh:targetNode <http://www.co-ode.org/ontologies/pizza/pizza.owl#isBaseOf> .
+
+ex:MisplacedPropertiesShape_91 a sh:NodeShape ;
+    sh:property [ sh:maxCount 0 ;
+            sh:message "MisplacedProperties_91 - The property http://www.co-ode.org/ontologies/pizza/pizza.owl#AuxPropertyNoLabel is being used as a class" ;
+            sh:path [ sh:inversePath rdf:type ] ] ;
+    sh:targetNode <http://www.co-ode.org/ontologies/pizza/pizza.owl#AuxPropertyNoLabel> .
 
 ex:MisuseOwlDatatypePropertiesShape_33 a sh:NodeShape ;
     sh:property [ sh:message "MisuseOwlDatatypeProperties_33 - The datatype property http://www.co-ode.org/ontologies/pizza/pizza.owl#cookedDate is being used with Resources" ;
@@ -2312,29 +2335,29 @@ ex:SchemaCompletenessClassUsageShape_99 a sh:NodeShape ;
     sh:targetNode <http://www.co-ode.org/ontologies/pizza/pizza.owl#Napoletana> .
 
 ex:SelfDescriptiveFormatPropertiesShape_0 a sh:NodeShape ;
-    sh:message "SelfDescriptiveFormatProperties_0 - The property http://www.co-ode.org/ontologies/pizza/pizza.owl#cookedDate uses literals or blank nodes as values" ;
+    sh:message "SelfDescriptiveFormatProperties_0 - The property http://xmlns.com/foaf/0.1/name uses literals or blank nodes as values" ;
     sh:nodeKind sh:IRI ;
-    sh:targetObjectsOf <http://www.co-ode.org/ontologies/pizza/pizza.owl#cookedDate> .
+    sh:targetObjectsOf foaf:name .
 
 ex:SelfDescriptiveFormatPropertiesShape_1 a sh:NodeShape ;
-    sh:message "SelfDescriptiveFormatProperties_1 - The property http://www.co-ode.org/ontologies/pizza/pizza.owl#undefinedToppingProperty uses literals or blank nodes as values" ;
+    sh:message "SelfDescriptiveFormatProperties_1 - The property http://www.co-ode.org/ontologies/pizza/pizza.owl#thingDomainProperty uses literals or blank nodes as values" ;
     sh:nodeKind sh:IRI ;
-    sh:targetObjectsOf <http://www.co-ode.org/ontologies/pizza/pizza.owl#undefinedToppingProperty> .
+    sh:targetObjectsOf <http://www.co-ode.org/ontologies/pizza/pizza.owl#thingDomainProperty> .
 
 ex:SelfDescriptiveFormatPropertiesShape_10 a sh:NodeShape ;
-    sh:message "SelfDescriptiveFormatProperties_10 - The property http://purl.org/dc/terms/license uses literals or blank nodes as values" ;
+    sh:message "SelfDescriptiveFormatProperties_10 - The property http://www.co-ode.org/ontologies/pizza/pizza.owl#isDifferentFrom uses literals or blank nodes as values" ;
     sh:nodeKind sh:IRI ;
-    sh:targetObjectsOf dcterms:license .
+    sh:targetObjectsOf <http://www.co-ode.org/ontologies/pizza/pizza.owl#isDifferentFrom> .
 
 ex:SelfDescriptiveFormatPropertiesShape_11 a sh:NodeShape ;
-    sh:message "SelfDescriptiveFormatProperties_11 - The property http://www.co-ode.org/ontologies/pizza/pizza.owl#literalProperty uses literals or blank nodes as values" ;
+    sh:message "SelfDescriptiveFormatProperties_11 - The property http://www.co-ode.org/ontologies/pizza/pizza.owl#spicinessLevel uses literals or blank nodes as values" ;
     sh:nodeKind sh:IRI ;
-    sh:targetObjectsOf <http://www.co-ode.org/ontologies/pizza/pizza.owl#literalProperty> .
+    sh:targetObjectsOf <http://www.co-ode.org/ontologies/pizza/pizza.owl#spicinessLevel> .
 
 ex:SelfDescriptiveFormatPropertiesShape_12 a sh:NodeShape ;
-    sh:message "SelfDescriptiveFormatProperties_12 - The property http://www.co-ode.org/ontologies/pizza/pizza.owl#price uses literals or blank nodes as values" ;
+    sh:message "SelfDescriptiveFormatProperties_12 - The property http://www.co-ode.org/ontologies/pizza/pizza.owl#madeIn uses literals or blank nodes as values" ;
     sh:nodeKind sh:IRI ;
-    sh:targetObjectsOf <http://www.co-ode.org/ontologies/pizza/pizza.owl#price> .
+    sh:targetObjectsOf <http://www.co-ode.org/ontologies/pizza/pizza.owl#madeIn> .
 
 ex:SelfDescriptiveFormatPropertiesShape_13 a sh:NodeShape ;
     sh:message "SelfDescriptiveFormatProperties_13 - The property http://www.w3.org/1999/02/22-rdf-syntax-ns#type uses literals or blank nodes as values" ;
@@ -2342,134 +2365,139 @@ ex:SelfDescriptiveFormatPropertiesShape_13 a sh:NodeShape ;
     sh:targetObjectsOf rdf:type .
 
 ex:SelfDescriptiveFormatPropertiesShape_14 a sh:NodeShape ;
-    sh:message "SelfDescriptiveFormatProperties_14 - The property http://www.w3.org/2000/01/rdf-schema#comment uses literals or blank nodes as values" ;
-    sh:nodeKind sh:IRI ;
-    sh:targetObjectsOf rdfs:comment .
-
-ex:SelfDescriptiveFormatPropertiesShape_15 a sh:NodeShape ;
-    sh:message "SelfDescriptiveFormatProperties_15 - The property http://www.co-ode.org/ontologies/pizza/pizza.owl#bakedAt uses literals or blank nodes as values" ;
-    sh:nodeKind sh:IRI ;
-    sh:targetObjectsOf <http://www.co-ode.org/ontologies/pizza/pizza.owl#bakedAt> .
-
-ex:SelfDescriptiveFormatPropertiesShape_16 a sh:NodeShape ;
-    sh:message "SelfDescriptiveFormatProperties_16 - The property http://www.co-ode.org/ontologies/pizza/pizza.owl#oldProperty uses literals or blank nodes as values" ;
-    sh:nodeKind sh:IRI ;
-    sh:targetObjectsOf <http://www.co-ode.org/ontologies/pizza/pizza.owl#oldProperty> .
-
-ex:SelfDescriptiveFormatPropertiesShape_17 a sh:NodeShape ;
-    sh:message "SelfDescriptiveFormatProperties_17 - The property http://www.co-ode.org/ontologies/pizza/pizza.owl#bakingYear uses literals or blank nodes as values" ;
-    sh:nodeKind sh:IRI ;
-    sh:targetObjectsOf <http://www.co-ode.org/ontologies/pizza/pizza.owl#bakingYear> .
-
-ex:SelfDescriptiveFormatPropertiesShape_18 a sh:NodeShape ;
-    sh:message "SelfDescriptiveFormatProperties_18 - The property http://www.co-ode.org/ontologies/pizza/pizza.owl#oldToppingProperty uses literals or blank nodes as values" ;
-    sh:nodeKind sh:IRI ;
-    sh:targetObjectsOf <http://www.co-ode.org/ontologies/pizza/pizza.owl#oldToppingProperty> .
-
-ex:SelfDescriptiveFormatPropertiesShape_19 a sh:NodeShape ;
-    sh:message "SelfDescriptiveFormatProperties_19 - The property http://www.co-ode.org/ontologies/pizza/pizza.owl#hasTopping uses literals or blank nodes as values" ;
-    sh:nodeKind sh:IRI ;
-    sh:targetObjectsOf <http://www.co-ode.org/ontologies/pizza/pizza.owl#hasTopping> .
-
-ex:SelfDescriptiveFormatPropertiesShape_2 a sh:NodeShape ;
-    sh:message "SelfDescriptiveFormatProperties_2 - The property http://www.w3.org/2002/07/owl#sameAs uses literals or blank nodes as values" ;
-    sh:nodeKind sh:IRI ;
-    sh:targetObjectsOf owl:sameAs .
-
-ex:SelfDescriptiveFormatPropertiesShape_20 a sh:NodeShape ;
-    sh:message "SelfDescriptiveFormatProperties_20 - The property http://www.co-ode.org/ontologies/pizza/pizza.owl#thingProperty uses literals or blank nodes as values" ;
+    sh:message "SelfDescriptiveFormatProperties_14 - The property http://www.co-ode.org/ontologies/pizza/pizza.owl#thingProperty uses literals or blank nodes as values" ;
     sh:nodeKind sh:IRI ;
     sh:targetObjectsOf <http://www.co-ode.org/ontologies/pizza/pizza.owl#thingProperty> .
 
-ex:SelfDescriptiveFormatPropertiesShape_21 a sh:NodeShape ;
-    sh:message "SelfDescriptiveFormatProperties_21 - The property http://www.co-ode.org/ontologies/pizza/pizza.owl#isDifferentFrom uses literals or blank nodes as values" ;
+ex:SelfDescriptiveFormatPropertiesShape_15 a sh:NodeShape ;
+    sh:message "SelfDescriptiveFormatProperties_15 - The property http://www.co-ode.org/ontologies/pizza/pizza.owl#price uses literals or blank nodes as values" ;
     sh:nodeKind sh:IRI ;
-    sh:targetObjectsOf <http://www.co-ode.org/ontologies/pizza/pizza.owl#isDifferentFrom> .
+    sh:targetObjectsOf <http://www.co-ode.org/ontologies/pizza/pizza.owl#price> .
 
-ex:SelfDescriptiveFormatPropertiesShape_22 a sh:NodeShape ;
-    sh:message "SelfDescriptiveFormatProperties_22 - The property http://www.co-ode.org/ontologies/pizza/pizza.owl#madeBy uses literals or blank nodes as values" ;
-    sh:nodeKind sh:IRI ;
-    sh:targetObjectsOf <http://www.co-ode.org/ontologies/pizza/pizza.owl#madeBy> .
-
-ex:SelfDescriptiveFormatPropertiesShape_23 a sh:NodeShape ;
-    sh:message "SelfDescriptiveFormatProperties_23 - The property http://xmlns.com/foaf/0.1/name uses literals or blank nodes as values" ;
-    sh:nodeKind sh:IRI ;
-    sh:targetObjectsOf foaf:name .
-
-ex:SelfDescriptiveFormatPropertiesShape_24 a sh:NodeShape ;
-    sh:message "SelfDescriptiveFormatProperties_24 - The property http://www.co-ode.org/ontologies/pizza/pizza.owl#NonVegetarianPizza uses literals or blank nodes as values" ;
-    sh:nodeKind sh:IRI ;
-    sh:targetObjectsOf <http://www.co-ode.org/ontologies/pizza/pizza.owl#NonVegetarianPizza> .
-
-ex:SelfDescriptiveFormatPropertiesShape_25 a sh:NodeShape ;
-    sh:message "SelfDescriptiveFormatProperties_25 - The property http://www.co-ode.org/ontologies/pizza/pizza.owl#resourceProperty uses literals or blank nodes as values" ;
-    sh:nodeKind sh:IRI ;
-    sh:targetObjectsOf <http://www.co-ode.org/ontologies/pizza/pizza.owl#resourceProperty> .
-
-ex:SelfDescriptiveFormatPropertiesShape_26 a sh:NodeShape ;
-    sh:message "SelfDescriptiveFormatProperties_26 - The property http://www.co-ode.org/ontologies/pizza/pizza.owl#bakingDay uses literals or blank nodes as values" ;
-    sh:nodeKind sh:IRI ;
-    sh:targetObjectsOf <http://www.co-ode.org/ontologies/pizza/pizza.owl#bakingDay> .
-
-ex:SelfDescriptiveFormatPropertiesShape_27 a sh:NodeShape ;
-    sh:message "SelfDescriptiveFormatProperties_27 - The property http://www.w3.org/1999/02/22-rdf-syntax-ns#_2 uses literals or blank nodes as values" ;
-    sh:nodeKind sh:IRI ;
-    sh:targetObjectsOf rdf:_2 .
-
-ex:SelfDescriptiveFormatPropertiesShape_28 a sh:NodeShape ;
-    sh:message "SelfDescriptiveFormatProperties_28 - The property http://www.co-ode.org/ontologies/pizza/pizza.owl#hasDoubleRating uses literals or blank nodes as values" ;
+ex:SelfDescriptiveFormatPropertiesShape_16 a sh:NodeShape ;
+    sh:message "SelfDescriptiveFormatProperties_16 - The property http://www.co-ode.org/ontologies/pizza/pizza.owl#hasDoubleRating uses literals or blank nodes as values" ;
     sh:nodeKind sh:IRI ;
     sh:targetObjectsOf <http://www.co-ode.org/ontologies/pizza/pizza.owl#hasDoubleRating> .
 
-ex:SelfDescriptiveFormatPropertiesShape_29 a sh:NodeShape ;
-    sh:message "SelfDescriptiveFormatProperties_29 - The property http://purl.org/dc/terms/creator uses literals or blank nodes as values" ;
+ex:SelfDescriptiveFormatPropertiesShape_17 a sh:NodeShape ;
+    sh:message "SelfDescriptiveFormatProperties_17 - The property http://www.co-ode.org/ontologies/pizza/pizza.owl#hasTopping uses literals or blank nodes as values" ;
     sh:nodeKind sh:IRI ;
-    sh:targetObjectsOf dcterms:creator .
+    sh:targetObjectsOf <http://www.co-ode.org/ontologies/pizza/pizza.owl#hasTopping> .
 
-ex:SelfDescriptiveFormatPropertiesShape_3 a sh:NodeShape ;
-    sh:message "SelfDescriptiveFormatProperties_3 - The property http://www.co-ode.org/ontologies/pizza/pizza.owl#thingDomainProperty uses literals or blank nodes as values" ;
+ex:SelfDescriptiveFormatPropertiesShape_18 a sh:NodeShape ;
+    sh:message "SelfDescriptiveFormatProperties_18 - The property http://www.co-ode.org/ontologies/pizza/pizza.owl#cookedDate uses literals or blank nodes as values" ;
     sh:nodeKind sh:IRI ;
-    sh:targetObjectsOf <http://www.co-ode.org/ontologies/pizza/pizza.owl#thingDomainProperty> .
+    sh:targetObjectsOf <http://www.co-ode.org/ontologies/pizza/pizza.owl#cookedDate> .
 
-ex:SelfDescriptiveFormatPropertiesShape_30 a sh:NodeShape ;
-    sh:message "SelfDescriptiveFormatProperties_30 - The property http://www.w3.org/1999/02/22-rdf-syntax-ns#_1 uses literals or blank nodes as values" ;
+ex:SelfDescriptiveFormatPropertiesShape_19 a sh:NodeShape ;
+    sh:message "SelfDescriptiveFormatProperties_19 - The property http://www.w3.org/2000/01/rdf-schema#comment uses literals or blank nodes as values" ;
     sh:nodeKind sh:IRI ;
-    sh:targetObjectsOf rdf:_1 .
+    sh:targetObjectsOf rdfs:comment .
 
-ex:SelfDescriptiveFormatPropertiesShape_31 a sh:NodeShape ;
-    sh:message "SelfDescriptiveFormatProperties_31 - The property http://www.co-ode.org/ontologies/pizza/pizza.owl#isVegetarian uses literals or blank nodes as values" ;
-    sh:nodeKind sh:IRI ;
-    sh:targetObjectsOf <http://www.co-ode.org/ontologies/pizza/pizza.owl#isVegetarian> .
-
-ex:SelfDescriptiveFormatPropertiesShape_4 a sh:NodeShape ;
-    sh:message "SelfDescriptiveFormatProperties_4 - The property http://www.w3.org/2000/01/rdf-schema#label uses literals or blank nodes as values" ;
-    sh:nodeKind sh:IRI ;
-    sh:targetObjectsOf rdfs:label .
-
-ex:SelfDescriptiveFormatPropertiesShape_5 a sh:NodeShape ;
-    sh:message "SelfDescriptiveFormatProperties_5 - The property http://www.co-ode.org/ontologies/pizza/pizza.owl#bakingMonth uses literals or blank nodes as values" ;
-    sh:nodeKind sh:IRI ;
-    sh:targetObjectsOf <http://www.co-ode.org/ontologies/pizza/pizza.owl#bakingMonth> .
-
-ex:SelfDescriptiveFormatPropertiesShape_6 a sh:NodeShape ;
-    sh:message "SelfDescriptiveFormatProperties_6 - The property http://www.co-ode.org/ontologies/pizza/pizza.owl#spicinessLevel uses literals or blank nodes as values" ;
-    sh:nodeKind sh:IRI ;
-    sh:targetObjectsOf <http://www.co-ode.org/ontologies/pizza/pizza.owl#spicinessLevel> .
-
-ex:SelfDescriptiveFormatPropertiesShape_7 a sh:NodeShape ;
-    sh:message "SelfDescriptiveFormatProperties_7 - The property http://www.co-ode.org/ontologies/pizza/pizza.owl#madeIn uses literals or blank nodes as values" ;
-    sh:nodeKind sh:IRI ;
-    sh:targetObjectsOf <http://www.co-ode.org/ontologies/pizza/pizza.owl#madeIn> .
-
-ex:SelfDescriptiveFormatPropertiesShape_8 a sh:NodeShape ;
-    sh:message "SelfDescriptiveFormatProperties_8 - The property http://www.co-ode.org/ontologies/pizza/pizza.owl#hasFloatScore uses literals or blank nodes as values" ;
+ex:SelfDescriptiveFormatPropertiesShape_2 a sh:NodeShape ;
+    sh:message "SelfDescriptiveFormatProperties_2 - The property http://www.co-ode.org/ontologies/pizza/pizza.owl#hasFloatScore uses literals or blank nodes as values" ;
     sh:nodeKind sh:IRI ;
     sh:targetObjectsOf <http://www.co-ode.org/ontologies/pizza/pizza.owl#hasFloatScore> .
 
-ex:SelfDescriptiveFormatPropertiesShape_9 a sh:NodeShape ;
-    sh:message "SelfDescriptiveFormatProperties_9 - The property http://www.co-ode.org/ontologies/pizza/pizza.owl#Store uses literals or blank nodes as values" ;
+ex:SelfDescriptiveFormatPropertiesShape_20 a sh:NodeShape ;
+    sh:message "SelfDescriptiveFormatProperties_20 - The property http://www.co-ode.org/ontologies/pizza/pizza.owl#undefinedToppingProperty uses literals or blank nodes as values" ;
+    sh:nodeKind sh:IRI ;
+    sh:targetObjectsOf <http://www.co-ode.org/ontologies/pizza/pizza.owl#undefinedToppingProperty> .
+
+ex:SelfDescriptiveFormatPropertiesShape_21 a sh:NodeShape ;
+    sh:message "SelfDescriptiveFormatProperties_21 - The property http://www.co-ode.org/ontologies/pizza/pizza.owl#resourceProperty uses literals or blank nodes as values" ;
+    sh:nodeKind sh:IRI ;
+    sh:targetObjectsOf <http://www.co-ode.org/ontologies/pizza/pizza.owl#resourceProperty> .
+
+ex:SelfDescriptiveFormatPropertiesShape_22 a sh:NodeShape ;
+    sh:message "SelfDescriptiveFormatProperties_22 - The property http://purl.org/dc/terms/license uses literals or blank nodes as values" ;
+    sh:nodeKind sh:IRI ;
+    sh:targetObjectsOf dcterms:license .
+
+ex:SelfDescriptiveFormatPropertiesShape_23 a sh:NodeShape ;
+    sh:message "SelfDescriptiveFormatProperties_23 - The property http://www.w3.org/2002/07/owl#sameAs uses literals or blank nodes as values" ;
+    sh:nodeKind sh:IRI ;
+    sh:targetObjectsOf owl:sameAs .
+
+ex:SelfDescriptiveFormatPropertiesShape_24 a sh:NodeShape ;
+    sh:message "SelfDescriptiveFormatProperties_24 - The property http://www.co-ode.org/ontologies/pizza/pizza.owl#isVegetarian uses literals or blank nodes as values" ;
+    sh:nodeKind sh:IRI ;
+    sh:targetObjectsOf <http://www.co-ode.org/ontologies/pizza/pizza.owl#isVegetarian> .
+
+ex:SelfDescriptiveFormatPropertiesShape_25 a sh:NodeShape ;
+    sh:message "SelfDescriptiveFormatProperties_25 - The property http://www.co-ode.org/ontologies/pizza/pizza.owl#bakingMonth uses literals or blank nodes as values" ;
+    sh:nodeKind sh:IRI ;
+    sh:targetObjectsOf <http://www.co-ode.org/ontologies/pizza/pizza.owl#bakingMonth> .
+
+ex:SelfDescriptiveFormatPropertiesShape_26 a sh:NodeShape ;
+    sh:message "SelfDescriptiveFormatProperties_26 - The property http://www.co-ode.org/ontologies/pizza/pizza.owl#literalProperty uses literals or blank nodes as values" ;
+    sh:nodeKind sh:IRI ;
+    sh:targetObjectsOf <http://www.co-ode.org/ontologies/pizza/pizza.owl#literalProperty> .
+
+ex:SelfDescriptiveFormatPropertiesShape_27 a sh:NodeShape ;
+    sh:message "SelfDescriptiveFormatProperties_27 - The property http://www.co-ode.org/ontologies/pizza/pizza.owl#oldProperty uses literals or blank nodes as values" ;
+    sh:nodeKind sh:IRI ;
+    sh:targetObjectsOf <http://www.co-ode.org/ontologies/pizza/pizza.owl#oldProperty> .
+
+ex:SelfDescriptiveFormatPropertiesShape_28 a sh:NodeShape ;
+    sh:message "SelfDescriptiveFormatProperties_28 - The property http://purl.org/dc/terms/creator uses literals or blank nodes as values" ;
+    sh:nodeKind sh:IRI ;
+    sh:targetObjectsOf dcterms:creator .
+
+ex:SelfDescriptiveFormatPropertiesShape_29 a sh:NodeShape ;
+    sh:message "SelfDescriptiveFormatProperties_29 - The property http://www.co-ode.org/ontologies/pizza/pizza.owl#Store uses literals or blank nodes as values" ;
     sh:nodeKind sh:IRI ;
     sh:targetObjectsOf <http://www.co-ode.org/ontologies/pizza/pizza.owl#Store> .
+
+ex:SelfDescriptiveFormatPropertiesShape_3 a sh:NodeShape ;
+    sh:message "SelfDescriptiveFormatProperties_3 - The property http://www.co-ode.org/ontologies/pizza/pizza.owl#bakedAt uses literals or blank nodes as values" ;
+    sh:nodeKind sh:IRI ;
+    sh:targetObjectsOf <http://www.co-ode.org/ontologies/pizza/pizza.owl#bakedAt> .
+
+ex:SelfDescriptiveFormatPropertiesShape_30 a sh:NodeShape ;
+    sh:message "SelfDescriptiveFormatProperties_30 - The property http://www.co-ode.org/ontologies/pizza/pizza.owl#madeBy uses literals or blank nodes as values" ;
+    sh:nodeKind sh:IRI ;
+    sh:targetObjectsOf <http://www.co-ode.org/ontologies/pizza/pizza.owl#madeBy> .
+
+ex:SelfDescriptiveFormatPropertiesShape_31 a sh:NodeShape ;
+    sh:message "SelfDescriptiveFormatProperties_31 - The property http://www.w3.org/1999/02/22-rdf-syntax-ns#_1 uses literals or blank nodes as values" ;
+    sh:nodeKind sh:IRI ;
+    sh:targetObjectsOf rdf:_1 .
+
+ex:SelfDescriptiveFormatPropertiesShape_32 a sh:NodeShape ;
+    sh:message "SelfDescriptiveFormatProperties_32 - The property http://www.w3.org/2000/01/rdf-schema#label uses literals or blank nodes as values" ;
+    sh:nodeKind sh:IRI ;
+    sh:targetObjectsOf rdfs:label .
+
+ex:SelfDescriptiveFormatPropertiesShape_4 a sh:NodeShape ;
+    sh:message "SelfDescriptiveFormatProperties_4 - The property http://www.co-ode.org/ontologies/pizza/pizza.owl#oldToppingProperty uses literals or blank nodes as values" ;
+    sh:nodeKind sh:IRI ;
+    sh:targetObjectsOf <http://www.co-ode.org/ontologies/pizza/pizza.owl#oldToppingProperty> .
+
+ex:SelfDescriptiveFormatPropertiesShape_5 a sh:NodeShape ;
+    sh:message "SelfDescriptiveFormatProperties_5 - The property http://www.co-ode.org/ontologies/pizza/pizza.owl#myAsymmetricProperty uses literals or blank nodes as values" ;
+    sh:nodeKind sh:IRI ;
+    sh:targetObjectsOf <http://www.co-ode.org/ontologies/pizza/pizza.owl#myAsymmetricProperty> .
+
+ex:SelfDescriptiveFormatPropertiesShape_6 a sh:NodeShape ;
+    sh:message "SelfDescriptiveFormatProperties_6 - The property http://www.co-ode.org/ontologies/pizza/pizza.owl#bakingYear uses literals or blank nodes as values" ;
+    sh:nodeKind sh:IRI ;
+    sh:targetObjectsOf <http://www.co-ode.org/ontologies/pizza/pizza.owl#bakingYear> .
+
+ex:SelfDescriptiveFormatPropertiesShape_7 a sh:NodeShape ;
+    sh:message "SelfDescriptiveFormatProperties_7 - The property http://www.co-ode.org/ontologies/pizza/pizza.owl#NonVegetarianPizza uses literals or blank nodes as values" ;
+    sh:nodeKind sh:IRI ;
+    sh:targetObjectsOf <http://www.co-ode.org/ontologies/pizza/pizza.owl#NonVegetarianPizza> .
+
+ex:SelfDescriptiveFormatPropertiesShape_8 a sh:NodeShape ;
+    sh:message "SelfDescriptiveFormatProperties_8 - The property http://www.w3.org/1999/02/22-rdf-syntax-ns#_2 uses literals or blank nodes as values" ;
+    sh:nodeKind sh:IRI ;
+    sh:targetObjectsOf rdf:_2 .
+
+ex:SelfDescriptiveFormatPropertiesShape_9 a sh:NodeShape ;
+    sh:message "SelfDescriptiveFormatProperties_9 - The property http://www.co-ode.org/ontologies/pizza/pizza.owl#bakingDay uses literals or blank nodes as values" ;
+    sh:nodeKind sh:IRI ;
+    sh:targetObjectsOf <http://www.co-ode.org/ontologies/pizza/pizza.owl#bakingDay> .
 
 ex:SelfDescriptiveFormatShape a sh:NodeShape ;
     sh:or ( [ sh:hasValue rdfs:Class ;
