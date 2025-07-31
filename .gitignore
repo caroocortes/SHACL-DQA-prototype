@@ -1,5 +1,6 @@
 datasets/*
 !datasets/pizza/
+!datasets/vocabularies/
 profile/*
 shacl_shapes_test_venv/
 test/*
